@@ -1,0 +1,4 @@
+include ':ChatMessageView'
+include ':ChatLayoutView'
+include ':app'
+rootProject.name = "ChatKitLayout"

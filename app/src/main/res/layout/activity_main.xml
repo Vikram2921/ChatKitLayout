@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    tools:context=".MainActivity">
+    <com.nobodyknows.chatlayoutview.ChatLayoutView
+        android:layout_width="match_parent"
+        android:id="@+id/chatlayout_view"
+        app:view_mode="RecyclerView"
+        app:useDatabase="true"
+        android:layout_above="@id/clickme"
+        android:layout_height="match_parent">
+    </com.nobodyknows.chatlayoutview.ChatLayoutView>
+    <Button
+        android:layout_alignParentBottom="true"
+        android:id="@+id/clickme"
+        android:text="Add Message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></Button>
+</RelativeLayout>
