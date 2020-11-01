@@ -10,7 +10,7 @@ public class Message {
     private String receiver;
     private String message;
     private String roomId;
-    private ArrayList<String> urls;
+    private ArrayList<SharedFile> sharedFiles = new ArrayList<>();
     private MessageType messageType = MessageType.TEXT;
     private Date createdTimestamp = new Date();
     private Date updateTimestamp = new Date();
@@ -51,12 +51,12 @@ public class Message {
         this.message = message;
     }
 
-    public ArrayList<String> getUrls() {
-        return urls;
+    public ArrayList<SharedFile> getSharedFiles() {
+        return sharedFiles;
     }
 
-    public void setUrls(ArrayList<String> urls) {
-        this.urls = urls;
+    public void setSharedFiles(ArrayList<SharedFile> sharedFiles) {
+        this.sharedFiles = sharedFiles;
     }
 
     public MessageType getMessageType() {
@@ -121,5 +121,9 @@ public class Message {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+    public void addSharedFile(SharedFile sharedFile) {
+        this.sharedFiles.add(sharedFile);
     }
 }

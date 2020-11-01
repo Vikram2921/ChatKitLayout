@@ -1,5 +1,6 @@
 package com.nobodyknows.chatlayoutview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -72,6 +73,8 @@ public class ChatLayoutView extends RelativeLayout {
     private boolean dynamicScrolling = false;
     private ChatLayoutListener chatLayoutListener;
     private Map<String, User> usermap = new HashMap<>();
+    public static DownloadHelper downloadHelper;
+    private Map<MessageType,String> downloadPaths = new HashMap<>();
 
     private int getNextOffset() {
         return offset+chatLimit;
@@ -79,6 +82,14 @@ public class ChatLayoutView extends RelativeLayout {
 
     public void addUser(User user) {
         usermap.put(user.getUserId(),user);
+    }
+
+    public String getImageDownloadPath(MessageType messageType) {
+        return this.downloadPaths.get(messageType);
+    }
+
+    public void setDownloadPath(MessageType messageType,String downloadFolder) {
+        this.downloadPaths.put(messageType,downloadFolder);
     }
 
     public User getUser(String userId) {
@@ -97,6 +108,10 @@ public class ChatLayoutView extends RelativeLayout {
     public ChatLayoutView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs,defStyleAttr);
+    }
+
+    public void setActivity(Activity activity) {
+        downloadHelper = new DownloadHelper(getContext(),activity);
     }
 
     private void init(AttributeSet attrs, int defStyleAttr) {
@@ -134,7 +149,7 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,usermap);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,usermap,downloadPaths);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -161,7 +176,7 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueListView() {
         recyclerView.setVisibility(GONE);
         listView.setVisibility(VISIBLE);
-        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages,usermap);
+        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages,usermap,downloadPaths);
         listView.setAdapter(listViewAdapter);
     }
 
@@ -181,13 +196,15 @@ public class ChatLayoutView extends RelativeLayout {
     }
 
     public void addMessage(Message message) {
-        message.setRoomId(roomId);
-        message.setMessageConfiguration(getMessageConfig(message));
-        checkForDate(message,messages,dates);
-        if(useDatabase && canSave) {
-            databaseHelper.insertMessage(message);
+        if(!messageIds.contains(message.getMessageId())) {
+            message.setRoomId(roomId);
+            message.setMessageConfiguration(getMessageConfig(message));
+            checkForDate(message,messages,dates);
+            if(useDatabase && canSave) {
+                databaseHelper.insertMessage(message);
+            }
+            notifyAdapter(true);
         }
-        notifyAdapter(true);
     }
     private String getFormattedDate(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");

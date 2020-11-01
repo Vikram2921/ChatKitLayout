@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.DownloadHelper;
 import com.nobodyknows.chatlayoutview.Model.User;
 import com.nobodyknows.chatlayoutview.R;
 import com.nobodyknows.chatlayoutview.ChatMessageView;
@@ -16,15 +18,19 @@ import com.nobodyknows.chatlayoutview.Model.Message;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.downloadHelper;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<Message> messages;
     private Context context;
     private Map<String,User> userMap;
-    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap) {
+    private Map<MessageType,String> downloadPath;
+    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths) {
         this.context = context;
         this.messages = messages;
         this.userMap = userMap;
+        this.downloadPath = downloadPaths;
     }
 
     @NonNull
@@ -40,8 +46,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
         Message message = messages.get(position);
         holder.setIsRecyclable(false);
-        holder.chatMessageView.setMessage(message);
+        holder.chatMessageView.setDownloadPath(getUrl(message.getMessageType()));
         holder.chatMessageView.setUser(userMap.get(message.getSender()));
+        holder.chatMessageView.setDownloadHelper(downloadHelper);
+        holder.chatMessageView.setMessage(message);
+    }
+
+    private String getUrl(MessageType messageType) {
+        return downloadPath.get(messageType);
     }
 
     @Override

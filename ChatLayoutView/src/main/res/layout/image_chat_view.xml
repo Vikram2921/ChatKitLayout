@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -12,10 +12,27 @@
         android:layout_height="wrap_content">
     </LinearLayout>
     <LinearLayout
+        android:layout_below="@id/line1"
         android:weightSum="2"
         android:id="@+id/line2"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </LinearLayout>
-</LinearLayout>
+   <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+       android:layout_width="wrap_content"
+       android:id="@+id/circularButton"
+       android:text="Download"
+       android:textColor="#959595"
+       android:textSize="15dp"
+       android:drawableLeft="@drawable/download"
+       android:drawablePadding="5dp"
+       android:textAllCaps="false"
+       android:layout_centerInParent="true"
+       android:padding="10dp"
+       android:background="@drawable/circular_button_background"
+       app:spinning_bar_width="4dp"
+       app:spinning_bar_color="#000"
+       android:layout_height="wrap_content">
+   </br.com.simplepass.loadingbutton.customViews.CircularProgressButton>
+</RelativeLayout>

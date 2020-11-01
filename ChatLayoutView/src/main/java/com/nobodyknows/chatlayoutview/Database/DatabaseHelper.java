@@ -5,13 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
 import com.nobodyknows.chatlayoutview.Database.model.Chats;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.Database.model.Urls;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
+import com.nobodyknows.chatlayoutview.Model.SharedFile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,11 +39,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(Chats.getCreateTableQuery(roomId));
+        db.execSQL(Urls.getCreateTableQuery(roomId));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + Chats.getTableName(roomId));
+        db.execSQL("DROP TABLE IF EXISTS " + Urls.getTableName(roomId));
         onCreate(db);
     }
 
@@ -49,9 +54,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id = 0;
         if(!isMessageExist(message.getMessageId(),db)) {
             id = db.insert(Chats.getTableName(roomId),null,getContentValues(message));
+            if(message.getSharedFiles().size() > 0) {
+                for(SharedFile sharedFile:message.getSharedFiles()) {
+                    insertSharedFile(message.getMessageId(),sharedFile);
+                }
+            }
         }
         db.close();
         return id;
+    }
+
+    public long insertSharedFile(String messageId,SharedFile sharedFile) {
+        SQLiteDatabase db  = this.getWritableDatabase();
+        long id = 0;
+        if(!isSharedFileExist(messageId,sharedFile.getName(),db)) {
+            id = db.insert(Urls.getTableName(roomId),null,getSharedFileContentValues(messageId,sharedFile));
+        }
+        db.close();
+        return id;
+    }
+
+    private ContentValues getSharedFileContentValues(String messageId, SharedFile sharedFile) {
+        ContentValues values = new ContentValues();
+        values.put(Urls.COLUMN_MESSAGE_ID,messageId);
+        values.put(Urls.COLUMN_NAME,sharedFile.getName());
+        values.put(Urls.COLUMN_URL,sharedFile.getUrl());
+        values.put(Urls.COLUMN_EXETENSION,sharedFile.getExtension());
+        return values;
     }
 
     private ContentValues getContentValues(Message message) {
@@ -84,6 +113,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         db.close();
         return messages;
+    }
+
+    public ArrayList<SharedFile> getSharedFiles(String messageId) {
+        ArrayList<SharedFile> files = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + Urls.getTableName(roomId) + " WHERE " +
+                Urls.COLUMN_MESSAGE_ID + " = "+messageId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                files.add(convertToSharedFile(cursor));
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return files;
+    }
+
+    private SharedFile convertToSharedFile(Cursor cursor) {
+        SharedFile file = new SharedFile();
+        file.setUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_URL)));
+        file.setName(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_NAME)));
+        file.setExtension(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_EXETENSION)));
+        return file;
     }
 
     private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates,ArrayList<String> messageIds) {
@@ -131,9 +184,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Boolean isMessageExist(String messageId,SQLiteDatabase db) {
-        List<Message> messages = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " WHERE " +
                 Chats.COLUMN_MESSAGE_ID + " = "+messageId;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() <=0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    private Boolean isSharedFileExist(String messageId,String name,SQLiteDatabase db) {
+        String selectQuery = "SELECT  * FROM " + Urls.getTableName(roomId) + " WHERE " +
+                Urls.COLUMN_MESSAGE_ID + " = "+messageId+" AND "+Urls.COLUMN_NAME+" = '"+name+"'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if(cursor.getCount() <=0) {
             cursor.close();
@@ -161,7 +225,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             message.setMessageConfiguration(leftMessageConfiguration);
         }
+        message.setSharedFiles(getSharedFiles(message.getMessageId()));
         return message;
+    }
+
+    private void readSharedFiles(String messageId) {
+
     }
 
     public int getMessagesCount() {
