@@ -2,23 +2,49 @@ package com.nobodyknows.chatlayoutview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.capybaralabs.swipetoreply.ISwipeControllerActions;
+import com.capybaralabs.swipetoreply.SwipeController;
 import com.nobodyknows.chatlayoutview.Adapters.ListViewAdapter;
 import com.nobodyknows.chatlayoutview.Adapters.RecyclerViewAdapter;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Database.DatabaseHelper;
-import com.nobodyknows.chatmessageview.CONSTANT.MessagePosition;
-import com.nobodyknows.chatmessageview.Model.Message;
-import com.nobodyknows.chatmessageview.Model.MessageConfiguration;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
+import com.nobodyknows.chatlayoutview.Interfaces.ChatLayoutListener;
+import com.nobodyknows.chatlayoutview.Model.Message;
+import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
+import com.nobodyknows.chatlayoutview.Model.User;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
 public class ChatLayoutView extends RelativeLayout {
 
@@ -32,12 +58,32 @@ public class ChatLayoutView extends RelativeLayout {
     private MessageConfiguration leftMessageConfiguration;
     private MessageConfiguration rightMessageConfiguration;
     private ListView listView;
+    private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
     private ListViewAdapter listViewAdapter;
     private DatabaseHelper databaseHelper;
     private String roomId,myId="";
     private Boolean useDatabase = false;
     private Boolean canSave = false;
+    private ArrayList<String> messageIds = new ArrayList<>();
+    private Integer chatLimit = 30;
+    private ImageView backgroundImage;
+    private int offset = 0;
+    private boolean dynamicScrolling = false;
+    private ChatLayoutListener chatLayoutListener;
+    private Map<String, User> usermap = new HashMap<>();
+
+    private int getNextOffset() {
+        return offset+chatLimit;
+    }
+
+    public void addUser(User user) {
+        usermap.put(user.getUserId(),user);
+    }
+
+    public User getUser(String userId) {
+        return usermap.get(userId);
+    }
     public ChatLayoutView(Context context) {
         super(context);
         init(null,0);
@@ -59,8 +105,10 @@ public class ChatLayoutView extends RelativeLayout {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs,R.styleable.ChatLayoutView);
         mode = typedArray.getInt(R.styleable.ChatLayoutView_view_mode,0);
         useDatabase = typedArray.getBoolean(R.styleable.ChatLayoutView_useDatabase,false);
+        chatLimit = typedArray.getInt(R.styleable.ChatLayoutView_chatLimit,30);
         recyclerView = root.findViewById(R.id.recyclerview);
         listView = root.findViewById(R.id.listview);
+        backgroundImage = root.findViewById(R.id.background);
         leftMessageConfiguration = new MessageConfiguration();
         rightMessageConfiguration = new MessageConfiguration();
         leftMessageConfiguration.setMessagePosition(MessagePosition.LEFT);
@@ -72,10 +120,21 @@ public class ChatLayoutView extends RelativeLayout {
         }
     }
 
+    private void addSwipeRecyclerView() {
+        SwipeController controller = new SwipeController(getContext(), new ISwipeControllerActions() {
+            @Override
+            public void onSwipePerformed(int position) {
+                chatLayoutListener.onSwipeToReply(messages.get(position));
+            }
+        });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(controller);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,usermap);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -83,20 +142,34 @@ public class ChatLayoutView extends RelativeLayout {
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+//                if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    Toast.makeText(getContext(),"BOTTOM LAST",Toast.LENGTH_LONG).show();
+//                }
+                if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
+                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration,chatLimit,getNextOffset()));
+                    notifyAdapter(false);
+                }
+            }
+        });
+        addSwipeRecyclerView();
     }
 
     private void continueListView() {
         recyclerView.setVisibility(GONE);
         listView.setVisibility(VISIBLE);
-        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages);
+        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages,usermap);
         listView.setAdapter(listViewAdapter);
     }
 
-    private void notifyAdapter() {
+    private void notifyAdapter(Boolean scrollToBottom) {
         if(mode == RECYCLERVIEW) {
             recyclerViewAdapter.notifyDataSetChanged();
-            if(recyclerViewAdapter.getItemCount() > 0) {
-                recyclerView.smoothScrollToPosition(recyclerViewAdapter.getItemCount() - 1);
+            if(recyclerViewAdapter.getItemCount() > 0 && scrollToBottom) {
+                recyclerView.scrollToPosition(recyclerViewAdapter.getItemCount() - 1);
             }
         } else {
             listViewAdapter.notifyDataSetChanged();
@@ -110,12 +183,41 @@ public class ChatLayoutView extends RelativeLayout {
     public void addMessage(Message message) {
         message.setRoomId(roomId);
         message.setMessageConfiguration(getMessageConfig(message));
-        messages.add(message);
+        checkForDate(message,messages,dates);
         if(useDatabase && canSave) {
             databaseHelper.insertMessage(message);
         }
-        notifyAdapter();
+        notifyAdapter(true);
     }
+    private String getFormattedDate(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
+        return simpleDateFormat.format(date);
+    }
+
+
+    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates) {
+        String formattedText = getFormattedDate(message.getCreatedTimestamp());
+        if(!dates.contains(formattedText)) {
+            dates.add(formattedText);
+            Message dateMessage = new Message();
+            dateMessage.setMessageType(MessageType.DATE);
+            if(message.getCreatedTimestamp() == new Date()) {
+                formattedText = "Today";
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE,-1);
+                if(message.getCreatedTimestamp() == calendar.getTime()) {
+                    formattedText = "Yesterday";
+                }
+            }
+            dateMessage.setMessageId("DATE_"+formattedText);
+            dateMessage.setMessage(formattedText+"");
+            messages.add(dateMessage);
+        }
+        messages.add(message);
+        messageIds.add(message.getMessageId());
+    }
+
 
     private MessageConfiguration getMessageConfig(Message message) {
         if(message.getSender().equals(myId)) {
@@ -141,9 +243,9 @@ public class ChatLayoutView extends RelativeLayout {
 
     public void loadAllMessage() {
         messages.clear();
-        notifyAdapter();
-        messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration));
-        notifyAdapter();
+        notifyAdapter(true);
+        messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration,dates,messageIds));
+        notifyAdapter(true);
     }
 
     public MessageConfiguration getLeftMessageConfiguration() {
@@ -164,5 +266,41 @@ public class ChatLayoutView extends RelativeLayout {
 
     public String getMyId() {
         return myId;
+    }
+
+    public void setBackgroundImage(String url) {
+        Glide.with(getContext()).load(url).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(int resource) {
+        Glide.with(getContext()).load(resource).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(Uri uri) {
+        Glide.with(getContext()).load(uri).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(File file) {
+        Glide.with(getContext()).load(file).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(byte[] bytes) {
+        Glide.with(getContext()).load(bytes).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(Bitmap bitmap) {
+        Glide.with(getContext()).load(bitmap).into(backgroundImage);
+    }
+
+    public void setBackgroundImage(Drawable drawable) {
+        Glide.with(getContext()).load(drawable).into(backgroundImage);
+    }
+
+    public ChatLayoutListener getChatLayoutListener() {
+        return chatLayoutListener;
+    }
+
+    public void setChatLayoutListener(ChatLayoutListener chatLayoutListener) {
+        this.chatLayoutListener = chatLayoutListener;
     }
 }

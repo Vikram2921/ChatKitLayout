@@ -6,5 +6,6 @@
             <enum name="ListView" value="1"></enum>
         </attr>
         <attr name="useDatabase" format="boolean"></attr>
+        <attr name="chatLimit" format="integer"></attr>
     </declare-styleable>
 </resources>

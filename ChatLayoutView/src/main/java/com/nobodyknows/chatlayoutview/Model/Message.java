@@ -1,6 +1,6 @@
-package com.nobodyknows.chatmessageview.Model;
+package com.nobodyknows.chatlayoutview.Model;
 
-import com.nobodyknows.chatmessageview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import java.util.ArrayList;
 import java.util.Date;
 

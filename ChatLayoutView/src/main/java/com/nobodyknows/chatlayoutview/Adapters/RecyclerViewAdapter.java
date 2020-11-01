@@ -4,24 +4,27 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nobodyknows.chatlayoutview.Model.User;
 import com.nobodyknows.chatlayoutview.R;
-import com.nobodyknows.chatmessageview.ChatMessageView;
-import com.nobodyknows.chatmessageview.Model.Message;
+import com.nobodyknows.chatlayoutview.ChatMessageView;
+import com.nobodyknows.chatlayoutview.Model.Message;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<Message> messages;
     private Context context;
-    public RecyclerViewAdapter(Context context,ArrayList<Message> messages) {
+    private Map<String,User> userMap;
+    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap) {
         this.context = context;
         this.messages = messages;
+        this.userMap = userMap;
     }
 
     @NonNull
@@ -38,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Message message = messages.get(position);
         holder.setIsRecyclable(false);
         holder.chatMessageView.setMessage(message);
+        holder.chatMessageView.setUser(userMap.get(message.getSender()));
     }
 
     @Override

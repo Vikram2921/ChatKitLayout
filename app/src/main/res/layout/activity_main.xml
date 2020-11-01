@@ -10,14 +10,27 @@
         android:layout_width="match_parent"
         android:id="@+id/chatlayout_view"
         app:view_mode="RecyclerView"
-        app:useDatabase="true"
-        android:layout_above="@id/clickme"
+        app:useDatabase="false"
+        android:layout_above="@id/messageentry"
         android:layout_height="match_parent">
     </com.nobodyknows.chatlayoutview.ChatLayoutView>
-    <Button
+    <LinearLayout
+        android:id="@+id/messageentry"
         android:layout_alignParentBottom="true"
-        android:id="@+id/clickme"
-        android:text="Add Message"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Button>
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_weight="1"
+            android:id="@+id/message"
+            android:hint="Enter message here"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </EditText>
+        <Button
+            android:id="@+id/clickme"
+            android:text="Add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></Button>
+    </LinearLayout>
 </RelativeLayout>

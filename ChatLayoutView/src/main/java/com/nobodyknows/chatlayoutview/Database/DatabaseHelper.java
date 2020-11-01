@@ -5,18 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.nobodyknows.chatlayoutview.Database.model.Chats;
-import com.nobodyknows.chatmessageview.CONSTANT.MessageType;
-import com.nobodyknows.chatmessageview.Model.Message;
-import com.nobodyknows.chatmessageview.Model.MessageConfiguration;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.Model.Message;
+import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    public ArrayList<Message> getAllMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
+    public ArrayList<Message> getAllMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration,ArrayList<String> dates,ArrayList<String> messageIds) {
         ArrayList<Message> messages = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " ORDER BY " +
                 Chats.COLUMN_CREATED_TIME + " ASC";
@@ -79,7 +79,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                messages.add(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration));
+                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates,messageIds);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return messages;
+    }
+
+    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates,ArrayList<String> messageIds) {
+        String formattedText = getFormattedDate(message.getCreatedTimestamp());
+        if(!dates.contains(formattedText)) {
+            dates.add(formattedText);
+            Message dateMessage = new Message();
+            dateMessage.setMessageType(MessageType.DATE);
+            if(message.getCreatedTimestamp() == new Date()) {
+                formattedText = "Today";
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE,-1);
+                if(message.getCreatedTimestamp() == calendar.getTime()) {
+                    formattedText = "Yesterday";
+                }
+            }
+            dateMessage.setMessage(formattedText+"");
+            dateMessage.setMessageId("DATE_"+formattedText);
+            messages.add(dateMessage);
+        }
+        messages.add(message);
+        messageIds.add(message.getMessageId());
+    }
+
+    private String getFormattedDate(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
+        return simpleDateFormat.format(date);
+    }
+
+    public ArrayList<Message> getLimitedMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration,int limit,int offset) {
+        ArrayList<Message> messages = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " ORDER BY " +
+                Chats.COLUMN_CREATED_TIME + " DESC LIMIT "+limit+" OFFSET "+offset;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                messages.add(0,convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration));
             } while (cursor.moveToNext());
         }
         db.close();

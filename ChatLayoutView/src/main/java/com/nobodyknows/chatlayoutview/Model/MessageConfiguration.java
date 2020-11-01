@@ -1,8 +1,8 @@
-package com.nobodyknows.chatmessageview.Model;
+package com.nobodyknows.chatlayoutview.Model;
 
-import com.nobodyknows.chatmessageview.CONSTANT.MessagePosition;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 
-import static com.nobodyknows.chatmessageview.CONSTANT.MessagePosition.LEFT;
+import static com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition.LEFT;
 
 public class MessageConfiguration {
     private MessagePosition messagePosition = LEFT;

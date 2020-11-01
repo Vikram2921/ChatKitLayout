@@ -2,10 +2,6 @@ package com.nobodyknows.chatlayoutview.Database.model;
 
 import android.util.Log;
 
-import com.nobodyknows.chatmessageview.CONSTANT.MessageType;
-
-import java.util.Date;
-
 public class Chats {
     public static final String TABLE_NAME = "ChatDB";
 
