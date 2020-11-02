@@ -26,6 +26,7 @@ public class viewmedia extends AppCompatActivity {
     private ArrayList<String> urls = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private String clicked = "",localPath;
+    int lastPosition = 0;
     private MessageType type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,24 @@ public class viewmedia extends AppCompatActivity {
         viewPager = findViewById(R.id.viewpager);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(type == MessageType.VIDEO) {
+                    VideoViewFragment videoViewFragment = (VideoViewFragment) viewPagerAdapter.getItem(lastPosition);
+                    videoViewFragment.getVideoView().pause();
+                    lastPosition = position;
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
         addFragments();
     }
 
@@ -57,13 +76,15 @@ public class viewmedia extends AppCompatActivity {
                 url = urls.get(i);
             }
             Log.d("TAGURL", "addFragments: "+url);
-            if(type == MessageType.IMAGE) {
+            if(type == MessageType.IMAGE || type == MessageType.GIF) {
                 viewPagerAdapter.addFragment(new ImageViewFragment(url),"");
             } else if(type == MessageType.VIDEO) {
                 viewPagerAdapter.addFragment(new VideoViewFragment(url),"");
             }
         }
         viewPagerAdapter.notifyDataSetChanged();
+        viewPager.setOffscreenPageLimit(viewPagerAdapter.getCount());
+        lastPosition = urls.indexOf(clicked);
         viewPager.setCurrentItem(urls.indexOf(clicked));
     }
 

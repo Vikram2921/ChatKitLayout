@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.setActivity(MainActivity.this);
         chatLayoutView.setDownloadPath(MessageType.IMAGE,"/ChatKitLayout/Images");
         chatLayoutView.setDownloadPath(MessageType.VIDEO,"/ChatKitLayout/Videos");
+        chatLayoutView.setDownloadPath(MessageType.GIF,"/ChatKitLayout/Gif");
         chatLayoutView.setIds("ROOM1","7014550298");
         User myUserObject = new User();
         myUserObject.setName("Vikram Singh Rawat");
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         freindUserObject.setUserId("8442000360");
         chatLayoutView.addUser(myUserObject);
         chatLayoutView.addUser(freindUserObject);
-        chatLayoutView.setBackgroundImage("https://wallpaperaccess.com/full/1288076.jpg");
+        //chatLayoutView.setBackgroundImage("https://wallpaperaccess.com/full/1288076.jpg");
         Button button = findViewById(R.id.clickme);
         EditText editText = findViewById(R.id.message);
         button.setOnClickListener(new View.OnClickListener() {
@@ -58,8 +59,30 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                 }
             }
         });
-       // chatLayoutView.addMessage(getImageMessages("This is an example of image chat"));
-        chatLayoutView.addMessage(getVideoMessages("This is an example of Video chat"));
+      //  chatLayoutView.addMessage(getImageMessages("This is an example of IMAGE chat"));
+      //  chatLayoutView.addMessage(getVideoMessages("This is an example of VIDEO chat"));
+      //  chatLayoutView.addMessage(getGifMessage("This is an example of GIF chat"));
+        int k=0;
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/FCYNQLacZGwFTNaIIT/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/7JmuMGOZYJYmeivT8j/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
     }
 
     private Message getMessages(String messageText) {
@@ -113,6 +136,37 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.addSharedFile(getSharedFile("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4",message.getMessageId()+"2","mp4"));
         message.addSharedFile(getSharedFile("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4",message.getMessageId()+"3","mp4"));
         message.addSharedFile(getSharedFile("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4",message.getMessageId()+"4","mp4"));
+        message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
+        message.setSeenAt(new Date());
+        message.setSentAt(new Date());
+        message.setReceivedAt(new Date());
+        return message;
+    }
+
+    private Message getGifMessage(String messageText) {
+        String random = ids.get(new Random().nextInt(2));
+        Message message = new Message();
+        message.setMessageType(MessageType.GIF);
+        message.setMessageId("2751300");
+        message.setMessage(messageText);
+        message.setSender(random);
+        message.addSharedFile(getSharedFile("https://media3.giphy.com/media/26ybvqyqoH7UbyHeg/giphy.gif",message.getMessageId()+"5","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
+        message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
+        message.setSeenAt(new Date());
+        message.setSentAt(new Date());
+        message.setReceivedAt(new Date());
+        return message;
+    }
+
+    private Message getStickerMessage(String messageText,int i) {
+        String random = ids.get(new Random().nextInt(2));
+        Message message = new Message();
+        message.setMessageType(MessageType.STICKER);
+        message.setMessageId("2751400"+i);
+        message.setMessage(messageText);
+        message.setSender(random);
+        message.addSharedFile(getSharedFile(messageText,message.getMessageId()+"5","webp"));
         message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
         message.setSeenAt(new Date());
         message.setSentAt(new Date());

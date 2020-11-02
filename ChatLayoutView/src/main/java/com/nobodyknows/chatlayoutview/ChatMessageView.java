@@ -16,14 +16,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawable;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation;
+import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,9 +48,11 @@ public class ChatMessageView extends RelativeLayout {
     private String downloadPath;
     private String envPath = Environment.getExternalStorageDirectory().getPath();
     private DownloadHelper downloadHelper;
-    private LinearLayout customView;
+    private LinearLayout customView,innerView;
     private Message currentMessage;
     private SuziLoader suziLoader = new SuziLoader();
+    private int STICKER_SIZE = 400;
+
     public ChatMessageView(Context context) {
         super(context);
         init(null,0);
@@ -68,6 +74,7 @@ public class ChatMessageView extends RelativeLayout {
         rootview = root.findViewById(R.id.rootview);
         dateview = root.findViewById(R.id.dateView);
         message = root.findViewById(R.id.message);
+        innerView = root.findViewById(R.id.datetimeview);
         senderName = root.findViewById(R.id.sendername);
         customView = root.findViewById(R.id.customviews);
         messageBox = root.findViewById(R.id.messagebox);
@@ -83,9 +90,32 @@ public class ChatMessageView extends RelativeLayout {
             this.messagestatus.setVisibility(GONE);
             messageBox.setBackgroundResource(R.drawable.left_message_drawable);
         } else if(position == MessagePosition.RIGHT) {
+            senderName.setVisibility(GONE);
             params.setMargins(100,0,0,0);
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             messageBox.setBackgroundResource(R.drawable.right_message_drawable);
+        }
+        if(currentMessage.getMessageType() == MessageType.STICKER) {
+            LayoutParams layoutParams = new LayoutParams(STICKER_SIZE,LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW,R.id.sendername);
+            if(position == MessagePosition.LEFT) {
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                innerView.setBackgroundResource(R.drawable.left_message_drawable);
+                senderName.setBackgroundResource(R.drawable.left_message_drawable);
+            } else if(position == MessagePosition.RIGHT) {
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                innerView.setBackgroundResource(R.drawable.right_message_drawable);
+                senderName.setBackgroundResource(R.drawable.right_message_drawable);
+                LayoutParams layoutParamsinnerview = (LayoutParams) innerView.getLayoutParams();
+                layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                innerView.setLayoutParams(layoutParamsinnerview);
+                LayoutParams layoutParamsName = (LayoutParams) senderName.getLayoutParams();
+                layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                senderName.setLayoutParams(layoutParamsName);
+            }
+            customView.setLayoutParams(layoutParams);
+            messageBox.setBackgroundResource(0);
+            message.setVisibility(GONE);
         }
         rootview.setLayoutParams(params);
     }
@@ -120,29 +150,45 @@ public class ChatMessageView extends RelativeLayout {
             overlay.setVisibility(VISIBLE);
         }
         if(currentMessage.getMessageType() == MessageType.VIDEO) {
+            imageView.setVisibility(VISIBLE);
             playIcon.setVisibility(VISIBLE);
-            Glide.with(getContext()).load(sharedFile.getUrl()).into(imageView);
+            Glide.with(getContext()).load(sharedFile.getUrl()).override(150,150).into(imageView);
+        } else if(currentMessage.getMessageType() == MessageType.GIF) {
+            playIcon.setVisibility(VISIBLE);
+            playIcon.setImageResource(R.drawable.ic_baseline_gif_24);
+            Glide.with(getContext()).asBitmap().load(sharedFile.getUrl()).override(200, 200).into(imageView);
+        } else if(currentMessage.getMessageType() == MessageType.STICKER) {
+            playIcon.setVisibility(GONE);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageView.setPadding(15,15,15,15);
+            LayoutParams layoutParams = (LayoutParams) imageView.getLayoutParams();
+            layoutParams.width = STICKER_SIZE;
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            imageView.setLayoutParams(layoutParams);
+            Glide.with(getContext()).load(sharedFile.getUrl()).override(200, 200).into(imageView);
         } else {
-            Glide.with(getContext()).load(sharedFile.getUrl()).into(imageView);
+            Glide.with(getContext()).load(sharedFile.getUrl()).override(150,150).into(imageView);
         }
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, height);
         layoutParams.weight =1;
         layoutParams.setMargins(3,3,3,3);
         view.setLayoutParams(layoutParams);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), viewmedia.class);
-                intent.putStringArrayListExtra("urls",urls);
-                intent.putStringArrayListExtra("names",names);
-                intent.putExtra("clicked",sharedFile.getUrl());
-                intent.putExtra("type",currentMessage.getMessageType().ordinal());
-                intent.putExtra("localpath",envPath+downloadPath+"/");
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(intent);
-            }
-        });
+        if(currentMessage.getMessageType() != MessageType.STICKER) {
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), viewmedia.class);
+                    intent.putStringArrayListExtra("urls",urls);
+                    intent.putStringArrayListExtra("names",names);
+                    intent.putExtra("clicked",sharedFile.getUrl());
+                    intent.putExtra("type",currentMessage.getMessageType().ordinal());
+                    intent.putExtra("localpath",envPath+downloadPath+"/");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getContext().startActivity(intent);
+                }
+            });
+        }
         return view;
     }
 
@@ -175,14 +221,19 @@ public class ChatMessageView extends RelativeLayout {
         LinearLayout line1 = view.findViewById(R.id.line1);
         LinearLayout line2 = view.findViewById(R.id.line2);
         CircularProgressButton eventButtton = view.findViewById(R.id.circularButton);
-        Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
-        if(canDownload) {
-            eventButtton.setVisibility(VISIBLE);
-        } else {
-            eventButtton.setVisibility(GONE);
-        }
         ArrayList<String> urls = new ArrayList<>();
         ArrayList<String> names = new ArrayList<>();
+        if(messageType == MessageType.GIF || messageType == MessageType.STICKER) {
+            eventButtton.setVisibility(GONE);
+        } else {
+            Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
+            if(canDownload) {
+                eventButtton.setVisibility(VISIBLE);
+
+            } else {
+                eventButtton.setVisibility(GONE);
+            }
+        }
         for(SharedFile sharedFile:sharedFiles) {
             urls.add(sharedFile.getUrl());
             names.add(sharedFile.getName()+"."+sharedFile.getExtension());
@@ -236,6 +287,12 @@ public class ChatMessageView extends RelativeLayout {
             case VIDEO:
                 customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.VIDEO));
                 break;
+            case GIF:
+                customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.GIF));
+                break;
+            case STICKER:
+                customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.STICKER));
+                break;
             default:
                 break;
         }
@@ -258,14 +315,14 @@ public class ChatMessageView extends RelativeLayout {
     }
 
     private void updateMessageStatus(Message message) {
-        if(message.getSeenAt() != null) {
+        if(message.getMessageStatus() == MessageStatus.SEEN) {
             this.messagestatus.setImageResource(R.drawable.seen);
-        } else if(message.getReceivedAt() != null) {
+        } else if(message.getMessageStatus() == MessageStatus.RECEIVED) {
             this.messagestatus.setImageResource(R.drawable.received);
-        }  else if(message.getSentAt() != null) {
+        }  else if(message.getMessageStatus() == MessageStatus.SENT) {
             this.messagestatus.setImageResource(R.drawable.sent);
-        } else {
-
+        } else if(message.getMessageStatus() == MessageStatus.SENDING) {
+            this.messagestatus.setImageResource(R.drawable.sent); //TODO Change icon
         }
     }
 

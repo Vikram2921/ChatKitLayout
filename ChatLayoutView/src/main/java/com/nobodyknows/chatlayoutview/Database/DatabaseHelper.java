@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.Database.model.Chats;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Database.model.Urls;
@@ -18,10 +18,8 @@ import com.nobodyknows.chatlayoutview.Model.SharedFile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -86,16 +84,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private ContentValues getContentValues(Message message) {
         ContentValues values = new ContentValues();
         values.put(Chats.COLUMN_MESSAGE_ID,message.getMessageId());
+        values.put(Chats.COLUMN_REPLY_MESSAGE_ID,message.getRepliedMessageId());
         values.put(Chats.COLUMN_SENDER,message.getSender());
         values.put(Chats.COLUMN_RECEIVER,message.getReceiver());
         values.put(Chats.COLUMN_ROOM_ID,message.getRoomId());
         values.put(Chats.COLUMN_MESSAGE,message.getMessage());
         values.put(Chats.COLUMN_MESSAGE_TYPE,message.getMessageType().ordinal());
+        values.put(Chats.COLUMN_MESSAGE_STATUS,message.getMessageStatus().ordinal());
         values.put(Chats.COLUMN_CREATED_TIME,getConvertedDate(message.getCreatedTimestamp()));
         values.put(Chats.COLUMN_UPDATED_TIME,getConvertedDate(message.getUpdateTimestamp()));
         values.put(Chats.COLUMN_SENTAT,getConvertedDate(message.getSentAt()));
         values.put(Chats.COLUMN_RECEIVEAT,getConvertedDate(message.getReceivedAt()));
         values.put(Chats.COLUMN_SEENAT,getConvertedDate(message.getSeenAt()));
+        values.put(Chats.COLUMN_IS_REPLY_MESSAGE,getBooleanToIntValue(message.getIsRepliedMessage()));
         return values;
     }
 
@@ -210,16 +211,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Message convertToMessage(Cursor cursor, String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
         Message message = new Message();
         message.setMessageId(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_MESSAGE_ID)));
+        message.setRepliedMessageId(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_REPLY_MESSAGE_ID)));
         message.setSender(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_SENDER)));
         message.setReceiver(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_RECEIVER)));
         message.setMessage(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_MESSAGE)));
         message.setRoomId(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_ROOM_ID)));
         message.setMessageType(MessageType.values()[cursor.getInt(cursor.getColumnIndex(Chats.COLUMN_MESSAGE_TYPE))]);
+        message.setMessageStatus(MessageStatus.values()[cursor.getInt(cursor.getColumnIndex(Chats.COLUMN_MESSAGE_STATUS))]);
         message.setCreatedTimestamp(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_CREATED_TIME))));
         message.setUpdateTimestamp(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_UPDATED_TIME))));
         message.setSentAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_SENTAT))));
         message.setReceivedAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_RECEIVEAT))));
         message.setSeenAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_SEENAT))));
+        message.setIsRepliedMessage(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Chats.COLUMN_IS_REPLY_MESSAGE))));
         if(myId.equals(message.getSender())) {
             message.setMessageConfiguration(rightMessageConfiguration);
         } else {
@@ -227,6 +231,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         message.setSharedFiles(getSharedFiles(message.getMessageId()));
         return message;
+    }
+
+    private boolean getBooleanValue(int value) {
+        if(value >= 1) {
+            return true;
+        }
+        return false;
+    }
+
+    private int getBooleanToIntValue(Boolean value) {
+        if(value) {
+            return 1;
+        }
+        return 0;
     }
 
     private void readSharedFiles(String messageId) {

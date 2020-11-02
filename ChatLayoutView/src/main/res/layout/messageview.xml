@@ -15,7 +15,6 @@
             android:elevation="1dp"
             android:visibility="visible"
             android:id="@+id/messagebox"
-            android:background="@drawable/right_message_drawable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <RelativeLayout
@@ -50,6 +49,7 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_marginTop="2dp"
+                android:id="@+id/datetimeview"
                 android:layout_below="@id/innermessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">

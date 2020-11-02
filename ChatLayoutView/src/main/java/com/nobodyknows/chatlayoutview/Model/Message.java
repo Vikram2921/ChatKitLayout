@@ -1,5 +1,6 @@
 package com.nobodyknows.chatlayoutview.Model;
 
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +18,9 @@ public class Message {
     private Date sentAt = new Date();
     private Date receivedAt;
     private Date seenAt;
+    private Boolean isRepliedMessage = false;
+    private String repliedMessageId = "";
+    private MessageStatus messageStatus = MessageStatus.SENDING;
     private MessageConfiguration messageConfiguration = new MessageConfiguration();
 
     public String getMessageId() {
@@ -125,5 +129,29 @@ public class Message {
 
     public void addSharedFile(SharedFile sharedFile) {
         this.sharedFiles.add(sharedFile);
+    }
+
+    public MessageStatus getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(MessageStatus messageStatus) {
+        this.messageStatus = messageStatus;
+    }
+
+    public Boolean getIsRepliedMessage() {
+        return isRepliedMessage;
+    }
+
+    public void setIsRepliedMessage(Boolean repliedMessage) {
+        isRepliedMessage = repliedMessage;
+    }
+
+    public String getRepliedMessageId() {
+        return repliedMessageId;
+    }
+
+    public void setRepliedMessageId(String repliedMessageId) {
+        this.repliedMessageId = repliedMessageId;
     }
 }

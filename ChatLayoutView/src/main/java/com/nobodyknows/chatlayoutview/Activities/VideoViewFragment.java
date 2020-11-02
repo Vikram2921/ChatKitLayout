@@ -10,13 +10,12 @@ import android.widget.VideoView;
 
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
-import com.github.chrisbanes.photoview.PhotoView;
 import com.nobodyknows.chatlayoutview.R;
 
 public class VideoViewFragment extends Fragment {
 
     private String url;
+    private VideoView videoView;
     public VideoViewFragment(String url) {
         this.url = url;
     }
@@ -24,14 +23,17 @@ public class VideoViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v= inflater.inflate(R.layout.video, container, false);
-        VideoView videoView = v.findViewById(R.id.videoview);
+        videoView = v.findViewById(R.id.videoview);
         MediaController mediaController = new MediaController(getContext());
         mediaController.setAnchorView(videoView);
 //        mediaController.show();
         videoView.setMediaController(mediaController);
         videoView.setVideoURI(Uri.parse(url));
         videoView.requestFocus();
-        videoView.start();
         return v;
+    }
+
+    public VideoView getVideoView() {
+        return videoView;
     }
 }

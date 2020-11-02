@@ -1,15 +1,17 @@
 package com.nobodyknows.chatlayoutview.CONSTANT;
 
 public enum  MessageType {
-    IMAGE,
-    GIF,
-    VIDEO,
-    AUDIO,
-    RECORDING,
-    TEXT,
-    DOCUMENT,
+    IMAGE, //UPLOAD REMAING
+    GIF, //DONE
+    VIDEO, //UPLOAD REMAING
+    AUDIO, //UPLOAD AND VIEW REMAING
+    RECORDING, //UPLOAD AND VIEW REMAING
+    TEXT, //DONE
+    DOCUMENT, //UPLOAD AND VIEW REMAING
     MAP,
     CONTACT,
     CUSTOM,
-    DATE;
+    DATE, //DONE
+    STICKER, //DONE
+    REPLY_MESSAGE
 }
