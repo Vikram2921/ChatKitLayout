@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,6 +53,7 @@ public class ChatMessageView extends RelativeLayout {
     private Message currentMessage;
     private SuziLoader suziLoader = new SuziLoader();
     private int STICKER_SIZE = 400;
+    private String DELTE_MESSAGE = "This message was deleted";
 
     public ChatMessageView(Context context) {
         super(context);
@@ -88,35 +90,12 @@ public class ChatMessageView extends RelativeLayout {
             params.setMargins(0,0,100,0);
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             this.messagestatus.setVisibility(GONE);
-            messageBox.setBackgroundResource(R.drawable.left_message_drawable);
         } else if(position == MessagePosition.RIGHT) {
             senderName.setVisibility(GONE);
             params.setMargins(100,0,0,0);
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            messageBox.setBackgroundResource(R.drawable.right_message_drawable);
         }
-        if(currentMessage.getMessageType() == MessageType.STICKER) {
-            LayoutParams layoutParams = new LayoutParams(STICKER_SIZE,LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW,R.id.sendername);
-            if(position == MessagePosition.LEFT) {
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                innerView.setBackgroundResource(R.drawable.left_message_drawable);
-                senderName.setBackgroundResource(R.drawable.left_message_drawable);
-            } else if(position == MessagePosition.RIGHT) {
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                innerView.setBackgroundResource(R.drawable.right_message_drawable);
-                senderName.setBackgroundResource(R.drawable.right_message_drawable);
-                LayoutParams layoutParamsinnerview = (LayoutParams) innerView.getLayoutParams();
-                layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                innerView.setLayoutParams(layoutParamsinnerview);
-                LayoutParams layoutParamsName = (LayoutParams) senderName.getLayoutParams();
-                layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                senderName.setLayoutParams(layoutParamsName);
-            }
-            customView.setLayoutParams(layoutParams);
-            messageBox.setBackgroundResource(0);
-            message.setVisibility(GONE);
-        }
+        messageBox.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
         rootview.setLayoutParams(params);
     }
 
@@ -129,13 +108,68 @@ public class ChatMessageView extends RelativeLayout {
             this.dateview.setVisibility(VISIBLE);
             this.rootview.setVisibility(GONE);
         } else {
+            this.message.setTextSize(message.getMessageConfiguration().getMessageTextSize());
             configRootView(message.getMessageConfiguration().getMessagePosition());
-            this.message.setText(message.getMessage());
-            this.messageTime.setText(getFormatedDate("hh:mm aa",message.getSentAt()));
-            updateMessageStatus(message);
-            if(message.getMessageType() != MessageType.TEXT) {
-                updateMessageView(message);
+            if(message.getMessageStatus() != MessageStatus.DELETED) {
+                updateStickerView(message.getMessageConfiguration().getMessagePosition());
+                this.message.setText(message.getMessage());
+                this.messageTime.setText(getFormatedDate("hh:mm aa", message.getSentAt()));
+                updateMessageStatus(message);
+                if(message.getIsRepliedMessage()) {
+                    ViewGroup parentGroup = ((ViewGroup) message.getReplyMessageView().getParent());
+                    if(parentGroup != null) {
+                        parentGroup.removeView(message.getReplyMessageView());
+                    }
+                    customView.addView(message.getReplyMessageView());
+                    customView.setVisibility(VISIBLE);
+                }
+                if (message.getMessageType() != MessageType.TEXT) {
+                    updateMessageView(message);
+                }
+
+            } else {
+                this.message.setText(DELTE_MESSAGE);
+                senderName.setVisibility(GONE);
+                innerView.setVisibility(GONE);
+                if(message.getMessageConfiguration().getMessagePosition() == MessagePosition.LEFT) {
+                    this.message.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_baseline_block_24,0);
+                } else {
+                    this.message.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_block_24,0,0,0);
+                }
+                this.message.setCompoundDrawablePadding(10);
             }
+        }
+    }
+
+    private void updateStickerView(MessagePosition position) {
+        if(currentMessage.getMessageType() == MessageType.STICKER && currentMessage.getMessageStatus() != MessageStatus.DELETED) {
+            LayoutParams layoutParams = new LayoutParams(STICKER_SIZE,LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW,R.id.sendername);
+            innerView.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
+            senderName.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
+            if(position == MessagePosition.LEFT) {
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            } else if(position == MessagePosition.RIGHT) {
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                LayoutParams layoutParamsinnerview = (LayoutParams) innerView.getLayoutParams();
+                layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                innerView.setLayoutParams(layoutParamsinnerview);
+                LayoutParams layoutParamsName = (LayoutParams) senderName.getLayoutParams();
+                layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                senderName.setLayoutParams(layoutParamsName);
+            }
+            customView.setLayoutParams(layoutParams);
+            if(!currentMessage.getIsRepliedMessage()) {
+                messageBox.setBackgroundResource(0);
+            } else {
+                if(position == MessagePosition.RIGHT) {
+                    LayoutParams layoutParamsinnerview = (LayoutParams) messageBox.getLayoutParams();
+                    layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    layoutParamsinnerview.width = STICKER_SIZE;
+                    messageBox.setLayoutParams(layoutParamsinnerview);
+                }
+            }
+            message.setVisibility(GONE);
         }
     }
 

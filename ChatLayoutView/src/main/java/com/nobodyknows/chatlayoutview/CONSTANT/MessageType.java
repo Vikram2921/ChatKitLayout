@@ -12,6 +12,5 @@ public enum  MessageType {
     CONTACT,
     CUSTOM,
     DATE, //DONE
-    STICKER, //DONE
-    REPLY_MESSAGE
+    STICKER //DONE
 }

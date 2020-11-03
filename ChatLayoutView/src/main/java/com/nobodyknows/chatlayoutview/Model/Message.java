@@ -1,5 +1,7 @@
 package com.nobodyknows.chatlayoutview.Model;
 
+import android.view.View;
+
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ public class Message {
     private Boolean isRepliedMessage = false;
     private String repliedMessageId = "";
     private MessageStatus messageStatus = MessageStatus.SENDING;
-    private MessageConfiguration messageConfiguration = new MessageConfiguration();
+    private MessageConfiguration messageConfiguration;
+    private View replyMessageView;
 
     public String getMessageId() {
         return messageId;
@@ -153,5 +156,13 @@ public class Message {
 
     public void setRepliedMessageId(String repliedMessageId) {
         this.repliedMessageId = repliedMessageId;
+    }
+
+    public View getReplyMessageView() {
+        return replyMessageView;
+    }
+
+    public void setReplyMessageView(View replyMessageView) {
+        this.replyMessageView = replyMessageView;
     }
 }

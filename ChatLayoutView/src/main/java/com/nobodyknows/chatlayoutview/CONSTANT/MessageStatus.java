@@ -5,5 +5,5 @@ public enum MessageStatus {
     SENT,
     RECEIVED,
     SEEN,
-    DELTED
+    DELETED //DOne
 }

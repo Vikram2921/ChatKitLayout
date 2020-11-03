@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +15,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,8 +43,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
 public class ChatLayoutView extends RelativeLayout {
 
@@ -127,7 +124,9 @@ public class ChatLayoutView extends RelativeLayout {
         leftMessageConfiguration = new MessageConfiguration();
         rightMessageConfiguration = new MessageConfiguration();
         leftMessageConfiguration.setMessagePosition(MessagePosition.LEFT);
+        leftMessageConfiguration.setBackgroundResource(R.drawable.left_message_drawable);
         rightMessageConfiguration.setMessagePosition(MessagePosition.RIGHT);
+        rightMessageConfiguration.setBackgroundResource(R.drawable.right_message_drawable);
         if(mode == RECYCLERVIEW) {
             continueRecyclerView();
         } else {
@@ -139,7 +138,7 @@ public class ChatLayoutView extends RelativeLayout {
         SwipeController controller = new SwipeController(getContext(), new ISwipeControllerActions() {
             @Override
             public void onSwipePerformed(int position) {
-                chatLayoutListener.onSwipeToReply(messages.get(position));
+                chatLayoutListener.onSwipeToReply(messages.get(position),getReplyMessageView(messages.get(position)));
             }
         });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(controller);
@@ -198,7 +197,15 @@ public class ChatLayoutView extends RelativeLayout {
     public void addMessage(Message message) {
         if(!messageIds.contains(message.getMessageId())) {
             message.setRoomId(roomId);
-            message.setMessageConfiguration(getMessageConfig(message));
+            if(message.getMessageConfiguration() == null) {
+                message.setMessageConfiguration(getMessageConfig(message));
+            } else {
+                if(myId.equalsIgnoreCase(message.getSender())) {
+                    message.getMessageConfiguration().setMessagePosition(MessagePosition.RIGHT);
+                } else {
+                    message.getMessageConfiguration().setMessagePosition(MessagePosition.LEFT);
+                }
+            }
             checkForDate(message,messages,dates);
             if(useDatabase && canSave) {
                 databaseHelper.insertMessage(message);
@@ -230,9 +237,98 @@ public class ChatLayoutView extends RelativeLayout {
             dateMessage.setMessageId("DATE_"+formattedText);
             dateMessage.setMessage(formattedText+"");
             messages.add(dateMessage);
+            messageIds.add("DATE_"+message.getCreatedTimestamp());
+        }
+        if(message.getIsRepliedMessage()) {
+            if(message.getReplyMessageView() == null) {
+                Message replyMessage = messages.get(messageIds.indexOf(message.getRepliedMessageId()));
+                message.setReplyMessageView(getReplyMessageView(replyMessage));
+            }
         }
         messages.add(message);
         messageIds.add(message.getMessageId());
+    }
+
+    private View getReplyMessageView(Message message) {
+        View view = layoutInflater.inflate(R.layout.replyview,null);
+        ImageView preview = view.findViewById(R.id.preview);
+        TextView senderName = view.findViewById(R.id.sendername);
+        TextView messageview = view.findViewById(R.id.message);
+        View bar = view.findViewById(R.id.bar);
+        Log.d("TAGUSERMAP", "getReplyMessageView: "+usermap+" \n"+message.getSender());
+        if(message.getMessageType() == MessageType.DATE) {
+            senderName.setText("Date");
+            messageview.setText(message.getMessage());
+            senderName.setTextColor(Color.BLACK);
+            bar.setBackgroundColor(Color.BLACK);
+            preview.setVisibility(GONE);
+        } else {
+            User user = usermap.get(message.getSender());
+            senderName.setTextColor(user.getColor());
+            if(message.getSender().equalsIgnoreCase(myId)) {
+                senderName.setText("You");
+            } else {
+                senderName.setText(user.getName());
+            }
+            if(message.getMessageType() == MessageType.IMAGE) {
+                messageview.setText("Photo");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+                Glide.with(getContext()).load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+            } else if(message.getMessageType() == MessageType.VIDEO) {
+                messageview.setText("Video");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+                Glide.with(getContext()).load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+            } else if(message.getMessageType() == MessageType.AUDIO) {
+                messageview.setText("Audio");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+            }  else if(message.getMessageType() == MessageType.GIF) {
+                messageview.setText("GIF");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+                Glide.with(getContext()).asBitmap().load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+            }  else if(message.getMessageType() == MessageType.RECORDING) {
+                messageview.setText("Recording");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+            }  else if(message.getMessageType() == MessageType.DOCUMENT) {
+                messageview.setText("Document");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+            }  else if(message.getMessageType() == MessageType.MAP) {
+                messageview.setText("Map");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+            }  else if(message.getMessageType() == MessageType.CONTACT) {
+                messageview.setText("Contact");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+            }  else if(message.getMessageType() == MessageType.STICKER) {
+                messageview.setText("Sticker");
+                Glide.with(getContext()).asBitmap().load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+            }   else {
+                messageview.setText(message.getMessage());
+                preview.setVisibility(GONE);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+            }
+            bar.setBackgroundColor(user.getColor());
+        }
+//        view.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view1) {
+//                int index = messageIds.indexOf(message.getMessageId());
+//                if(mode == LISTVIEW) {
+//                    View item = (View) listView.getItemAtPosition(index);
+//                    item.setBackgroundColor(Color.parseColor("#4003A9F4"));
+//                    item.setSelected(true);
+//                    new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
+//                } else {
+//                    RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
+//                    if(holder != null) {
+//                        View item = holder.itemView;
+//                        item.setBackgroundColor(Color.parseColor("#4003A9F4"));
+//                        item.setSelected(true);
+//                        new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
+//                    }
+//                }
+//
+//            }
+//        });
+        return view;
     }
 
 

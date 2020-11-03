@@ -158,6 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             dateMessage.setMessage(formattedText+"");
             dateMessage.setMessageId("DATE_"+formattedText);
             messages.add(dateMessage);
+            messageIds.add("DATE_"+message.getCreatedTimestamp());
         }
         messages.add(message);
         messageIds.add(message.getMessageId());
