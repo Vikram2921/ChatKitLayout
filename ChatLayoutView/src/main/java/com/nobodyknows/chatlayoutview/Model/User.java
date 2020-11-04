@@ -8,7 +8,7 @@ import java.util.Date;
 public class User {
     private String userId;
     private String name;
-    private String profileUrl;
+    private String profileUrl = "";
     private int color;
 
     public String getUserId() {

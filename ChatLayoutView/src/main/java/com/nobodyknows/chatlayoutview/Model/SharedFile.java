@@ -8,8 +8,8 @@ public class SharedFile {
     private String previewUrl;
     private String name;
     private String extension;
-    private Double size =0.0;
-    private Double duration =0.0;
+    private Double size =8000000.0;
+    private Double duration =10000.0;
 
     public String getUrl() {
         return url;

@@ -65,6 +65,7 @@ public class ChatLayoutView extends RelativeLayout {
     protected static String lastPlayingAudioMessageId = "";
     protected static ProgressBar lastPlayingProgressBar;
     protected static ImageView lastPlayingImageView;
+    protected static TextView lastPlayingDuration;
     private ListViewAdapter listViewAdapter;
     private DatabaseHelper databaseHelper;
     private String roomId,myId="";
@@ -78,7 +79,7 @@ public class ChatLayoutView extends RelativeLayout {
     protected static ChatLayoutListener chatLayoutListener;
     public static DownloadHelper downloadHelper;
     private Map<MessageType,String> downloadPaths = new HashMap<>();
-    private Helper helper;
+    protected static Helper helper;
     private MediaPlayer mediaPlayer;
     protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
@@ -174,9 +175,6 @@ public class ChatLayoutView extends RelativeLayout {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-//                if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                    Toast.makeText(getContext(),"BOTTOM LAST",Toast.LENGTH_LONG).show();
-//                }
                 if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
                     messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration,chatLimit,getNextOffset()));
                     notifyAdapter(false);

@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +34,12 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLayoutListener;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.helper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingAudioMessageId;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingDuration;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingImageView;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingProgressBar;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
@@ -57,7 +60,8 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
     private MediaPlayer mediaPlayer;
     private String DELTE_MESSAGE = "This message was deleted";
     private MediaObserver observer = null;
-    private ProgressBar progressBar;
+    private SeekBar progressBar;
+    private TextView duration;
 
     private class MediaObserver implements Runnable {
         private AtomicBoolean stop = new AtomicBoolean(false);
@@ -70,6 +74,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         public void run() {
             while (!stop.get()) {
                 progressBar.setProgress((int)((double)mediaPlayer.getCurrentPosition() / (double)mediaPlayer.getDuration()*100));
+               // duration.setText(mediaPlayer.getCurrentPosition()+" / "+mediaPlayer.getDuration());
                 try {
                     Thread.sleep(200);
                 } catch (Exception ex) {
@@ -153,19 +158,23 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
     }
 
     private String getMessageTime(Message message) {
+        long size = 0;
+        for(SharedFile sharedFile:message.getSharedFiles()) {
+            size += sharedFile.getSize();
+        }
         String time= getFormatedDate("hh:mm aa", message.getSentAt());
         if(message.getMessageType() == MessageType.AUDIO) {
-            time+=DOT_SEPRATOR+"Audio ";
+            time+=DOT_SEPRATOR+"Audio "+DOT_SEPRATOR+helper.getSize(size);
         } else if(message.getMessageType() == MessageType.VIDEO) {
-            time+=DOT_SEPRATOR+"Video ";
+            time+=DOT_SEPRATOR+"Video "+DOT_SEPRATOR+helper.getSize(size);
         }  else if(message.getMessageType() == MessageType.IMAGE) {
-            time+=DOT_SEPRATOR+"Image ";
+            time+=DOT_SEPRATOR+"Image "+DOT_SEPRATOR+helper.getSize(size);
         }  else if(message.getMessageType() == MessageType.GIF) {
             time+=DOT_SEPRATOR+"Gif ";
         }  else if(message.getMessageType() == MessageType.DOCUMENT) {
-            time+=DOT_SEPRATOR+"Document ";
+            time+=DOT_SEPRATOR+"Document "+DOT_SEPRATOR+helper.getSize(size);
         }  else if(message.getMessageType() == MessageType.RECORDING) {
-            time+=DOT_SEPRATOR+"Recording ";
+            time+=DOT_SEPRATOR+"Recording "+DOT_SEPRATOR+helper.getSize(size);
         }  else if(message.getMessageType() == MessageType.CONTACT) {
             time+=DOT_SEPRATOR+"Contacts ";
         }
@@ -400,13 +409,6 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         return view;
     }
 
-    private ArrayList<String> getNames(Message message,int size) {
-        ArrayList<String> list =new ArrayList<>();
-        for(int i=0;i<size;i++) {
-            list.add(message.getMessageId()+i+"_"+message.getMessageType().ordinal()+".jpg");
-        }
-        return list;
-    }
 
     private void updateMessageView(Message message) {
         customView.setVisibility(VISIBLE);
@@ -421,15 +423,32 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             case AUDIO:
                 customView.addView(getAudioLayout(message.getSharedFiles()));
                 break;
+            case RECORDING:
+                customView.addView(getRecordingLayout(message.getSharedFiles()));
+                break;
             case GIF:
                 customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.GIF));
                 break;
             case STICKER:
                 customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.STICKER));
                 break;
+            case DOCUMENT:
+                customView.addView(getDocumentLayout(message.getSharedFiles()));
+                break;
             default:
                 break;
         }
+    }
+
+    private View getDocumentLayout(ArrayList<SharedFile> sharedFiles) {
+        View view = null;
+        if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
+            view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        } else {
+            view = layoutInflater.inflate(R.layout.document_view,null);
+            Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
+        }
+        return view;
     }
 
     private View getAudioLayout(ArrayList<SharedFile> sharedFiles) {
@@ -443,7 +462,8 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             ImageView imageup = view.findViewById(R.id.imageup);
             CircularProgressButton eventButtton = view.findViewById(R.id.progressbutton);
             final String[] url = {sharedFiles.get(0).getUrl()};
-            ProgressBar progressBar = view.findViewById(R.id.progressbar);
+            TextView durationview = view.findViewById(R.id.duration);
+            SeekBar progressBar = view.findViewById(R.id.progressbar);
             final Boolean[] isPlaying = {false};
             pp.setOnClickListener(new OnClickListener() {
                 @Override
@@ -457,7 +477,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                             url[0] = envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension();
                         }
                         pp.setImageResource(R.drawable.ic_baseline_pause_24);
-                        playeAudio(url[0],progressBar,pp);
+                        playeAudio(url[0],progressBar,pp,durationview);
                         isPlaying[0] = true;
                     }
                 }
@@ -501,6 +521,54 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
 
             }
 
+        }
+        return view;
+    }
+
+    private View getRecordingLayout(ArrayList<SharedFile> sharedFiles) {
+        message.setVisibility(GONE);
+        View view = null;
+        if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
+            view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        } else {
+            view =layoutInflater.inflate(R.layout.recording,null);
+            ImageView pp = view.findViewById(R.id.playpause);
+            CircleImageView civ = view.findViewById(R.id.profilepicture);
+            if(user.getProfileUrl().length() > 0) {
+                Glide.with(getContext()).load(user.getProfileUrl()).into(civ);
+            }
+            ImageView imageup = view.findViewById(R.id.imageup);
+            TextView durationview = view.findViewById(R.id.duration);
+            CircularProgressButton eventButtton = view.findViewById(R.id.progressbutton);
+            final String[] url = {sharedFiles.get(0).getUrl()};
+            SeekBar progressBar = view.findViewById(R.id.progressbar);
+            final Boolean[] isPlaying = {false};
+            pp.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isPlaying[0]) {
+                        pp.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                        stopAudio();
+                        isPlaying[0] = false;
+                    }else {
+                        if(new File(envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension()).exists()) {
+                            url[0] = envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension();
+                        }
+                        pp.setImageResource(R.drawable.ic_baseline_pause_24);
+                        playeAudio(url[0],progressBar,pp,durationview);
+                        isPlaying[0] = true;
+                    }
+                }
+            });
+            if(currentMessage.getMessageStatus() == MessageStatus.SENDING) {
+                imageup.setImageResource(R.drawable.upload);
+                imageup.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chatLayoutListener.onUploadRetry(currentMessage);
+                    }
+                });
+            }
         }
         return view;
     }
@@ -568,12 +636,14 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         mediaPlayer.prepareAsync();
     }
 
-    private void playeAudio(String url, ProgressBar progressBar,ImageView pp) {
+    private void playeAudio(String url, SeekBar progressBar, ImageView pp, TextView durationview) {
         this.progressBar = progressBar;
         if(lastPlayingAudioMessageId == null || lastPlayingAudioMessageId.length() ==0) {
             lastPlayingAudioMessageId = currentMessage.getMessageId();
             lastPlayingProgressBar = progressBar;
             lastPlayingImageView = pp;
+            this.duration = durationview;
+            lastPlayingDuration = durationview;
             playMusic(url);
         } else {
             if(lastPlayingAudioMessageId == currentMessage.getMessageId()) {
@@ -583,9 +653,12 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 mediaPlayer.reset();
                 lastPlayingImageView.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 lastPlayingProgressBar.setProgress(0);
+                lastPlayingDuration.setText("00:00 / 00:00");
                 lastPlayingAudioMessageId = currentMessage.getMessageId();
                 lastPlayingProgressBar = progressBar;
                 lastPlayingImageView = pp;
+                this.duration = durationview;
+                lastPlayingDuration = durationview;
                 playMusic(url);
             }
         }
