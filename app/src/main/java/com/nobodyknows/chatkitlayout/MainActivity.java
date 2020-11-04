@@ -19,6 +19,8 @@ import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
+import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadView;
+import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,16 +35,20 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     Message selmessage;
     View selView;
     ArrayList<String> ids = new ArrayList<>(Arrays.asList("7014550298","8442000360"));
+    UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         linearLayout = findViewById(R.id.viewhold);
+        uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getApplicationContext());
         ChatLayoutView chatLayoutView = findViewById(R.id.chatlayout_view);
         chatLayoutView.setChatLayoutListener(this);
+        chatLayoutView.setUploadAndDownloadViewHandler(uploadAndDownloadViewHandler);
         chatLayoutView.setActivity(MainActivity.this);
         chatLayoutView.setDownloadPath(MessageType.IMAGE,"/ChatKitLayout/Images");
         chatLayoutView.setDownloadPath(MessageType.VIDEO,"/ChatKitLayout/Videos");
+        chatLayoutView.setDownloadPath(MessageType.AUDIO,"/ChatKitLayout/Audios");
         chatLayoutView.setDownloadPath(MessageType.GIF,"/ChatKitLayout/Gif");
         chatLayoutView.setIds("ROOM1","7014550298");
         User myUserObject = new User();
@@ -90,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 //        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","125",false));
 //        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","126",false));
         chatLayoutView.addMessage(getMessages(getResources().getString(R.string.dummy_text),"113",true));
+        chatLayoutView.addMessage(getAudioMessages(getResources().getString(R.string.dummy_text),"118",false,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"));
+        chatLayoutView.addMessage(getAudioMessages(getResources().getString(R.string.dummy_text),"119",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
       //  chatLayoutView.addMessage(getImageMessages("This is an example of IMAGE chat"));
       //  chatLayoutView.addMessage(getVideoMessages("This is an example of VIDEO chat"));
       //  chatLayoutView.addMessage(getGifMessage("This is an example of GIF chat"));
@@ -114,6 +122,23 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+    }
+
+    private Message getAudioMessages(String string, String s, boolean b,String url) {
+        String random = ids.get(new Random().nextInt(2));
+        Message message = new Message();
+        message.setMessageId(s);
+        message.setIsRepliedMessage(b);
+        message.setMessageType(MessageType.AUDIO);
+        message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"mp3"));
+        message.setMessage("");
+        message.setSender(random);
+        message.setMessageStatus(MessageStatus.SENT);
+        message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
+        message.setSeenAt(new Date());
+        message.setSentAt(new Date());
+        message.setReceivedAt(new Date());
+        return message;
     }
 
     private Message getMessages(String messageText,String id,Boolean isReplied) {
@@ -150,12 +175,6 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setSeenAt(new Date());
         message.setSentAt(new Date());
         message.setReceivedAt(new Date());
-        MessageConfiguration messageConfiguration = new MessageConfiguration();
-        messageConfiguration.setTextColor(Color.WHITE);
-        messageConfiguration.setTimeTextColor(Color.WHITE);
-        messageConfiguration.setMessagePosition(MessagePosition.RIGHT);
-        messageConfiguration.setBackgroundResource(R.drawable.left_message_drawable_demo);
-        message.setMessageConfiguration(messageConfiguration);
         return message;
     }
 
@@ -264,5 +283,10 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         linearLayout.addView(replyView,0);
         viewAdded =true;
         selmessage = message;
+    }
+
+    @Override
+    public void onUploadRetry(Message message) {
+        Toast.makeText(getApplicationContext(),message.getMessageId(),Toast.LENGTH_SHORT).show();
     }
 }

@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +38,7 @@ import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 import com.nobodyknows.chatlayoutview.Model.User;
 import com.nobodyknows.chatlayoutview.Services.Helper;
+import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -59,6 +62,9 @@ public class ChatLayoutView extends RelativeLayout {
     private ListView listView;
     private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
+    protected static String lastPlayingAudioMessageId = "";
+    protected static ProgressBar lastPlayingProgressBar;
+    protected static ImageView lastPlayingImageView;
     private ListViewAdapter listViewAdapter;
     private DatabaseHelper databaseHelper;
     private String roomId,myId="";
@@ -69,10 +75,18 @@ public class ChatLayoutView extends RelativeLayout {
     private ImageView backgroundImage;
     private int offset = 0;
     private boolean dynamicScrolling = false;
-    private ChatLayoutListener chatLayoutListener;
+    protected static ChatLayoutListener chatLayoutListener;
     public static DownloadHelper downloadHelper;
     private Map<MessageType,String> downloadPaths = new HashMap<>();
     private Helper helper;
+    private MediaPlayer mediaPlayer;
+    protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
+
+
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
 
     private int getNextOffset() {
         return offset+chatLimit;
@@ -118,6 +132,8 @@ public class ChatLayoutView extends RelativeLayout {
         recyclerView = root.findViewById(R.id.recyclerview);
         listView = root.findViewById(R.id.listview);
         helper = new Helper(getContext());
+        uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getContext());
+        mediaPlayer = new MediaPlayer();
         backgroundImage = root.findViewById(R.id.background);
         leftMessageConfiguration = new MessageConfiguration();
         rightMessageConfiguration = new MessageConfiguration();
@@ -146,7 +162,7 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths,mediaPlayer);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -173,13 +189,13 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueListView() {
         recyclerView.setVisibility(GONE);
         listView.setVisibility(VISIBLE);
-        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages,helper.getUserMap(),downloadPaths);
+        listViewAdapter = new ListViewAdapter(getContext(),R.layout.message_box,messages,helper.getUserMap(),downloadPaths,mediaPlayer);
         listView.setAdapter(listViewAdapter);
     }
 
     private void notifyAdapter(Boolean scrollToBottom) {
         if(mode == RECYCLERVIEW) {
-            recyclerViewAdapter.notifyDataSetChanged();
+            recyclerViewAdapter.notifyItemInserted(recyclerViewAdapter.getItemCount() -1);
             if(recyclerViewAdapter.getItemCount() > 0 && scrollToBottom) {
                 recyclerView.scrollToPosition(recyclerViewAdapter.getItemCount() - 1);
             }
@@ -294,10 +310,12 @@ public class ChatLayoutView extends RelativeLayout {
     }
 
     public void loadAllDBMessage() {
-        messages.clear();
-        notifyAdapter(true);
-        messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration,dates,messageIds));
-        notifyAdapter(true);
+        if(useDatabase) {
+            messages.clear();
+            notifyAdapter(true);
+            messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration,dates,messageIds));
+            notifyAdapter(true);
+        }
     }
 
     public MessageConfiguration getLeftMessageConfiguration() {
@@ -356,6 +374,14 @@ public class ChatLayoutView extends RelativeLayout {
         this.chatLayoutListener = chatLayoutListener;
     }
 
+    public UploadAndDownloadViewHandler getUploadAndDownloadViewHandler() {
+        return uploadAndDownloadViewHandler;
+    }
+
+    public void setUploadAndDownloadViewHandler(UploadAndDownloadViewHandler uploadAndDownloadViewHandler) {
+        ChatLayoutView.uploadAndDownloadViewHandler = uploadAndDownloadViewHandler;
+    }
+
     public void deleteDatabase() {
         this.databaseHelper.deleteAll();
         this.messages.clear();
@@ -369,4 +395,5 @@ public class ChatLayoutView extends RelativeLayout {
         this.messageIds.clear();
         notifyAdapter(false);
     }
+
 }

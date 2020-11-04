@@ -2,16 +2,20 @@ package com.nobodyknows.chatlayoutview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
@@ -23,12 +27,21 @@ import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 
-public class ChatMessageView extends RelativeLayout {
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLayoutListener;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingAudioMessageId;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingImageView;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingProgressBar;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
+
+public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPreparedListener {
     private LayoutInflater layoutInflater;
     private RelativeLayout root,rootview,messageBox,dateview;
     private TextView message,messageTime,senderName;
@@ -39,8 +52,60 @@ public class ChatMessageView extends RelativeLayout {
     private DownloadHelper downloadHelper;
     private LinearLayout customView,innerView;
     private Message currentMessage;
+    private String DOT_SEPRATOR = " \u25CF ";
     private int STICKER_SIZE = 400;
+    private MediaPlayer mediaPlayer;
     private String DELTE_MESSAGE = "This message was deleted";
+    private MediaObserver observer = null;
+    private ProgressBar progressBar;
+
+    private class MediaObserver implements Runnable {
+        private AtomicBoolean stop = new AtomicBoolean(false);
+
+        public void stop() {
+            stop.set(true);
+        }
+
+        @Override
+        public void run() {
+            while (!stop.get()) {
+                progressBar.setProgress((int)((double)mediaPlayer.getCurrentPosition() / (double)mediaPlayer.getDuration()*100));
+                try {
+                    Thread.sleep(200);
+                } catch (Exception ex) {
+                }
+
+            }
+        }
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                observer.stop();
+                progressBar.setProgress(mp.getCurrentPosition());
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+                lastPlayingImageView.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                lastPlayingProgressBar.setProgress(0);
+            }
+        });
+        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+            @Override
+            public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                progressBar.setSecondaryProgress(percent);
+            }
+        });
+        if(observer == null) {
+            observer = new MediaObserver();
+        }
+        new Thread(observer).start();
+    }
+
+
 
     public ChatMessageView(Context context) {
         super(context);
@@ -87,6 +152,26 @@ public class ChatMessageView extends RelativeLayout {
         rootview.setLayoutParams(params);
     }
 
+    private String getMessageTime(Message message) {
+        String time= getFormatedDate("hh:mm aa", message.getSentAt());
+        if(message.getMessageType() == MessageType.AUDIO) {
+            time+=DOT_SEPRATOR+"Audio ";
+        } else if(message.getMessageType() == MessageType.VIDEO) {
+            time+=DOT_SEPRATOR+"Video ";
+        }  else if(message.getMessageType() == MessageType.IMAGE) {
+            time+=DOT_SEPRATOR+"Image ";
+        }  else if(message.getMessageType() == MessageType.GIF) {
+            time+=DOT_SEPRATOR+"Gif ";
+        }  else if(message.getMessageType() == MessageType.DOCUMENT) {
+            time+=DOT_SEPRATOR+"Document ";
+        }  else if(message.getMessageType() == MessageType.RECORDING) {
+            time+=DOT_SEPRATOR+"Recording ";
+        }  else if(message.getMessageType() == MessageType.CONTACT) {
+            time+=DOT_SEPRATOR+"Contacts ";
+        }
+       return time;
+    }
+
 
     public void setMessage(Message message) {
         this.currentMessage = message;
@@ -103,7 +188,7 @@ public class ChatMessageView extends RelativeLayout {
             if(message.getMessageStatus() != MessageStatus.DELETED) {
                 updateStickerView(message.getMessageConfiguration().getMessagePosition());
                 this.message.setText(message.getMessage());
-                this.messageTime.setText(getFormatedDate("hh:mm aa", message.getSentAt()));
+                this.messageTime.setText(getMessageTime(message));
                 updateMessageStatus(message);
                 if(message.getIsRepliedMessage()) {
                     ViewGroup parentGroup = ((ViewGroup) message.getReplyMessageView().getParent());
@@ -245,54 +330,72 @@ public class ChatMessageView extends RelativeLayout {
     }
 
     private View getMediaLayout(ArrayList<SharedFile> sharedFiles,MessageType messageType) {
-        View view = layoutInflater.inflate(R.layout.image_chat_view,null);
-        LinearLayout line1 = view.findViewById(R.id.line1);
-        LinearLayout line2 = view.findViewById(R.id.line2);
-        CircularProgressButton eventButtton = view.findViewById(R.id.circularButton);
-        ArrayList<String> urls = new ArrayList<>();
-        ArrayList<String> names = new ArrayList<>();
-        if(messageType == MessageType.GIF || messageType == MessageType.STICKER) {
-            eventButtton.setVisibility(GONE);
-        } else {
-            Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
-            if(canDownload) {
-                eventButtton.setVisibility(VISIBLE);
 
-            } else {
-                eventButtton.setVisibility(GONE);
+        View view = null;
+        if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
+            view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        } else {
+            view = layoutInflater.inflate(R.layout.image_chat_view,null);
+            LinearLayout line1 = view.findViewById(R.id.line1);
+            LinearLayout line2 = view.findViewById(R.id.line2);
+            CircularProgressButton eventButtton = view.findViewById(R.id.circularButton);
+            ArrayList<String> urls = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
+            for(SharedFile sharedFile:sharedFiles) {
+                urls.add(sharedFile.getUrl());
+                names.add(sharedFile.getName()+"."+sharedFile.getExtension());
             }
-        }
-        for(SharedFile sharedFile:sharedFiles) {
-            urls.add(sharedFile.getUrl());
-            names.add(sharedFile.getName()+"."+sharedFile.getExtension());
-        }
-        eventButtton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventButtton.startAnimation();
-                if(sharedFiles.size() == 1) {
-                    downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton);
+            int height = getHeightByUrlsSize(sharedFiles.size());
+            for(int i=0;i<sharedFiles.size();i++) {
+                if(i<2) {
+                    line1.addView(getMediaView(sharedFiles.get(i),height,false,"",urls,names));
                 } else {
-                    downloadHelper.downloadAll(sharedFiles,downloadPath,eventButtton);
-                }
-            }
-        });
-        int height = getHeightByUrlsSize(sharedFiles.size());
-        for(int i=0;i<sharedFiles.size();i++) {
-            if(i<2) {
-                line1.addView(getMediaView(sharedFiles.get(i),height,false,"",urls,names));
-            } else {
-                if(i == 3) {
-                    if(sharedFiles.size() > 4) {
-                        line2.addView(getMediaView(sharedFiles.get(i),height,true,"+ "+(sharedFiles.size()-4),urls,names));
-                        break;
+                    if(i == 3) {
+                        if(sharedFiles.size() > 4) {
+                            line2.addView(getMediaView(sharedFiles.get(i),height,true,"+ "+(sharedFiles.size()-4),urls,names));
+                            break;
+                        } else {
+                            line2.addView(getMediaView(sharedFiles.get(i),height,false,"",urls,names));
+                        }
                     } else {
                         line2.addView(getMediaView(sharedFiles.get(i),height,false,"",urls,names));
                     }
-                } else {
-                    line2.addView(getMediaView(sharedFiles.get(i),height,false,"",urls,names));
                 }
             }
+            if(messageType == MessageType.GIF || messageType == MessageType.STICKER) {
+                eventButtton.setVisibility(GONE);
+            } else {
+                Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
+                if(canDownload) {
+                    eventButtton.setVisibility(VISIBLE);
+                    if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
+                        eventButtton.startAnimation();
+                        uploadAndDownloadViewHandler.addUploadView(currentMessage,view);
+                        if(sharedFiles.size() == 1) {
+                            downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
+                        } else {
+                            downloadHelper.downloadAll(sharedFiles,downloadPath,eventButtton, currentMessage.getMessageId());
+                        }
+                    } else {
+                        View finalView = view;
+                        eventButtton.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                eventButtton.startAnimation();
+                                uploadAndDownloadViewHandler.addUploadView(currentMessage, finalView);
+                                if(sharedFiles.size() == 1) {
+                                    downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton,currentMessage.getMessageId());
+                                } else {
+                                    downloadHelper.downloadAll(sharedFiles,downloadPath,eventButtton,currentMessage.getMessageId());
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    eventButtton.setVisibility(GONE);
+                }
+            }
+
         }
         return view;
     }
@@ -315,6 +418,9 @@ public class ChatMessageView extends RelativeLayout {
             case VIDEO:
                 customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.VIDEO));
                 break;
+            case AUDIO:
+                customView.addView(getAudioLayout(message.getSharedFiles()));
+                break;
             case GIF:
                 customView.addView(getMediaLayout(message.getSharedFiles(),MessageType.GIF));
                 break;
@@ -324,6 +430,79 @@ public class ChatMessageView extends RelativeLayout {
             default:
                 break;
         }
+    }
+
+    private View getAudioLayout(ArrayList<SharedFile> sharedFiles) {
+        message.setVisibility(GONE);
+        View view = null;
+        if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
+            view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        } else {
+            view =layoutInflater.inflate(R.layout.audio,null);
+            ImageView pp = view.findViewById(R.id.playpause);
+            ImageView imageup = view.findViewById(R.id.imageup);
+            CircularProgressButton eventButtton = view.findViewById(R.id.progressbutton);
+            final String[] url = {sharedFiles.get(0).getUrl()};
+            ProgressBar progressBar = view.findViewById(R.id.progressbar);
+            final Boolean[] isPlaying = {false};
+            pp.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isPlaying[0]) {
+                        pp.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                        stopAudio();
+                        isPlaying[0] = false;
+                    }else {
+                        if(new File(envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension()).exists()) {
+                            url[0] = envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension();
+                        }
+                        pp.setImageResource(R.drawable.ic_baseline_pause_24);
+                        playeAudio(url[0],progressBar,pp);
+                        isPlaying[0] = true;
+                    }
+                }
+            });
+            if(currentMessage.getMessageStatus() == MessageStatus.SENDING) {
+                imageup.setImageResource(R.drawable.upload);
+                imageup.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chatLayoutListener.onUploadRetry(currentMessage);
+                    }
+                });
+            } else {
+                Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
+                if(canDownload) {
+                    imageup.setVisibility(VISIBLE);
+                    if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
+                        imageup.setVisibility(GONE);
+                        eventButtton.setVisibility(VISIBLE);
+                        eventButtton.startAnimation();
+                        uploadAndDownloadViewHandler.addUploadView(currentMessage,view);
+
+                        downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
+                    } else {
+                        View finalView = view;
+                        imageup.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                imageup.setVisibility(GONE);
+                                eventButtton.setVisibility(VISIBLE);
+                                eventButtton.startAnimation();
+                                uploadAndDownloadViewHandler.addUploadView(currentMessage, finalView);
+                                Toast.makeText(getContext(),uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())+"",Toast.LENGTH_SHORT).show();
+                                downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
+                            }
+                        });
+                    }
+                } else {
+                    imageup.setVisibility(GONE);
+                }
+
+            }
+
+        }
+        return view;
     }
 
     public void setUser(User user) {
@@ -368,5 +547,55 @@ public class ChatMessageView extends RelativeLayout {
 
     public void setDownloadHelper(DownloadHelper downloadHelper) {
         this.downloadHelper = downloadHelper;
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
+    }
+
+    private void playMusic(String url) {
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(getContext(), Uri.parse(url));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setOnPreparedListener(this);
+        mediaPlayer.prepareAsync();
+    }
+
+    private void playeAudio(String url, ProgressBar progressBar,ImageView pp) {
+        this.progressBar = progressBar;
+        if(lastPlayingAudioMessageId == null || lastPlayingAudioMessageId.length() ==0) {
+            lastPlayingAudioMessageId = currentMessage.getMessageId();
+            lastPlayingProgressBar = progressBar;
+            lastPlayingImageView = pp;
+            playMusic(url);
+        } else {
+            if(lastPlayingAudioMessageId == currentMessage.getMessageId()) {
+                mediaPlayer.start();
+            } else {
+                stopAudio();
+                mediaPlayer.reset();
+                lastPlayingImageView.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                lastPlayingProgressBar.setProgress(0);
+                lastPlayingAudioMessageId = currentMessage.getMessageId();
+                lastPlayingProgressBar = progressBar;
+                lastPlayingImageView = pp;
+                playMusic(url);
+            }
+        }
+
+    }
+
+    private void stopAudio() {
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+
+        }
     }
 }

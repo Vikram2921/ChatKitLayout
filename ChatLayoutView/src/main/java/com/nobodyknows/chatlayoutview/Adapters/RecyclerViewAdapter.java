@@ -1,6 +1,7 @@
 package com.nobodyknows.chatlayoutview.Adapters;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context context;
     private Map<String,User> userMap;
     private Map<MessageType,String> downloadPath;
-    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths) {
+    private MediaPlayer mediaPlayer;
+    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths,MediaPlayer mediaPlayer) {
         this.context = context;
         this.messages = messages;
+        this.mediaPlayer = mediaPlayer;
         this.userMap = userMap;
         this.downloadPath = downloadPaths;
     }
@@ -49,6 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.chatMessageView.setDownloadPath(getUrl(message.getMessageType()));
         holder.chatMessageView.setUser(userMap.get(message.getSender()));
         holder.chatMessageView.setDownloadHelper(downloadHelper);
+        holder.chatMessageView.setMediaPlayer(mediaPlayer);
         holder.chatMessageView.setMessage(message);
     }
 

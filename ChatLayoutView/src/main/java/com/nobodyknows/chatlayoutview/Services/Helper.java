@@ -94,29 +94,36 @@ public class Helper {
                 Glide.with(getContext()).load(url).override(100,100).into(preview);
             } else if(message.getMessageType() == MessageType.VIDEO) {
                 messageview.setText("Video");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_videocam_24,0,0,0);
                 Glide.with(getContext()).load(url).override(100,100).into(preview);
             } else if(message.getMessageType() == MessageType.AUDIO) {
                 messageview.setText("Audio");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headset_14,0,0,0);
+                preview.setBackgroundColor(Color.parseColor("#FF9800"));
+                Glide.with(getContext()).load(R.drawable.ic_baseline_headset_24).into(preview);
+                preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.GIF) {
                 messageview.setText("GIF");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
                 Glide.with(getContext()).asBitmap().load(url).override(100,100).into(preview);
             }  else if(message.getMessageType() == MessageType.RECORDING) {
                 messageview.setText("Recording");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_mic_24,0,0,0);
+                preview.setBackgroundColor(Color.parseColor("#FF9800"));
+                Glide.with(getContext()).load(R.drawable.ic_baseline_mic_24).into(preview);
+                preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.DOCUMENT) {
                 messageview.setText("Document");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_insert_drive_file_24,0,0,0);
             }  else if(message.getMessageType() == MessageType.MAP) {
                 messageview.setText("Map");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_map_24,0,0,0);
             }  else if(message.getMessageType() == MessageType.CONTACT) {
                 messageview.setText("Contact");
-                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_contacts_24,0,0,0);
             }  else if(message.getMessageType() == MessageType.STICKER) {
                 messageview.setText("Sticker");
+                messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_emoji_emotions_24,0,0,0);
                 Glide.with(getContext()).asBitmap().load(url).override(100,100).into(preview);
             }   else {
                 messageview.setText(message.getMessage());

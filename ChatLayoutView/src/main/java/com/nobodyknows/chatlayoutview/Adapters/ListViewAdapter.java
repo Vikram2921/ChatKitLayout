@@ -1,6 +1,7 @@
 package com.nobodyknows.chatlayoutview.Adapters;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,12 @@ public class ListViewAdapter extends ArrayAdapter {
     private LayoutInflater layoutInflater;
     private Map<String, User> userMap;
     private Map<MessageType,String> downloadPath;
-    public ListViewAdapter(@NonNull Context context, int resource, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths) {
+    private MediaPlayer mediaPlayer;
+    public ListViewAdapter(@NonNull Context context, int resource, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths,MediaPlayer mediaPlayer) {
         super(context, resource,messages);
         this.context = context;
         this.userMap = userMap;
+        this.mediaPlayer = mediaPlayer;
         this.messages = messages;
         this.downloadPath = downloadPaths;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -41,6 +44,7 @@ public class ListViewAdapter extends ArrayAdapter {
        chatMessageView.setDownloadPath(downloadPath.get(messages.get(position).getMessageType()));
        chatMessageView.setDownloadHelper(downloadHelper);
        chatMessageView.setUser(userMap.get(messages.get(position).getSender()));
+       chatMessageView.setMediaPlayer(mediaPlayer);
         chatMessageView.setMessage(messages.get(position));
        return messageView;
     }

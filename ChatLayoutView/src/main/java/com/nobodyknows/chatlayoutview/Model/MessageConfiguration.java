@@ -11,6 +11,7 @@ public class MessageConfiguration {
     private MessagePosition messagePosition = LEFT;
     private int backgroundResource = R.drawable.left_message_drawable;
     private float messageTextSize =16;
+    private Boolean mediaAutoDownload =false;
     private int textColor = Color.BLACK;
     private int timeTextColor = Color.parseColor("#969696");
     public MessagePosition getMessagePosition() {
@@ -51,5 +52,13 @@ public class MessageConfiguration {
 
     public void setTimeTextColor(int timeTextColor) {
         this.timeTextColor = timeTextColor;
+    }
+
+    public Boolean getMediaAutoDownload() {
+        return mediaAutoDownload;
+    }
+
+    public void setMediaAutoDownload(Boolean mediaAutoDownload) {
+        this.mediaAutoDownload = mediaAutoDownload;
     }
 }

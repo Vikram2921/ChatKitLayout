@@ -3,12 +3,10 @@ package com.nobodyknows.chatlayoutview;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -24,6 +22,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
+
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
 
 public class DownloadHelper {
 
@@ -67,7 +67,7 @@ public class DownloadHelper {
         return result;
     }
 
-    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressButton progressBar) {
+    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressButton progressBar, String messageId) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -78,6 +78,7 @@ public class DownloadHelper {
             );
         } else {
             String envPath = Environment.getExternalStorageDirectory().getPath();
+
             if (!new File(envPath +dirPath).exists()) {
                 new File(envPath + dirPath).mkdirs();
             }
@@ -85,8 +86,13 @@ public class DownloadHelper {
             final int[] downloadCompleted = {0};
             String filename = "";
             for(int i=0;i<urls.size();i++) {
+                String partialUrl = envPath+dirPath+"/"+urls.get(i).getName()+"_PARTIALLY."+urls.get(i).getExtension();
+                String realname = envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension();
+                if (new File(partialUrl).exists()) {
+                    new File(partialUrl).delete();
+                }
                 if(!new File(envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension()).exists()) {
-                    DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(urls.get(i).getUrl()).setPath(envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension()).build();
+                    DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(urls.get(i).getUrl()).setPath(partialUrl).build();
                     int finalTotalDownloads = totalDownloads;
                     downloadInfo.setDownloadListener(new DownloadListener() {
                         @Override
@@ -120,7 +126,9 @@ public class DownloadHelper {
                             progressBar.setProgress(progress);
                             if(progress == 100.0) {
                                 progressBar.setVisibility(View.GONE);
+                                uploadAndDownloadViewHandler.delete(messageId);
                             }
+                            renameFile(partialUrl,realname);
                         }
 
                         @Override
@@ -142,7 +150,7 @@ public class DownloadHelper {
         return downloadId;
     }
 
-    public int downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressButton progressBar) {
+    public int downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressButton progressBar, String messageId) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -153,11 +161,16 @@ public class DownloadHelper {
             );
         } else {
             String envPath = Environment.getExternalStorageDirectory().getPath();
+            String partialUrl = envPath+dirPath+"/"+sharedFile.getName()+"_PARTIALLY."+sharedFile.getExtension();
+            if (new File(partialUrl).exists()) {
+                new File(partialUrl).delete();
+            }
             if (!new File(envPath +dirPath).exists()) {
                 new File(envPath + dirPath).mkdirs();
             }
+
             if(!new File(envPath+dirPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension()).exists()) {
-                DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(sharedFile.getUrl()).setPath(envPath+dirPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension()).build();
+                DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(sharedFile.getUrl()).setPath(partialUrl).build();
                 downloadInfo.setDownloadListener(new DownloadListener() {
                     @Override
                     public void onStart() {
@@ -187,6 +200,9 @@ public class DownloadHelper {
                     @Override
                     public void onDownloadSuccess() {
                         progressBar.setVisibility(View.GONE);
+                        uploadAndDownloadViewHandler.delete(messageId);
+                        Toast.makeText(context,uploadAndDownloadViewHandler.isExist(messageId)+"",Toast.LENGTH_SHORT).show();
+                        renameFile(partialUrl,envPath+dirPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension());
                     }
 
                     @Override
@@ -200,6 +216,14 @@ public class DownloadHelper {
             }
         }
         return downloadId;
+    }
+
+    private void renameFile(String partialUrl, String newUrl) {
+        File from = new File(partialUrl);
+        File to = new File(newUrl);
+        if(from.exists()) {
+            from.renameTo(to);
+        }
     }
 
     private int calculateProgress(long progress, long size) {

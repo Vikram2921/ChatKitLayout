@@ -35,7 +35,7 @@
             android:drawableTint="#818181"
             android:drawablePadding="5dp"
             android:textSize="10dp"
-            android:singleLine="true"
+            android:maxLines="2"
             android:id="@+id/message"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
@@ -45,7 +45,6 @@
     </LinearLayout>
     <ImageView
         android:id="@+id/preview"
-        android:src="@drawable/sunny"
         android:scaleType="centerCrop"
         android:layout_alignParentRight="true"
         android:layout_width="70dp"
