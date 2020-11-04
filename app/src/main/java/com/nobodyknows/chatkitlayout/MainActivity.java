@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         freindUserObject.setUserId("8442000360");
         chatLayoutView.addUser(myUserObject);
         chatLayoutView.addUser(freindUserObject);
+        chatLayoutView.loadAllDBMessage();
         //chatLayoutView.setBackgroundImage("https://wallpaperaccess.com/full/1288076.jpg");
         Button button = findViewById(R.id.clickme);
         EditText editText = findViewById(R.id.message);

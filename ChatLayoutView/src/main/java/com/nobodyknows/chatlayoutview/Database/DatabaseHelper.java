@@ -15,6 +15,7 @@ import com.nobodyknows.chatlayoutview.Database.model.Urls;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
+import com.nobodyknows.chatlayoutview.Services.Helper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NOBODYKNOW_CHATS";
     private String roomId;
+    private Helper helper;
     public DatabaseHelper(@Nullable Context context,String roomId) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.roomId = roomId;
@@ -32,6 +34,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+    public void setHelper(Helper helper) {
+        this.helper = helper;
     }
 
     @Override
@@ -116,6 +122,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return messages;
     }
 
+    public Message getMessage(String messageId) {
+        Message message = null;
+        String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " WHERE " +
+                Chats.COLUMN_MESSAGE_ID + " = "+messageId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                message = convertToMessage(cursor);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return message;
+    }
+
     public ArrayList<SharedFile> getSharedFiles(String messageId) {
         ArrayList<SharedFile> files = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Urls.getTableName(roomId) + " WHERE " +
@@ -159,6 +181,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             dateMessage.setMessageId("DATE_"+formattedText);
             messages.add(dateMessage);
             messageIds.add("DATE_"+message.getCreatedTimestamp());
+        }
+        if(message.getIsRepliedMessage()) {
+            if(message.getReplyMessageView() == null) {
+                Message replyMessage = messages.get(messageIds.indexOf(message.getRepliedMessageId()));
+                message.setReplyMessageView(helper.getReplyMessageView(replyMessage));
+            }
         }
         messages.add(message);
         messageIds.add(message.getMessageId());
@@ -210,6 +238,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Message convertToMessage(Cursor cursor, String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
+        Message message = convertToMessage(cursor);
+        if(myId.equals(message.getSender())) {
+            message.setMessageConfiguration(rightMessageConfiguration);
+        } else {
+            message.setMessageConfiguration(leftMessageConfiguration);
+        }
+        message.setSharedFiles(getSharedFiles(message.getMessageId()));
+        return message;
+    }
+
+    private Message convertToMessage(Cursor cursor) {
         Message message = new Message();
         message.setMessageId(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_MESSAGE_ID)));
         message.setRepliedMessageId(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_REPLY_MESSAGE_ID)));
@@ -225,12 +264,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         message.setReceivedAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_RECEIVEAT))));
         message.setSeenAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_SEENAT))));
         message.setIsRepliedMessage(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Chats.COLUMN_IS_REPLY_MESSAGE))));
-        if(myId.equals(message.getSender())) {
-            message.setMessageConfiguration(rightMessageConfiguration);
-        } else {
-            message.setMessageConfiguration(leftMessageConfiguration);
-        }
-        message.setSharedFiles(getSharedFiles(message.getMessageId()));
         return message;
     }
 
