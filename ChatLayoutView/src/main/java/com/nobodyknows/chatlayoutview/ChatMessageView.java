@@ -2,12 +2,9 @@ package com.nobodyknows.chatlayoutview;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
-import android.os.Build;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.integration.webp.decoder.WebpDrawable;
-import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation;
-import com.bumptech.glide.load.Transformation;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
@@ -29,16 +21,12 @@ import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
-import xyz.neocrux.suziloader.SuziLoader;
-
-import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 
 public class ChatMessageView extends RelativeLayout {
     private LayoutInflater layoutInflater;
@@ -51,7 +39,6 @@ public class ChatMessageView extends RelativeLayout {
     private DownloadHelper downloadHelper;
     private LinearLayout customView,innerView;
     private Message currentMessage;
-    private SuziLoader suziLoader = new SuziLoader();
     private int STICKER_SIZE = 400;
     private String DELTE_MESSAGE = "This message was deleted";
 
@@ -82,6 +69,7 @@ public class ChatMessageView extends RelativeLayout {
         messageBox = root.findViewById(R.id.messagebox);
         messagestatus = root.findViewById(R.id.messagestatus);
         messageTime = root.findViewById(R.id.messagetime);
+
     }
 
     private void configRootView(MessagePosition position) {
@@ -185,14 +173,18 @@ public class ChatMessageView extends RelativeLayout {
             textView.setText(overlayText);
             overlay.setVisibility(VISIBLE);
         }
+        String url = sharedFile.getPreviewUrl();
+        if(url == null || url.length() == 0) {
+            url = sharedFile.getUrl();
+        }
         if(currentMessage.getMessageType() == MessageType.VIDEO) {
             imageView.setVisibility(VISIBLE);
             playIcon.setVisibility(VISIBLE);
-            Glide.with(getContext()).load(sharedFile.getUrl()).override(150,150).into(imageView);
+            Glide.with(getContext()).load(url).override(150,150).into(imageView);
         } else if(currentMessage.getMessageType() == MessageType.GIF) {
             playIcon.setVisibility(VISIBLE);
             playIcon.setImageResource(R.drawable.ic_baseline_gif_24);
-            Glide.with(getContext()).asBitmap().load(sharedFile.getUrl()).override(200, 200).into(imageView);
+            Glide.with(getContext()).asBitmap().load(url).override(200, 200).into(imageView);
         } else if(currentMessage.getMessageType() == MessageType.STICKER) {
             playIcon.setVisibility(GONE);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -201,9 +193,9 @@ public class ChatMessageView extends RelativeLayout {
             layoutParams.width = STICKER_SIZE;
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             imageView.setLayoutParams(layoutParams);
-            Glide.with(getContext()).load(sharedFile.getUrl()).override(200, 200).into(imageView);
+            Glide.with(getContext()).load(url).override(200, 200).into(imageView);
         } else {
-            Glide.with(getContext()).load(sharedFile.getUrl()).override(150,150).into(imageView);
+            Glide.with(getContext()).load(url).override(150,150).into(imageView);
         }
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, height);

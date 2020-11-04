@@ -101,9 +101,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private ContentValues getSharedFileContentValues(String messageId, SharedFile sharedFile) {
         ContentValues values = new ContentValues();
         values.put(Urls.COLUMN_MESSAGE_ID,messageId);
+        values.put(Urls.COLUMN_FILE_ID,sharedFile.getFileId());
         values.put(Urls.COLUMN_NAME,sharedFile.getName());
         values.put(Urls.COLUMN_URL,sharedFile.getUrl());
+        values.put(Urls.COLUMN_PREVIEW_URL,sharedFile.getPreviewUrl());
         values.put(Urls.COLUMN_EXETENSION,sharedFile.getExtension());
+        values.put(Urls.COLUMN_SIZE,sharedFile.getSize());
+        values.put(Urls.COLUMN_DURATION,sharedFile.getDuration());
         return values;
     }
 
@@ -176,9 +180,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private SharedFile convertToSharedFile(Cursor cursor) {
         SharedFile file = new SharedFile();
+        file.setPreviewUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_PREVIEW_URL)));
+        file.setFileId(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_FILE_ID)));
         file.setUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_URL)));
         file.setName(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_NAME)));
         file.setExtension(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_EXETENSION)));
+        file.setSize(cursor.getDouble(cursor.getColumnIndex(Urls.COLUMN_SIZE)));
+        file.setDuration(cursor.getDouble(cursor.getColumnIndex(Urls.COLUMN_DURATION)));
         return file;
     }
 

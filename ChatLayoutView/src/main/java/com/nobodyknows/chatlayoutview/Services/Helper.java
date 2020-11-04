@@ -81,21 +81,28 @@ public class Helper {
             } else {
                 senderName.setText(user.getName());
             }
+            String url = "";
+            if(message.getSharedFiles().size() > 0) {
+                url = message.getSharedFiles().get(0).getPreviewUrl();
+                if(url == null || url.length() == 0) {
+                    url = message.getSharedFiles().get(0).getUrl();
+                }
+            }
             if(message.getMessageType() == MessageType.IMAGE) {
                 messageview.setText("Photo");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
-                Glide.with(getContext()).load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+                Glide.with(getContext()).load(url).override(100,100).into(preview);
             } else if(message.getMessageType() == MessageType.VIDEO) {
                 messageview.setText("Video");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
-                Glide.with(getContext()).load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+                Glide.with(getContext()).load(url).override(100,100).into(preview);
             } else if(message.getMessageType() == MessageType.AUDIO) {
                 messageview.setText("Audio");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
             }  else if(message.getMessageType() == MessageType.GIF) {
                 messageview.setText("GIF");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
-                Glide.with(getContext()).asBitmap().load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+                Glide.with(getContext()).asBitmap().load(url).override(100,100).into(preview);
             }  else if(message.getMessageType() == MessageType.RECORDING) {
                 messageview.setText("Recording");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
@@ -110,7 +117,7 @@ public class Helper {
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
             }  else if(message.getMessageType() == MessageType.STICKER) {
                 messageview.setText("Sticker");
-                Glide.with(getContext()).asBitmap().load(message.getSharedFiles().get(0).getUrl()).override(100,100).into(preview);
+                Glide.with(getContext()).asBitmap().load(url).override(100,100).into(preview);
             }   else {
                 messageview.setText(message.getMessage());
                 preview.setVisibility(GONE);

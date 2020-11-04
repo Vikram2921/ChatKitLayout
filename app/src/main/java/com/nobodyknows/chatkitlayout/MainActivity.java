@@ -244,9 +244,14 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 
     private SharedFile getSharedFile(String url,String name,String exetension) {
         SharedFile sharedFile = new SharedFile();
+        sharedFile.setFileId("FILE_"+name+"_7014550298_"+new Random().nextInt(9999));
+        sharedFile.setSize(10000.0);
+        sharedFile.setDuration(0.0);
         sharedFile.setExtension(exetension);
         sharedFile.setName(name);
         sharedFile.setUrl(url);
+        sharedFile.setPreviewUrl("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/sunny-compressed.jpg?alt=media&token=6a7aa85b-9bee-4bf7-89d0-c982e45bc71b");
+
         return sharedFile;
     }
 
