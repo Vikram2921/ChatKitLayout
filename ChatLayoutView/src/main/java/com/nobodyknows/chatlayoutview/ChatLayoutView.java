@@ -252,7 +252,7 @@ public class ChatLayoutView extends RelativeLayout {
                     formattedText = "Yesterday";
                 }
             }
-            dateMessage.setMessageId("DATE_"+formattedText);
+            dateMessage.setMessageId("DATE_"+message.getCreatedTimestamp());
             dateMessage.setMessage(formattedText+"");
             messages.add(dateMessage);
             messageIds.add("DATE_"+message.getCreatedTimestamp());
