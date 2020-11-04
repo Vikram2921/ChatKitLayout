@@ -64,6 +64,7 @@
                     android:layout_marginLeft="3dp"
                     android:text="05:30 PM"
                     android:textStyle="normal"
+                    android:textColor="#969696"
                     android:id="@+id/messagetime"
                     android:textSize="10dp"
                     android:layout_width="wrap_content"

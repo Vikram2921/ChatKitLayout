@@ -211,6 +211,26 @@ public class ChatLayoutView extends RelativeLayout {
             notifyAdapter(true);
         }
     }
+
+    public Message getMessage(String messageId) {
+        if(messageIds.contains(messageId)) {
+            return messages.get(messageIds.indexOf(messageId));
+        }
+        return null;
+    }
+
+    public void updateMessage(Message message) {
+        if(messageIds.contains(message.getMessageId())) {
+            int index = messageIds.indexOf(message.getMessageId());
+            messages.remove(index);
+            messages.add(index,message);
+            if(mode == RECYCLERVIEW) {
+                recyclerViewAdapter.notifyItemChanged(index);
+            } else {
+                listViewAdapter.notifyDataSetChanged();
+            }
+        }
+    }
     private String getFormattedDate(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
         return simpleDateFormat.format(date);
@@ -334,5 +354,19 @@ public class ChatLayoutView extends RelativeLayout {
 
     public void setChatLayoutListener(ChatLayoutListener chatLayoutListener) {
         this.chatLayoutListener = chatLayoutListener;
+    }
+
+    public void deleteDatabase() {
+        this.databaseHelper.deleteAll();
+        this.messages.clear();
+        this.messageIds.clear();
+        notifyAdapter(false);
+    }
+
+    public void clearCompleteChat() {
+        this.databaseHelper.clearAll();
+        this.messages.clear();
+        this.messageIds.clear();
+        notifyAdapter(false);
     }
 }

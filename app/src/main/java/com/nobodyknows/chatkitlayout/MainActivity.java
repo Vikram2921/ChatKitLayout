@@ -150,6 +150,12 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setSeenAt(new Date());
         message.setSentAt(new Date());
         message.setReceivedAt(new Date());
+        MessageConfiguration messageConfiguration = new MessageConfiguration();
+        messageConfiguration.setTextColor(Color.WHITE);
+        messageConfiguration.setTimeTextColor(Color.WHITE);
+        messageConfiguration.setMessagePosition(MessagePosition.RIGHT);
+        messageConfiguration.setBackgroundResource(R.drawable.left_message_drawable_demo);
+        message.setMessageConfiguration(messageConfiguration);
         return message;
     }
 

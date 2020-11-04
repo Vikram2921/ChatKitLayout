@@ -53,6 +53,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void delete(SQLiteDatabase db,String tableName) {
+        db.execSQL("DROP TABLE IF EXISTS " + tableName);
+    }
+
+    public void clear(SQLiteDatabase db,String tableName) {
+        db.execSQL("DELETE FROM " + tableName);
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        delete(db,Chats.getTableName(roomId));
+        delete(db,Urls.getTableName(roomId));
+    }
+
+    public void clearAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        clear(db,Chats.getTableName(roomId));
+        clear(db,Urls.getTableName(roomId));
+    }
+
     public long insertMessage(Message message) {
         SQLiteDatabase db  = this.getWritableDatabase();
         long id = 0;

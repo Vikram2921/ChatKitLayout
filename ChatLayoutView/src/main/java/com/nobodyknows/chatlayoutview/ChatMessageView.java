@@ -109,6 +109,8 @@ public class ChatMessageView extends RelativeLayout {
             this.rootview.setVisibility(GONE);
         } else {
             this.message.setTextSize(message.getMessageConfiguration().getMessageTextSize());
+            this.message.setTextColor(message.getMessageConfiguration().getTextColor());
+            this.messageTime.setTextColor(message.getMessageConfiguration().getTimeTextColor());
             configRootView(message.getMessageConfiguration().getMessagePosition());
             if(message.getMessageStatus() != MessageStatus.DELETED) {
                 updateStickerView(message.getMessageConfiguration().getMessagePosition());
