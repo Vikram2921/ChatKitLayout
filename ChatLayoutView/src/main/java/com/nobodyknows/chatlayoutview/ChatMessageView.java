@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,7 +31,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
@@ -338,6 +341,14 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         return canShow;
     }
 
+    private Boolean canShowDownloadButton(String downloadPath,SharedFile sharedFile) {
+        Boolean canShow = false;
+        if(!new File(envPath+downloadPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension()).exists()) {
+            canShow = true;
+        }
+        return canShow;
+    }
+
     private View getMediaLayout(ArrayList<SharedFile> sharedFiles,MessageType messageType) {
 
         View view = null;
@@ -347,7 +358,9 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             view = layoutInflater.inflate(R.layout.image_chat_view,null);
             LinearLayout line1 = view.findViewById(R.id.line1);
             LinearLayout line2 = view.findViewById(R.id.line2);
-            CircularProgressButton eventButtton = view.findViewById(R.id.circularButton);
+            ImageView imageup = view.findViewById(R.id.imageup);
+            RelativeLayout progressview = view.findViewById(R.id.progressview);
+            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             ArrayList<String> urls = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
             for(SharedFile sharedFile:sharedFiles) {
@@ -372,41 +385,40 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 }
             }
             if(messageType == MessageType.GIF || messageType == MessageType.STICKER) {
-                eventButtton.setVisibility(GONE);
+                progressview.setVisibility(GONE);
             } else {
                 Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
                 if(canDownload) {
-                    eventButtton.setVisibility(VISIBLE);
+                    imageup.setVisibility(VISIBLE);
                     if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
-                        eventButtton.startAnimation();
-                        uploadAndDownloadViewHandler.addUploadView(currentMessage,view);
-                        if(sharedFiles.size() == 1) {
-                            downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
-                        } else {
-                            downloadHelper.downloadAll(sharedFiles,downloadPath,eventButtton, currentMessage.getMessageId());
-                        }
+                        downloadFiles(imageup,progressview,sharedFiles,view,eventButtton);
                     } else {
                         View finalView = view;
                         eventButtton.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                eventButtton.startAnimation();
-                                uploadAndDownloadViewHandler.addUploadView(currentMessage, finalView);
-                                if(sharedFiles.size() == 1) {
-                                    downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton,currentMessage.getMessageId());
-                                } else {
-                                    downloadHelper.downloadAll(sharedFiles,downloadPath,eventButtton,currentMessage.getMessageId());
-                                }
+                                downloadFiles(imageup,progressview,sharedFiles,finalView,eventButtton);
                             }
                         });
                     }
                 } else {
-                    eventButtton.setVisibility(GONE);
+                    imageup.setVisibility(GONE);
                 }
             }
 
         }
         return view;
+    }
+
+    private void downloadFiles(ImageView imageup, RelativeLayout progressview, ArrayList<SharedFile> sharedFiles, View view, ProgressBar progressBar) {
+        imageup.setVisibility(GONE);
+        progressview.setVisibility(VISIBLE);
+        uploadAndDownloadViewHandler.addUploadView(currentMessage, view);
+        if(sharedFiles.size() == 1) {
+            downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,progressBar,currentMessage.getMessageId(), progressview, imageup);
+        } else {
+            downloadHelper.downloadAll(sharedFiles,downloadPath,progressBar,currentMessage.getMessageId(),progressview,imageup);
+        }
     }
 
 
@@ -442,11 +454,37 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
 
     private View getDocumentLayout(ArrayList<SharedFile> sharedFiles) {
         View view = null;
+        message.setVisibility(GONE);
         if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
             view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
         } else {
             view = layoutInflater.inflate(R.layout.document_view,null);
+            ImageView fileicon = view.findViewById(R.id.fileicon);
+            ImageView imageup = view.findViewById(R.id.imageup);
+            TextView fileformat = view.findViewById(R.id.fileformat);
+            TextView filename = view.findViewById(R.id.documentname);
+            TextView fileinfo = view.findViewById(R.id.documentinfo);
+            RelativeLayout progressview = view.findViewById(R.id.progressview);
+            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
+            fileformat.setText(sharedFiles.get(0).getExtension().toUpperCase());
+            filename.setText(sharedFiles.get(0).getName());
+            if(canDownload) {
+                imageup.setVisibility(VISIBLE);
+                if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
+                    downloadFiles(imageup,progressview,sharedFiles,view,eventButtton);
+                } else {
+                    View finalView = view;
+                    imageup.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            downloadFiles(imageup,progressview,sharedFiles,finalView,eventButtton);
+                        }
+                    });
+                }
+            } else {
+                imageup.setVisibility(GONE);
+            }
         }
         return view;
     }
@@ -460,7 +498,8 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             view =layoutInflater.inflate(R.layout.audio,null);
             ImageView pp = view.findViewById(R.id.playpause);
             ImageView imageup = view.findViewById(R.id.imageup);
-            CircularProgressButton eventButtton = view.findViewById(R.id.progressbutton);
+            RelativeLayout progressview = view.findViewById(R.id.progressview);
+            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             final String[] url = {sharedFiles.get(0).getUrl()};
             TextView durationview = view.findViewById(R.id.duration);
             SeekBar progressBar = view.findViewById(R.id.progressbar);
@@ -495,23 +534,13 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 if(canDownload) {
                     imageup.setVisibility(VISIBLE);
                     if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
-                        imageup.setVisibility(GONE);
-                        eventButtton.setVisibility(VISIBLE);
-                        eventButtton.startAnimation();
-                        uploadAndDownloadViewHandler.addUploadView(currentMessage,view);
-
-                        downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
+                        downloadFiles(imageup,progressview,sharedFiles,view,eventButtton);
                     } else {
                         View finalView = view;
                         imageup.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                imageup.setVisibility(GONE);
-                                eventButtton.setVisibility(VISIBLE);
-                                eventButtton.startAnimation();
-                                uploadAndDownloadViewHandler.addUploadView(currentMessage, finalView);
-                                Toast.makeText(getContext(),uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())+"",Toast.LENGTH_SHORT).show();
-                                downloadHelper.downloadSingle(sharedFiles.get(0),downloadPath,eventButtton, currentMessage.getMessageId());
+                                downloadFiles(imageup,progressview,sharedFiles,finalView,eventButtton);
                             }
                         });
                     }

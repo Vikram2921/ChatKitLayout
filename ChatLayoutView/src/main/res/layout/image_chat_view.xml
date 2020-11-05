@@ -19,20 +19,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </LinearLayout>
-   <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
-       android:layout_width="wrap_content"
-       android:id="@+id/circularButton"
-       android:text="Download"
-       android:textColor="#959595"
-       android:textSize="15dp"
-       android:drawableLeft="@drawable/download"
-       android:drawablePadding="5dp"
-       android:textAllCaps="false"
-       android:layout_centerInParent="true"
-       android:padding="10dp"
-       android:background="@drawable/circular_button_background"
-       app:spinning_bar_width="4dp"
-       app:spinning_bar_color="#000"
-       android:layout_height="wrap_content">
-   </br.com.simplepass.loadingbutton.customViews.CircularProgressButton>
+    <ImageView
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:id="@+id/imageup"
+        android:visibility="gone"
+        android:background="@drawable/media_full_type_background"
+        android:src="@drawable/download"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        app:tint="#FFFFFF">
+    </ImageView>
+    <RelativeLayout
+        android:layout_centerInParent="true"
+        android:id="@+id/progressview"
+        android:visibility="gone"
+        android:background="@drawable/media_full_type_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ProgressBar
+            android:id="@+id/progressbutton"
+            android:indeterminateTint="#8C8C8C"
+            android:background="@drawable/circle"
+            android:layout_width="45dp"
+            android:layout_height="45dp">
+        </ProgressBar>
+        <ImageView
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_baseline_close_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ImageView>
+    </RelativeLayout>
 </RelativeLayout>

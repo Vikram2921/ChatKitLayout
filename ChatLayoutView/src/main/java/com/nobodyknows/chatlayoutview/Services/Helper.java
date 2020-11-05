@@ -177,6 +177,9 @@ public class Helper {
             }  else if(message.getMessageType() == MessageType.DOCUMENT) {
                 messageview.setText("Document");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_insert_drive_file_24,0,0,0);
+                preview.setBackgroundColor(Color.parseColor("#4CAF50"));
+                Glide.with(getContext()).load(R.drawable.ic_baseline_insert_drive_file_24).into(preview);
+                preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.MAP) {
                 messageview.setText("Map");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_map_24,0,0,0);
@@ -208,7 +211,7 @@ public class Helper {
                         new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
                     }
                 } else {
-                    recyclerView.smoothScrollToPosition(index);
+                    recyclerView.scrollToPosition(index);
                     RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
                     if(holder != null) {
                         View item = holder.itemView;

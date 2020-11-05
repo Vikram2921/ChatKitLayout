@@ -65,19 +65,31 @@
                 android:id="@+id/imageup"
                 android:background="@drawable/media_type_background"
                 android:src="@drawable/download"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 app:tint="#FFFFFF">
             </ImageView>
-            <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
-                android:id="@+id/progressbutton"
+            <RelativeLayout
+                android:layout_centerVertical="true"
+                android:id="@+id/progressview"
                 android:visibility="gone"
-                android:background="@drawable/circular_button_background"
-                app:spinning_bar_width="4dp"
-                app:spinning_bar_color="#000"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </br.com.simplepass.loadingbutton.customViews.CircularProgressButton>
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ProgressBar
+                    android:id="@+id/progressbutton"
+                    android:indeterminateTint="#8C8C8C"
+                    android:background="@drawable/circle"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+                </ProgressBar>
+                <ImageView
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_baseline_close_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </ImageView>
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

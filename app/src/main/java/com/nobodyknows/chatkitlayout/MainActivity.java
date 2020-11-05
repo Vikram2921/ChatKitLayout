@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.setDownloadPath(MessageType.AUDIO,"/ChatKitLayout/Audios");
         chatLayoutView.setDownloadPath(MessageType.RECORDING,"/ChatKitLayout/Recordings");
         chatLayoutView.setDownloadPath(MessageType.GIF,"/ChatKitLayout/Gif");
+        chatLayoutView.setDownloadPath(MessageType.DOCUMENT,"/ChatKitLayout/Documents");
         chatLayoutView.setIds("ROOM1","7014550298");
         User myUserObject = new User();
         myUserObject.setName("Sunny Leone");
@@ -100,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.addMessage(getMessages(getResources().getString(R.string.dummy_text),"113",true));
         chatLayoutView.addMessage(getAudioMessages(getResources().getString(R.string.dummy_text),"118",false,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"));
         chatLayoutView.addMessage(getRecordingMessages(getResources().getString(R.string.dummy_text),"119",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"334",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"335",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"336",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"337",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
       //  chatLayoutView.addMessage(getImageMessages("This is an example of IMAGE chat"));
       //  chatLayoutView.addMessage(getVideoMessages("This is an example of VIDEO chat"));
       //  chatLayoutView.addMessage(getGifMessage("This is an example of GIF chat"));
@@ -124,6 +129,23 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
 //        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+    }
+
+    private Message getDocumentMessage(String string, String s, boolean b, String url) {
+        String random = ids.get(new Random().nextInt(2));
+        Message message = new Message();
+        message.setMessageId(s);
+        message.setIsRepliedMessage(b);
+        message.setMessageType(MessageType.DOCUMENT);
+        message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"pdf"));
+        message.setMessage("");
+        message.setSender(random);
+        message.setMessageStatus(MessageStatus.SENT);
+        message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
+        message.setSeenAt(new Date());
+        message.setSentAt(new Date());
+        message.setReceivedAt(new Date());
+        return message;
     }
 
     private Message getRecordingMessages(String string, String s, boolean b, String url) {

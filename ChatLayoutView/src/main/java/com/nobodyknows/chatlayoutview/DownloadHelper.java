@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -20,8 +23,6 @@ import com.nobodyknows.chatlayoutview.Model.SharedFile;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
 
@@ -67,7 +68,7 @@ public class DownloadHelper {
         return result;
     }
 
-    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressButton progressBar, String messageId) {
+    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, ProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -97,7 +98,16 @@ public class DownloadHelper {
                     downloadInfo.setDownloadListener(new DownloadListener() {
                         @Override
                         public void onStart() {
-
+                            progressBar.setIndeterminate(false);
+                            progressview.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    imageup.setVisibility(View.VISIBLE);
+                                    progressview.setVisibility(View.GONE);
+                                    downloadManager.pause(downloadInfo);
+                                    uploadAndDownloadViewHandler.delete(messageId);
+                                }
+                            });
                         }
 
                         @Override
@@ -123,7 +133,7 @@ public class DownloadHelper {
                         public void onDownloadSuccess() {
                             downloadCompleted[0]++;
                             float progress = ((float) downloadCompleted[0] / (float) finalTotalDownloads)*100;
-                            progressBar.setProgress(progress);
+                            progressBar.setProgress((int) progress);
                             if(progress == 100.0) {
                                 progressBar.setVisibility(View.GONE);
                                 uploadAndDownloadViewHandler.delete(messageId);
@@ -133,14 +143,17 @@ public class DownloadHelper {
 
                         @Override
                         public void onDownloadFailed(DownloadException e) {
-
+                            imageup.setVisibility(View.VISIBLE);
+                            progressview.setVisibility(View.GONE);
+                            downloadManager.remove(downloadInfo);
+                            uploadAndDownloadViewHandler.delete(messageId);
                         }
                     });
                     downloadManager.download(downloadInfo);
                 } else {
                     downloadCompleted[0]++;
                     float progress = ((float) downloadCompleted[0] / (float) totalDownloads)*100;
-                    progressBar.setProgress(progress);
+                    progressBar.setProgress((int) progress);
                     if(progress == 100.0) {
                         progressBar.setVisibility(View.GONE);
                     }
@@ -150,7 +163,7 @@ public class DownloadHelper {
         return downloadId;
     }
 
-    public int downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressButton progressBar, String messageId) {
+    public int downloadSingle(SharedFile sharedFile, String dirPath, ProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -174,7 +187,17 @@ public class DownloadHelper {
                 downloadInfo.setDownloadListener(new DownloadListener() {
                     @Override
                     public void onStart() {
-
+                        progressBar.setIndeterminate(false);
+                        progressBar.setMax(100);
+                        progressview.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                imageup.setVisibility(View.VISIBLE);
+                                progressview.setVisibility(View.GONE);
+                                downloadManager.pause(downloadInfo);
+                                uploadAndDownloadViewHandler.delete(messageId);
+                            }
+                        });
                     }
 
                     @Override
@@ -189,6 +212,8 @@ public class DownloadHelper {
 
                     @Override
                     public void onDownloading(long progress, long size) {
+
+                        Toast.makeText(context,calculateProgress(progress,size)+"",Toast.LENGTH_SHORT).show();
                         progressBar.setProgress(calculateProgress(progress,size));
                     }
 
@@ -207,7 +232,10 @@ public class DownloadHelper {
 
                     @Override
                     public void onDownloadFailed(DownloadException e) {
-
+                        imageup.setVisibility(View.VISIBLE);
+                        progressview.setVisibility(View.GONE);
+                        downloadManager.remove(downloadInfo);
+                        uploadAndDownloadViewHandler.delete(messageId);
                     }
                 });
                 downloadManager.download(downloadInfo);
