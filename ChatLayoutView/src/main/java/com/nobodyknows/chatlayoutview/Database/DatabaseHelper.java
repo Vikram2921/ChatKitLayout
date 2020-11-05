@@ -130,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    public ArrayList<Message> getAllMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration,ArrayList<String> dates,ArrayList<String> messageIds) {
+    public ArrayList<Message> getAllMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration,ArrayList<String> dates) {
         ArrayList<Message> messages = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " ORDER BY " +
                 Chats.COLUMN_CREATED_TIME + " ASC";
@@ -139,7 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates,messageIds);
+                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates);
             } while (cursor.moveToNext());
         }
         db.close();
@@ -190,7 +190,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return file;
     }
 
-    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates,ArrayList<String> messageIds) {
+    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates) {
         String formattedText = getFormattedDate(message.getCreatedTimestamp());
         if(!dates.contains(formattedText)) {
             dates.add(formattedText);
@@ -208,16 +208,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             dateMessage.setMessage(formattedText+"");
             dateMessage.setMessageId("DATE_"+message.getCreatedTimestamp());
             messages.add(dateMessage);
-            messageIds.add("DATE_"+message.getCreatedTimestamp());
+            helper.addMessageId("DATE_"+message.getCreatedTimestamp());
         }
         if(message.getIsRepliedMessage()) {
             if(message.getReplyMessageView() == null) {
-                Message replyMessage = messages.get(messageIds.indexOf(message.getRepliedMessageId()));
+                Message replyMessage = messages.get(helper.getMessageIdPositon(message.getRepliedMessageId()));
                 message.setReplyMessageView(helper.getReplyMessageView(replyMessage));
             }
         }
         messages.add(message);
-        messageIds.add(message.getMessageId());
+        helper.addMessageId(message.getMessageId());
     }
 
     private String getFormattedDate(Date date) {

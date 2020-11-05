@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:clickable="false"
+    android:clickable="true"
     android:background="@drawable/reply_background"
     android:layout_width="wrap_content"
     android:layout_marginBottom="10dp"

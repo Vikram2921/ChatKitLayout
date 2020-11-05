@@ -52,7 +52,7 @@ public class ChatLayoutView extends RelativeLayout {
 
     private LayoutInflater layoutInflater;
     private Integer RECYCLERVIEW = 0;
-    private Integer LISTVIEW = 0;
+    private Integer LISTVIEW = 1;
     private int mode=0;
     private ArrayList<Message> messages = new ArrayList<>();
     private RelativeLayout root;
@@ -71,7 +71,6 @@ public class ChatLayoutView extends RelativeLayout {
     private String roomId,myId="";
     private Boolean useDatabase = false;
     private Boolean canSave = false;
-    private ArrayList<String> messageIds = new ArrayList<>();
     private Integer chatLimit = 30;
     private ImageView backgroundImage;
     private int offset = 0;
@@ -133,6 +132,9 @@ public class ChatLayoutView extends RelativeLayout {
         recyclerView = root.findViewById(R.id.recyclerview);
         listView = root.findViewById(R.id.listview);
         helper = new Helper(getContext());
+        helper.setRecyclerView(recyclerView);
+        helper.setListView(listView);
+        helper.setMode(mode);
         uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getContext());
         mediaPlayer = new MediaPlayer();
         backgroundImage = root.findViewById(R.id.background);
@@ -207,7 +209,7 @@ public class ChatLayoutView extends RelativeLayout {
     }
 
     public void addMessage(Message message) {
-        if(!messageIds.contains(message.getMessageId())) {
+        if(!helper.messageIdExists(message.getMessageId())) {
             message.setRoomId(roomId);
             if(message.getMessageConfiguration() == null) {
                 message.setMessageConfiguration(getMessageConfig(message));
@@ -227,15 +229,15 @@ public class ChatLayoutView extends RelativeLayout {
     }
 
     public Message getMessage(String messageId) {
-        if(messageIds.contains(messageId)) {
-            return messages.get(messageIds.indexOf(messageId));
+        if(helper.messageIdExists(messageId)) {
+            return messages.get(helper.getMessageIdPositon(messageId));
         }
         return null;
     }
 
     public void updateMessage(Message message) {
-        if(messageIds.contains(message.getMessageId())) {
-            int index = messageIds.indexOf(message.getMessageId());
+        if(helper.messageIdExists(message.getMessageId())) {
+            int index = helper.getMessageIdPositon(message.getMessageId());
             messages.remove(index);
             messages.add(index,message);
             if(mode == RECYCLERVIEW) {
@@ -269,16 +271,16 @@ public class ChatLayoutView extends RelativeLayout {
             dateMessage.setMessageId("DATE_"+message.getCreatedTimestamp());
             dateMessage.setMessage(formattedText+"");
             messages.add(dateMessage);
-            messageIds.add("DATE_"+message.getCreatedTimestamp());
+            helper.addMessageId("DATE_"+message.getCreatedTimestamp());
         }
         if(message.getIsRepliedMessage()) {
             if(message.getReplyMessageView() == null) {
-                Message replyMessage = messages.get(messageIds.indexOf(message.getRepliedMessageId()));
+                Message replyMessage = messages.get(helper.getMessageIdPositon(message.getRepliedMessageId()));
                 message.setReplyMessageView(helper.getReplyMessageView(replyMessage));
             }
         }
         messages.add(message);
-        messageIds.add(message.getMessageId());
+        helper.addMessageId(message.getMessageId());
     }
 
 
@@ -311,7 +313,7 @@ public class ChatLayoutView extends RelativeLayout {
         if(useDatabase) {
             messages.clear();
             notifyAdapter(true);
-            messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration,dates,messageIds));
+            messages.addAll(databaseHelper.getAllMessages(myId,leftMessageConfiguration,rightMessageConfiguration,dates));
             notifyAdapter(true);
         }
     }
@@ -383,14 +385,14 @@ public class ChatLayoutView extends RelativeLayout {
     public void deleteDatabase() {
         this.databaseHelper.deleteAll();
         this.messages.clear();
-        this.messageIds.clear();
+        helper.clearMessagedIds();
         notifyAdapter(false);
     }
 
     public void clearCompleteChat() {
         this.databaseHelper.clearAll();
         this.messages.clear();
-        this.messageIds.clear();
+        helper.clearMessagedIds();
         notifyAdapter(false);
     }
 
