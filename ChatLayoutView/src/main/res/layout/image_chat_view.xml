@@ -24,9 +24,8 @@
         android:id="@+id/imageup"
         android:visibility="gone"
         android:src="@drawable/download"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        app:tint="#FFFFFF">
+        android:layout_width="40dp"
+        android:layout_height="40dp">
     </ImageView>
     <RelativeLayout
         android:layout_centerInParent="true"
@@ -39,8 +38,8 @@
             android:id="@+id/progressbutton"
             android:indeterminateTint="#8C8C8C"
             android:background="@drawable/circle"
-            android:layout_width="45dp"
-            android:layout_height="45dp">
+            android:layout_width="40dp"
+            android:layout_height="40dp">
         </ProgressBar>
         <ImageView
             android:layout_centerInParent="true"

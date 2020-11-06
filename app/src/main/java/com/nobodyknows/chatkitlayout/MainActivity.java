@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setMessageId(s);
         message.setIsRepliedMessage(b);
         message.setMessageType(MessageType.DOCUMENT);
-        message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"pdf"));
+        message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"abc"));
         message.setMessage("");
         message.setSender(random);
         message.setMessageStatus(MessageStatus.SENT);

@@ -2,11 +2,13 @@ package com.nobodyknows.chatlayoutview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -461,7 +463,6 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             view = layoutInflater.inflate(R.layout.document_view,null);
             ImageView fileicon = view.findViewById(R.id.fileicon);
             ImageView imageup = view.findViewById(R.id.imageup);
-            TextView fileformat = view.findViewById(R.id.fileformat);
             TextView filename = view.findViewById(R.id.documentname);
             RoundedImageView preview = view.findViewById(R.id.preview_file);
             TextView fileinfo = view.findViewById(R.id.documentinfo);
@@ -469,8 +470,12 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             RelativeLayout box = view.findViewById(R.id.box);
             ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
-            fileformat.setText(sharedFiles.get(0).getExtension().toUpperCase());
             filename.setText(sharedFiles.get(0).getName());
+            int resId = getResources().getIdentifier(sharedFiles.get(0).getExtension(),"drawable",getContext().getPackageName());
+            Log.d("TAGRESID", "getDocumentLayout: "+resId);
+            if(resId != 0){
+                fileicon.setImageResource(resId);
+            }
             if(sharedFiles.get(0).getPreviewUrl() != null && sharedFiles.get(0).getPreviewUrl().length() > 0 ){
                 preview.setVisibility(VISIBLE);
                 Glide.with(getContext()).load(sharedFiles.get(0).getPreviewUrl()).into(preview);

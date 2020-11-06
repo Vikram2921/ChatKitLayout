@@ -63,14 +63,11 @@
             </TextView>
             <ImageView
                 android:layout_toRightOf="@id/duration"
-                android:padding="10dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/imageup"
-                android:background="@drawable/media_type_background"
                 android:src="@drawable/upload"
                 android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:tint="#FFFFFF">
+                android:layout_height="40dp">
             </ImageView>
         </RelativeLayout>
     </RelativeLayout>
