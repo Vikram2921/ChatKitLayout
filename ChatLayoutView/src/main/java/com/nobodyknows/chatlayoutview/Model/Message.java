@@ -25,7 +25,7 @@ public class Message {
     private MessageStatus messageStatus = MessageStatus.SENDING;
     private MessageConfiguration messageConfiguration;
     private View replyMessageView;
-
+    private View customView;
     public String getMessageId() {
         return messageId;
     }
@@ -164,5 +164,13 @@ public class Message {
 
     public void setReplyMessageView(View replyMessageView) {
         this.replyMessageView = replyMessageView;
+    }
+
+    public View getCustomView() {
+        return customView;
+    }
+
+    public void setCustomView(View customView) {
+        this.customView = customView;
     }
 }

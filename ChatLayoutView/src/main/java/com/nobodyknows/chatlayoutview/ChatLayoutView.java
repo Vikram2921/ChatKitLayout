@@ -71,6 +71,7 @@ public class ChatLayoutView extends RelativeLayout {
     private String roomId,myId="";
     private Boolean useDatabase = false;
     private Boolean canSave = false;
+    private Context mainActivityContext;
     private Integer chatLimit = 30;
     private ImageView backgroundImage;
     private int offset = 0;
@@ -82,7 +83,14 @@ public class ChatLayoutView extends RelativeLayout {
     private MediaPlayer mediaPlayer;
     protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
+    public Context getMainActivityContext() {
+        return mainActivityContext;
+    }
 
+    public void setMainActivityContext(Context mainActivityContext) {
+        this.mainActivityContext = mainActivityContext;
+        downloadHelper = new DownloadHelper(mainActivityContext);
+    }
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
@@ -116,10 +124,6 @@ public class ChatLayoutView extends RelativeLayout {
     public ChatLayoutView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs,defStyleAttr);
-    }
-
-    public void setActivity(Activity activity) {
-        downloadHelper = new DownloadHelper(getContext(),activity);
     }
 
     private void init(AttributeSet attrs, int defStyleAttr) {

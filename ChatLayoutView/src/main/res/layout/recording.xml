@@ -63,7 +63,7 @@
             </TextView>
             <ImageView
                 android:layout_toRightOf="@id/duration"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/imageup"
                 android:src="@drawable/upload"
                 android:layout_width="@dimen/updownsize"

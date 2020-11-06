@@ -33,6 +33,7 @@ public class Helper {
     private Map<String,User> userMap;
     private String myId;
     private Integer mode;
+    private String DOT_SEPRATOR = " \u25CF ";
     private RecyclerView recyclerView;
     private ListView listView;
     private ArrayList<String> messageIds = new ArrayList<>();
@@ -162,8 +163,7 @@ public class Helper {
             } else if(message.getMessageType() == MessageType.AUDIO) {
                 messageview.setText("Audio");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headset_14,0,0,0);
-                preview.setImageResource(R.drawable.ic_baseline_headset_14);
-                preview.setPadding(10,10,10,10);
+                preview.setVisibility(GONE);
             }  else if(message.getMessageType() == MessageType.GIF) {
                 messageview.setText("GIF");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
@@ -171,13 +171,14 @@ public class Helper {
             }  else if(message.getMessageType() == MessageType.RECORDING) {
                 messageview.setText("Recording");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_mic_24,0,0,0);
-                preview.setImageResource(R.drawable.ic_baseline_mic_24);
-                preview.setPadding(10,10,10,10);
+                preview.setVisibility(GONE);
             }  else if(message.getMessageType() == MessageType.DOCUMENT) {
-                messageview.setText("Document");
+                messageview.setText("Document"+DOT_SEPRATOR+message.getSharedFiles().get(0).getName());
+                if(message.getSharedFiles().get(0).getFileInfo() != null && message.getSharedFiles().get(0).getFileInfo().length() > 0) {
+                    messageview.setText(messageview.getText()+DOT_SEPRATOR+message.getSharedFiles().get(0).getFileInfo());
+                }
+                preview.setVisibility(GONE);
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_insert_drive_file_24,0,0,0);
-                preview.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
-                preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.MAP) {
                 messageview.setText("Map");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_map_24,0,0,0);

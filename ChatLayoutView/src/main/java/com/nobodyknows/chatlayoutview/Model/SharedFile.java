@@ -8,6 +8,7 @@ public class SharedFile {
     private String previewUrl;
     private String name;
     private String extension;
+    private String fileInfo;
     private Double size =8000000.0;
     private Double duration =10000.0;
 
@@ -65,5 +66,13 @@ public class SharedFile {
 
     public void setDuration(Double duration) {
         this.duration = duration;
+    }
+
+    public String getFileInfo() {
+        return fileInfo;
+    }
+
+    public void setFileInfo(String fileInfo) {
+        this.fileInfo = fileInfo;
     }
 }
