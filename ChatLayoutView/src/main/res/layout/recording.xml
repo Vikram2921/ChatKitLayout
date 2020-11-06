@@ -66,8 +66,8 @@
                 android:visibility="visible"
                 android:id="@+id/imageup"
                 android:src="@drawable/upload"
-                android:layout_width="40dp"
-                android:layout_height="40dp">
+                android:layout_width="@dimen/updownsize"
+                android:layout_height="@dimen/updownsize">
             </ImageView>
         </RelativeLayout>
     </RelativeLayout>

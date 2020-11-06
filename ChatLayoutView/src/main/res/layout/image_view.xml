@@ -13,7 +13,7 @@
         android:layout_height="match_parent">
     </ImageView>
     <ImageView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/playIcon"
         android:padding="5dp"
         android:background="@drawable/media_full_type_background"

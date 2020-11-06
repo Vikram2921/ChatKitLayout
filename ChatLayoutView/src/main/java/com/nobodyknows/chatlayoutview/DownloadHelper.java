@@ -19,6 +19,7 @@ import com.ixuea.android.downloader.callback.DownloadListener;
 import com.ixuea.android.downloader.callback.DownloadManager;
 import com.ixuea.android.downloader.domain.DownloadInfo;
 import com.ixuea.android.downloader.exception.DownloadException;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class DownloadHelper {
         return result;
     }
 
-    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, ProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
+    public int downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -98,7 +99,7 @@ public class DownloadHelper {
                     downloadInfo.setDownloadListener(new DownloadListener() {
                         @Override
                         public void onStart() {
-                            progressBar.setIndeterminate(false);
+                            progressBar.setIndeterminateMode(false);
                             progressview.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -135,7 +136,7 @@ public class DownloadHelper {
                             float progress = ((float) downloadCompleted[0] / (float) finalTotalDownloads)*100;
                             progressBar.setProgress((int) progress);
                             if(progress == 100.0) {
-                                progressBar.setVisibility(View.GONE);
+                                progressview.setVisibility(View.GONE);
                                 uploadAndDownloadViewHandler.delete(messageId);
                             }
                             renameFile(partialUrl,realname);
@@ -163,7 +164,7 @@ public class DownloadHelper {
         return downloadId;
     }
 
-    public int downloadSingle(SharedFile sharedFile, String dirPath, ProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
+    public int downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
         int downloadId = 0;
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -187,8 +188,7 @@ public class DownloadHelper {
                 downloadInfo.setDownloadListener(new DownloadListener() {
                     @Override
                     public void onStart() {
-                        progressBar.setIndeterminate(false);
-                        progressBar.setMax(100);
+                        progressBar.setIndeterminateMode(false);
                         progressview.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -212,8 +212,6 @@ public class DownloadHelper {
 
                     @Override
                     public void onDownloading(long progress, long size) {
-
-                        Toast.makeText(context,calculateProgress(progress,size)+"",Toast.LENGTH_SHORT).show();
                         progressBar.setProgress(calculateProgress(progress,size));
                     }
 
@@ -224,9 +222,8 @@ public class DownloadHelper {
 
                     @Override
                     public void onDownloadSuccess() {
-                        progressBar.setVisibility(View.GONE);
+                        progressview.setVisibility(View.GONE);
                         uploadAndDownloadViewHandler.delete(messageId);
-                        Toast.makeText(context,uploadAndDownloadViewHandler.isExist(messageId)+"",Toast.LENGTH_SHORT).show();
                         renameFile(partialUrl,envPath+dirPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension());
                     }
 

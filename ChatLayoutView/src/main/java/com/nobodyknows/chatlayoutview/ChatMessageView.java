@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
@@ -362,7 +363,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             LinearLayout line2 = view.findViewById(R.id.line2);
             ImageView imageup = view.findViewById(R.id.imageup);
             RelativeLayout progressview = view.findViewById(R.id.progressview);
-            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
+            CircularProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             ArrayList<String> urls = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
             for(SharedFile sharedFile:sharedFiles) {
@@ -412,7 +413,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         return view;
     }
 
-    private void downloadFiles(ImageView imageup, RelativeLayout progressview, ArrayList<SharedFile> sharedFiles, View view, ProgressBar progressBar) {
+    private void downloadFiles(ImageView imageup, RelativeLayout progressview, ArrayList<SharedFile> sharedFiles, View view, CircularProgressBar progressBar) {
         imageup.setVisibility(GONE);
         progressview.setVisibility(VISIBLE);
         uploadAndDownloadViewHandler.addUploadView(currentMessage, view);
@@ -468,7 +469,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             TextView fileinfo = view.findViewById(R.id.documentinfo);
             RelativeLayout progressview = view.findViewById(R.id.progressview);
             RelativeLayout box = view.findViewById(R.id.box);
-            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
+            CircularProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
             filename.setText(sharedFiles.get(0).getName());
             int resId = getResources().getIdentifier(sharedFiles.get(0).getExtension(),"drawable",getContext().getPackageName());
@@ -512,7 +513,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             ImageView pp = view.findViewById(R.id.playpause);
             ImageView imageup = view.findViewById(R.id.imageup);
             RelativeLayout progressview = view.findViewById(R.id.progressview);
-            ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
+            CircularProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             final String[] url = {sharedFiles.get(0).getUrl()};
             TextView durationview = view.findViewById(R.id.duration);
             SeekBar progressBar = view.findViewById(R.id.progressbar);
