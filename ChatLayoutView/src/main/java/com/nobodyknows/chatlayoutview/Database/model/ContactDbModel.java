@@ -1,9 +1,7 @@
 package com.nobodyknows.chatlayoutview.Database.model;
 
-import android.util.Log;
-
-public class Urls {
-    public static final String TABLE_NAME = "SharedFilesDB";
+public class ContactDbModel {
+    public static final String TABLE_NAME = "ContactsDB";
 
     private int id;
     private String messageId;

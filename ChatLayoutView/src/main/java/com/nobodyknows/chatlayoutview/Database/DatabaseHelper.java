@@ -104,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Urls.COLUMN_FILE_ID,sharedFile.getFileId());
         values.put(Urls.COLUMN_NAME,sharedFile.getName());
         values.put(Urls.COLUMN_URL,sharedFile.getUrl());
+        values.put(Urls.COLUMN_FILE_INFO,sharedFile.getFileInfo());
         values.put(Urls.COLUMN_PREVIEW_URL,sharedFile.getPreviewUrl());
         values.put(Urls.COLUMN_EXETENSION,sharedFile.getExtension());
         values.put(Urls.COLUMN_SIZE,sharedFile.getSize());
@@ -139,7 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates);
+                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates,-1);
             } while (cursor.moveToNext());
         }
         db.close();
@@ -184,13 +185,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         file.setFileId(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_FILE_ID)));
         file.setUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_URL)));
         file.setName(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_NAME)));
+        file.setFileInfo(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_FILE_INFO)));
         file.setExtension(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_EXETENSION)));
         file.setSize(cursor.getDouble(cursor.getColumnIndex(Urls.COLUMN_SIZE)));
         file.setDuration(cursor.getDouble(cursor.getColumnIndex(Urls.COLUMN_DURATION)));
         return file;
     }
 
-    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates) {
+    private void checkForDate(Message message,ArrayList<Message> messages,ArrayList<String> dates,int index) {
         String formattedText = getFormattedDate(message.getCreatedTimestamp());
         if(!dates.contains(formattedText)) {
             dates.add(formattedText);
@@ -207,8 +209,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             dateMessage.setMessage(formattedText+"");
             dateMessage.setMessageId("DATE_"+message.getCreatedTimestamp());
-            messages.add(dateMessage);
-            helper.addMessageId("DATE_"+message.getCreatedTimestamp());
+            if(index == -1) {
+                messages.add(dateMessage);
+                helper.addMessageId("DATE_"+message.getCreatedTimestamp());
+            } else{
+                messages.add(index,dateMessage);
+                helper.addMessageId(index,"DATE_"+message.getCreatedTimestamp());
+            }
         }
         if(message.getIsRepliedMessage()) {
             if(message.getReplyMessageView() == null) {
@@ -216,8 +223,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 message.setReplyMessageView(helper.getReplyMessageView(replyMessage));
             }
         }
-        messages.add(message);
-        helper.addMessageId(message.getMessageId());
+        if(index == -1) {
+            messages.add(message);
+            helper.addMessageId(message.getMessageId());
+        } else{
+            messages.add(index,message);
+            helper.addMessageId(index,message.getMessageId());
+        }
     }
 
     private String getFormattedDate(Date date) {
@@ -225,7 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return simpleDateFormat.format(date);
     }
 
-    public ArrayList<Message> getLimitedMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration,int limit,int offset) {
+    public ArrayList<Message> getLimitedMessages(String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration, ArrayList<String> dates, int limit, int offset) {
         ArrayList<Message> messages = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " ORDER BY " +
                 Chats.COLUMN_CREATED_TIME + " DESC LIMIT "+limit+" OFFSET "+offset;
@@ -234,7 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                messages.add(0,convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration));
+                checkForDate(convertToMessage(cursor,myId,leftMessageConfiguration,rightMessageConfiguration),messages,dates,0);
             } while (cursor.moveToNext());
         }
         db.close();

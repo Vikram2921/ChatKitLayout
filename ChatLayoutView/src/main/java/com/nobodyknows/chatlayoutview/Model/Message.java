@@ -14,6 +14,7 @@ public class Message {
     private String message;
     private String roomId;
     private ArrayList<SharedFile> sharedFiles = new ArrayList<>();
+    private ArrayList<Contact> contacts = new ArrayList<>();
     private MessageType messageType = MessageType.TEXT;
     private Date createdTimestamp = new Date();
     private Date updateTimestamp = new Date();
@@ -134,6 +135,10 @@ public class Message {
         this.sharedFiles.add(sharedFile);
     }
 
+    public void addContact(Contact contact) {
+        this.contacts.add(contact);
+    }
+
     public MessageStatus getMessageStatus() {
         return messageStatus;
     }
@@ -172,5 +177,13 @@ public class Message {
 
     public void setCustomView(View customView) {
         this.customView = customView;
+    }
+
+    public ArrayList<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(ArrayList<Contact> contacts) {
+        this.contacts = contacts;
     }
 }

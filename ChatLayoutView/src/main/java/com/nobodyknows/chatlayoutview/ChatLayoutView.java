@@ -1,24 +1,18 @@
 package com.nobodyknows.chatlayoutview;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -182,7 +176,7 @@ public class ChatLayoutView extends RelativeLayout {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
-                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration,chatLimit,getNextOffset()));
+                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration, dates, chatLimit,getNextOffset()));
                     notifyAdapter(false);
                 }
             }

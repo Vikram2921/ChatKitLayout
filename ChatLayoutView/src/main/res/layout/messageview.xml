@@ -25,7 +25,7 @@
                 <TextView
                     android:text="Vikram Singh Rawat"
                     android:textStyle="bold"
-                    android:textSize="13dp"
+                    android:textSize="10dp"
                     android:id="@+id/sendername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

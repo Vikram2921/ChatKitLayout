@@ -28,6 +28,7 @@ import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.Model.Contact;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
@@ -451,9 +452,34 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             case DOCUMENT:
                 customView.addView(getDocumentLayout(message.getSharedFiles()));
                 break;
+            case CONTACT:
+                customView.addView(getContactLayout(message.getContacts()));
+                break;
+            case CUSTOM:
+                customView.addView(message.getCustomView());
+                break;
             default:
                 break;
         }
+    }
+
+    private View getContactLayout(ArrayList<Contact> contacts) {
+        message.setVisibility(GONE);
+        View view = layoutInflater.inflate(R.layout.contactsitem,null);
+        TextView name = view.findViewById(R.id.name);
+        RelativeLayout viewContacts = view.findViewById(R.id.box);
+        if(contacts.size() > 1) {
+            name.setText(contacts.get(0).getName()+"... +"+(contacts.size()-1)+" contacts");
+        } else if(contacts.size() == 1) {
+            name.setText(contacts.get(0).getName());
+        }
+        viewContacts.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        return view;
     }
 
     private View getDocumentLayout(ArrayList<SharedFile> sharedFiles) {
