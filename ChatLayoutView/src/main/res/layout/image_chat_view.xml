@@ -21,10 +21,8 @@
     </LinearLayout>
     <ImageView
         android:layout_centerInParent="true"
-        android:padding="10dp"
         android:id="@+id/imageup"
         android:visibility="gone"
-        android:background="@drawable/media_full_type_background"
         android:src="@drawable/download"
         android:layout_width="45dp"
         android:layout_height="45dp"

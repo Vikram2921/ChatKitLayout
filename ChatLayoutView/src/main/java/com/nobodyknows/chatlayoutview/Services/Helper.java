@@ -1,6 +1,7 @@
 package com.nobodyknows.chatlayoutview.Services;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -161,8 +162,7 @@ public class Helper {
             } else if(message.getMessageType() == MessageType.AUDIO) {
                 messageview.setText("Audio");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headset_14,0,0,0);
-                preview.setBackgroundColor(Color.parseColor("#FF9800"));
-                Glide.with(getContext()).load(R.drawable.ic_baseline_headset_24).into(preview);
+                preview.setImageResource(R.drawable.ic_baseline_headset_14);
                 preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.GIF) {
                 messageview.setText("GIF");
@@ -171,14 +171,12 @@ public class Helper {
             }  else if(message.getMessageType() == MessageType.RECORDING) {
                 messageview.setText("Recording");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_mic_24,0,0,0);
-                preview.setBackgroundColor(Color.parseColor("#FF9800"));
-                Glide.with(getContext()).load(R.drawable.ic_baseline_mic_24).into(preview);
+                preview.setImageResource(R.drawable.ic_baseline_mic_24);
                 preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.DOCUMENT) {
                 messageview.setText("Document");
                 messageview.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_insert_drive_file_24,0,0,0);
-                preview.setBackgroundColor(Color.parseColor("#4CAF50"));
-                Glide.with(getContext()).load(R.drawable.ic_baseline_insert_drive_file_24).into(preview);
+                preview.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
                 preview.setPadding(10,10,10,10);
             }  else if(message.getMessageType() == MessageType.MAP) {
                 messageview.setText("Map");
@@ -200,24 +198,23 @@ public class Helper {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view1) {
-
-                int index = messageIds.indexOf(message.getMessageId());
-                if(mode == LISTVIEW) {
-                    listView.smoothScrollToPosition(index);
-                    View item = getViewByPosition(index,listView);
-                    if(item != null) {
-                        item.setBackgroundColor(Color.parseColor("#4003A9F4"));
-                        item.setSelected(true);
-                        new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
-                    }
-                } else {
-                    recyclerView.scrollToPosition(index);
-                    RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
-                    if(holder != null) {
-                        View item = holder.itemView;
-                        item.setBackgroundColor(Color.parseColor("#4003A9F4"));
-                        item.setSelected(true);
-                        new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
+                if(messageIds.contains(message.getMessageId())) {
+                    int index = messageIds.indexOf(message.getMessageId());
+                    if(mode == LISTVIEW) {
+                        listView.smoothScrollToPosition(index);
+                        View item = getViewByPosition(index,listView);
+                        if(item != null) {
+                            item.setBackgroundColor(Color.parseColor("#4003A9F4"));
+                            new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
+                        }
+                    } else {
+                        recyclerView.scrollToPosition(index);
+                        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
+                        if(holder != null) {
+                            View item = holder.itemView;
+                            item.setBackgroundColor(Color.parseColor("#4003A9F4"));
+                            new Handler().postDelayed(() -> item.setBackgroundColor(Color.TRANSPARENT), 1000);
+                        }
                     }
                 }
             }

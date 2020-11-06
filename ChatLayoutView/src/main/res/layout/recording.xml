@@ -72,15 +72,6 @@
                 android:layout_height="40dp"
                 app:tint="#FFFFFF">
             </ImageView>
-            <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
-                android:id="@+id/progressbutton"
-                android:visibility="gone"
-                android:background="@drawable/circular_button_background"
-                app:spinning_bar_width="4dp"
-                app:spinning_bar_color="#000"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </br.com.simplepass.loadingbutton.customViews.CircularProgressButton>
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

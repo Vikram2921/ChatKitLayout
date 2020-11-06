@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import com.nobodyknows.chatlayoutview.Interfaces.UpDownCompleteListener;
 import com.nobodyknows.chatlayoutview.Model.Message;
 
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 
 public class UploadAndDownloadView {
 

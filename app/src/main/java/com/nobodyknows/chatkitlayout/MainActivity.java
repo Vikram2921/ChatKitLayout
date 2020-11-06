@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         sharedFile.setExtension(exetension);
         sharedFile.setName(name);
         sharedFile.setUrl(url);
-        sharedFile.setPreviewUrl("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/sunny-compressed.jpg?alt=media&token=6a7aa85b-9bee-4bf7-89d0-c982e45bc71b");
+        //sharedFile.setPreviewUrl("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/sunny-compressed.jpg?alt=media&token=6a7aa85b-9bee-4bf7-89d0-c982e45bc71b");
 
         return sharedFile;
     }

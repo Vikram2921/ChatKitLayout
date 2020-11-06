@@ -2,114 +2,133 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@drawable/round"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <RelativeLayout
-        android:id="@+id/sizeInfoBox"
-        android:background="#4CAF50"
-        android:layout_centerVertical="true"
-        android:layout_width="60dp"
-        android:layout_height="60dp">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/fileicon"
-                android:src="@drawable/ic_baseline_insert_drive_file_24"
-                android:layout_width="30dp"
-                android:layout_height="30dp">
-            </ImageView>
-            <TextView
-                android:id="@+id/fileformat"
-                android:textColor="#fff"
-                android:layout_gravity="center"
-                android:textSize="15dp"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:text="EXE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal">
-            </TextView>
-        </LinearLayout>
-    </RelativeLayout>
-    <RelativeLayout
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/sizeInfoBox"
+        android:id="@+id/box"
+        android:background="@drawable/reply_background"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/eventbutton"
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/preview_file"
+            app:riv_corner_radius_top_left="5dp"
+            app:riv_corner_radius_top_right="5dp"
+            android:scaleType="centerCrop"
+            android:layout_margin="1dp"
+            android:visibility="gone"
+            android:src="@drawable/background"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/documentname"
-                android:text="Document#1.pdf"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:id="@+id/documentinfo"
-                android:text="this is document info"
-                android:textSize="12dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </TextView>
-        </LinearLayout>
+            android:layout_height="100dp">
+        </com.makeramen.roundedimageview.RoundedImageView>
         <RelativeLayout
-            android:id="@+id/eventbutton"
-            android:layout_margin="5dp"
-            android:layout_alignParentRight="true"
+            android:layout_below="@id/preview_file"
+            android:id="@+id/sizeInfoBox"
             android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/duration"
-                android:layout_centerVertical="true"
-                android:text="00:00/00:00"
-                android:visibility="gone"
-                android:layout_marginRight="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_toRightOf="@id/duration"
-                android:padding="10dp"
-                android:visibility="visible"
-                android:id="@+id/imageup"
-                android:background="@drawable/media_type_background"
-                android:src="@drawable/download"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:tint="#FFFFFF">
-            </ImageView>
-            <RelativeLayout
-                android:layout_centerVertical="true"
-                android:id="@+id/progressview"
-                android:visibility="gone"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <ProgressBar
-                    android:id="@+id/progressbutton"
-                    android:indeterminateTint="#8C8C8C"
-                    android:background="@drawable/circle"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp">
-                </ProgressBar>
                 <ImageView
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_baseline_close_24"
+                    android:id="@+id/fileicon"
+                    android:src="@drawable/ic_baseline_insert_drive_file_24"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp">
+                </ImageView>
+                <TextView
+                    android:id="@+id/fileformat"
+                    android:textColor="#818181"
+                    android:layout_gravity="center"
+                    android:textSize="10dp"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:text="EXE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+                </TextView>
+            </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_below="@id/preview_file"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/sizeInfoBox"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/eventbutton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/documentname"
+                    android:text="Document#1.pdf"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:id="@+id/documentinfo"
+                    android:text="this is document info"
+                    android:textSize="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/eventbutton"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_centerVertical="true"
+                    android:text="00:00/00:00"
+                    android:visibility="gone"
+                    android:layout_marginRight="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_toRightOf="@id/duration"
+                    android:visibility="visible"
+                    android:id="@+id/imageup"
+                    android:src="@drawable/download"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    app:tint="#FFFFFF">
                 </ImageView>
+                <RelativeLayout
+                    android:layout_centerVertical="true"
+                    android:id="@+id/progressview"
+                    android:visibility="gone"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/progressbutton"
+                        android:indeterminateTint="#8C8C8C"
+                        android:background="@drawable/circle"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp">
+                    </ProgressBar>
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_baseline_close_24"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                    </ImageView>
+                </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>

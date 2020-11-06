@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
@@ -36,7 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLayoutListener;
@@ -463,13 +463,20 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             ImageView imageup = view.findViewById(R.id.imageup);
             TextView fileformat = view.findViewById(R.id.fileformat);
             TextView filename = view.findViewById(R.id.documentname);
+            RoundedImageView preview = view.findViewById(R.id.preview_file);
             TextView fileinfo = view.findViewById(R.id.documentinfo);
             RelativeLayout progressview = view.findViewById(R.id.progressview);
+            RelativeLayout box = view.findViewById(R.id.box);
             ProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
             fileformat.setText(sharedFiles.get(0).getExtension().toUpperCase());
             filename.setText(sharedFiles.get(0).getName());
+            if(sharedFiles.get(0).getPreviewUrl() != null && sharedFiles.get(0).getPreviewUrl().length() > 0 ){
+                preview.setVisibility(VISIBLE);
+                Glide.with(getContext()).load(sharedFiles.get(0).getPreviewUrl()).into(preview);
+            }
             if(canDownload) {
+                box.setClickable(false);
                 imageup.setVisibility(VISIBLE);
                 if(currentMessage.getMessageConfiguration().getMediaAutoDownload()) {
                     downloadFiles(imageup,progressview,sharedFiles,view,eventButtton);
@@ -483,6 +490,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                     });
                 }
             } else {
+                box.setClickable(true);
                 imageup.setVisibility(GONE);
             }
         }
@@ -564,11 +572,10 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             ImageView pp = view.findViewById(R.id.playpause);
             CircleImageView civ = view.findViewById(R.id.profilepicture);
             if(user.getProfileUrl().length() > 0) {
-                Glide.with(getContext()).load(user.getProfileUrl()).into(civ);
+                Glide.with(getContext()).load(user.getProfileUrl()).override(100,100).into(civ);
             }
             ImageView imageup = view.findViewById(R.id.imageup);
             TextView durationview = view.findViewById(R.id.duration);
-            CircularProgressButton eventButtton = view.findViewById(R.id.progressbutton);
             final String[] url = {sharedFiles.get(0).getUrl()};
             SeekBar progressBar = view.findViewById(R.id.progressbar);
             final Boolean[] isPlaying = {false};
@@ -626,7 +633,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         }  else if(message.getMessageStatus() == MessageStatus.SENT) {
             this.messagestatus.setImageResource(R.drawable.sent);
         } else if(message.getMessageStatus() == MessageStatus.SENDING) {
-            this.messagestatus.setImageResource(R.drawable.sent); //TODO Change icon
+            this.messagestatus.setImageResource(R.drawable.waiting); //TODO Change icon
         }
     }
 

@@ -61,9 +61,7 @@
             </TextView>
             <ImageView
                 android:layout_toRightOf="@id/duration"
-                android:padding="10dp"
                 android:id="@+id/imageup"
-                android:background="@drawable/media_type_background"
                 android:src="@drawable/download"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
