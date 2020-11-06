@@ -26,6 +26,7 @@ import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements ChatLayoutListener {
@@ -85,53 +86,17 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                 }
             }
         });
-        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message and this is goona be a long message","112",false));
-        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","114",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","115",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","116",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","117",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","118",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","119",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","120",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","121",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","122",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","123",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","124",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","125",false));
-//        chatLayoutView.addMessage(getMessages("This is and example to reply messsage this message is goona be reply to another message","126",false));
-      //  chatLayoutView.addMessage(getMessages(getResources().getString(R.string.dummy_text),"113",true));
-        //chatLayoutView.addMessage(getAudioMessages(getResources().getString(R.string.dummy_text),"118",false,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"));
-        //chatLayoutView.addMessage(getRecordingMessages(getResources().getString(R.string.dummy_text),"119",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"334",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"335",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"336",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getDocumentMessage(getResources().getString(R.string.dummy_text),"337",false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getContactMessage(getResources().getString(R.string.dummy_text),"339",false));
-      //  chatLayoutView.addMessage(getImageMessages("This is an example of IMAGE chat"));
-      //  chatLayoutView.addMessage(getVideoMessages("This is an example of VIDEO chat"));
-      //  chatLayoutView.addMessage(getGifMessage("This is an example of GIF chat"));
-        int k=0;
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/FCYNQLacZGwFTNaIIT/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/7JmuMGOZYJYmeivT8j/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-////        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/kEcADJ0v0ONJa02x5C/giphy.webp",k++));
+        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2F1596103576_K_Advani.jpg?alt=media&token=b7655d77-eb2e-4dff-a348-cd8ae0a365b9")));
+        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FActress-Kiara-Advani-Gorgeous-new-still-.jpg?alt=media&token=a88e01ac-49bf-4134-8104-934ba1bf79dd","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKatrina-Kaif-in-pink-saree.jpg?alt=media&token=58091660-c0f6-4d76-bae1-1e8f89e35852")));
+        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara-Advani-Photo.jpg?alt=media&token=6bbf1c1b-0947-4b6b-896b-a09d95f01d68")));
+        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara_Advani_walks_for_Shyamal-Bhumika_at_India_Couture_Week_2018_Day_4_(03)_(cropped).jpg?alt=media&token=1c284215-bb2e-4e41-9cac-3e3f731a4e2e")));
+        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fbollywood-actresses-saree-slips_13620316171.jpg?alt=media&token=38479b5b-7665-43e6-b4ab-c57c793194fb",
+                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara-advani-1200.jpg?alt=media&token=f5f566ba-e8c0-4d7b-8774-2644cc95739b",
+                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara_advani_1603192093.webp?alt=media&token=4033f3bf-2cd5-4c2b-99eb-c431eaf2ef78",
+                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages.jfif?alt=media&token=1f379911-ef8c-4476-8125-1c793c17a6d8","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages%20(1).jfif?alt=media&token=0f155298-8051-4348-9603-cce1e2e6af28",
+                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fsaree16.jpg?alt=media&token=a0feb64f-13e3-4704-b884-1f6fbc7dfff9")));
     }
+
 
     private Message getContactMessage(String string, String s, boolean b) {
         String random = ids.get(new Random().nextInt(2));
@@ -243,21 +208,13 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         return message;
     }
 
-    private Message getImageMessages(String messageText) {
+    private Message getImageMessages(String messageText,List<String> urls) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
         message.setMessageType(MessageType.IMAGE);
-        message.setMessageId("27517");
+        message.setMessageId("27517"+i++);
         message.setMessage(messageText);
         message.setSender(random);
-        ArrayList<String> urls =new ArrayList<>();
-        urls.add("https://www.theindianwire.com/wp-content/uploads/2019/08/Sunny-Leone2.jpg");
-        urls.add("https://www.india.com/wp-content/uploads/2016/12/16-7.jpg");
-        urls.add("https://static.india.com/wp-content/uploads/2020/02/Sunny-Leone-5.jpg?impolicy=Medium_Resize&w=1200&h=800");
-        urls.add("https://assets.gqindia.com/photos/5e5de88e15f90c0008bcb960/master/pass/Exclusive-This-is-what-Katrina-Kaif-eats-through-the-day-to-stay-in-her-ever-so-great-shape.jpg");
-        urls.add("https://indianewengland.com/wp-content/uploads/2020/02/Katrina-Kaif-Facebook.jpg");
-        urls.add("https://caknowledge.com/wp-content/uploads/2020/02/Katrina-Kaif.jpeg");
-        urls.add("https://images.squarespace-cdn.com/content/v1/50f6d8dfe4b0c4007db424a3/1585141927325-PA6NTIQY0JGGQZIKX4YR/ke17ZwdGBToddI8pDm48kD3l6gdMBdO-PyPu-zZmu4kUqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8N_N4V1vUb5AoIIIbLZhVYxCRW4BPu10St3TBAUQYVKc47Ll6mSOzQH6DpuxFLzePoWDoqw8MA2UO1fAR9rtw_xoc41MWnq4at-qR6eYNwYU/Katrina-Kaif-Bharat.jpg");
         for(int i=0;i<urls.size();i++) {
             message.addSharedFile(getSharedFile(urls.get(i),message.getMessageId()+"_"+i,"jpg"));
         }

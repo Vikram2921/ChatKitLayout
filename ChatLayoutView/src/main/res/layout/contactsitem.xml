@@ -46,6 +46,7 @@
         android:layout_below="@id/box"
         android:clickable="true"
         android:padding="10dp"
+        android:id="@+id/clickbox"
         android:background="@drawable/reply_background_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

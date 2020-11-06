@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
+import com.nobodyknows.chatlayoutview.Activities.ViewContacts;
 import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
@@ -282,7 +284,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         if(currentMessage.getMessageType() == MessageType.VIDEO) {
             imageView.setVisibility(VISIBLE);
             playIcon.setVisibility(VISIBLE);
-            Glide.with(getContext()).load(url).override(150,150).into(imageView);
+            Glide.with(getContext()).load(url).into(imageView);
         } else if(currentMessage.getMessageType() == MessageType.GIF) {
             playIcon.setVisibility(VISIBLE);
             playIcon.setImageResource(R.drawable.ic_baseline_gif_24);
@@ -297,7 +299,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             imageView.setLayoutParams(layoutParams);
             Glide.with(getContext()).load(url).override(200, 200).into(imageView);
         } else {
-            Glide.with(getContext()).load(url).override(150,150).into(imageView);
+            Glide.with(getContext()).load(url).into(imageView);
         }
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, height);
@@ -363,7 +365,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             view = layoutInflater.inflate(R.layout.image_chat_view,null);
             LinearLayout line1 = view.findViewById(R.id.line1);
             LinearLayout line2 = view.findViewById(R.id.line2);
-            ImageView imageup = view.findViewById(R.id.imageup);
+            Button imageup = view.findViewById(R.id.imageup);
             RelativeLayout progressview = view.findViewById(R.id.progressview);
             CircularProgressBar eventButtton = view.findViewById(R.id.progressbutton);
             ArrayList<String> urls = new ArrayList<>();
@@ -399,7 +401,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                         downloadFiles(imageup,progressview,sharedFiles,view,eventButtton);
                     } else {
                         View finalView = view;
-                        eventButtton.setOnClickListener(new OnClickListener() {
+                        imageup.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 downloadFiles(imageup,progressview,sharedFiles,finalView,eventButtton);
@@ -415,7 +417,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         return view;
     }
 
-    private void downloadFiles(ImageView imageup, RelativeLayout progressview, ArrayList<SharedFile> sharedFiles, View view, CircularProgressBar progressBar) {
+    private void downloadFiles(View imageup, RelativeLayout progressview, ArrayList<SharedFile> sharedFiles, View view, CircularProgressBar progressBar) {
         imageup.setVisibility(GONE);
         progressview.setVisibility(VISIBLE);
         uploadAndDownloadViewHandler.addUploadView(currentMessage, view);
@@ -467,7 +469,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         message.setVisibility(GONE);
         View view = layoutInflater.inflate(R.layout.contactsitem,null);
         TextView name = view.findViewById(R.id.name);
-        RelativeLayout viewContacts = view.findViewById(R.id.box);
+        RelativeLayout viewContacts = view.findViewById(R.id.clickbox);
         if(contacts.size() > 1) {
             name.setText(contacts.get(0).getName()+"... +"+(contacts.size()-1)+" contacts");
         } else if(contacts.size() == 1) {
@@ -476,7 +478,8 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         viewContacts.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getContext(), ViewContacts.class);
+                getContext().startActivity(intent);
             }
         });
         return view;

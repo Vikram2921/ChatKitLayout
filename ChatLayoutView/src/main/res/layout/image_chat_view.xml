@@ -19,18 +19,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </LinearLayout>
-    <ImageView
+    <Button
         android:layout_centerInParent="true"
-        android:id="@+id/imageup"
+        android:drawablePadding="10dp"
+        android:padding="10dp"
         android:visibility="gone"
-        android:src="@drawable/download"
-        android:layout_width="@dimen/updownsize"
-        android:layout_height="@dimen/updownsize">
-    </ImageView>
+        android:id="@+id/imageup"
+        android:backgroundTint="#fff"
+        android:drawableTint="#fff"
+        android:background="@drawable/round_white"
+        android:drawableLeft="@drawable/download"
+        android:text="Download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </Button>
+
     <RelativeLayout
         android:layout_centerInParent="true"
         android:id="@+id/progressview"
         android:visibility="gone"
+        android:padding="2dp"
+        android:background="@drawable/round_white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <com.mikhaellopez.circularprogressbar.CircularProgressBar

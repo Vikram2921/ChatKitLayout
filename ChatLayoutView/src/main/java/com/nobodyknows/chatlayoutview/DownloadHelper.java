@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -40,7 +41,7 @@ public class DownloadHelper {
     }
 
 
-    public void downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
+    public void downloadAll(ArrayList<SharedFile> urls, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, View imageup) {
         PermissionListener permissionlistener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
@@ -52,6 +53,7 @@ public class DownloadHelper {
                 int totalDownloads = urls.size();
                 final int[] downloadCompleted = {0};
                 String filename = "";
+                ArrayList<DownloadInfo> downloadInfos = new ArrayList<>();
                 for(int i=0;i<urls.size();i++) {
                     String partialUrl = envPath+dirPath+"/"+urls.get(i).getName()+"_PARTIALLY."+urls.get(i).getExtension();
                     String realname = envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension();
@@ -60,19 +62,11 @@ public class DownloadHelper {
                     }
                     if(!new File(envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension()).exists()) {
                         DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(urls.get(i).getUrl()).setPath(partialUrl).build();
+                        downloadInfos.add(downloadInfo);
                         int finalTotalDownloads = totalDownloads;
                         downloadInfo.setDownloadListener(new DownloadListener() {
                             @Override
                             public void onStart() {
-                                progressview.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        imageup.setVisibility(View.VISIBLE);
-                                        progressview.setVisibility(View.GONE);
-                                        downloadManager.pause(downloadInfo);
-                                        uploadAndDownloadViewHandler.delete(messageId);
-                                    }
-                                });
                             }
 
                             @Override
@@ -97,8 +91,12 @@ public class DownloadHelper {
                             @Override
                             public void onDownloadSuccess() {
                                 downloadCompleted[0]++;
-                                float progress = ((float) downloadCompleted[0] / (float) finalTotalDownloads)*100;
-                                progressBar.setProgress((int) progress);
+                                double progress = (((double)downloadCompleted[0]/(double)finalTotalDownloads)*100);
+                                Log.d("TAGPROG", "onDownloadSuccess: "+progress);
+                                if(progress > 0) {
+                                    progressBar.setIndeterminateMode(false);
+                                    progressBar.setProgress((float) progress);
+                                }
                                 if(progress == 100.0) {
                                     progressview.setVisibility(View.GONE);
                                     uploadAndDownloadViewHandler.delete(messageId);
@@ -117,13 +115,24 @@ public class DownloadHelper {
                         downloadManager.download(downloadInfo);
                     } else {
                         downloadCompleted[0]++;
-                        float progress = ((float) downloadCompleted[0] / (float) totalDownloads)*100;
-                        progressBar.setProgress((int) progress);
+                        int progress = ((downloadCompleted[0] /totalDownloads)*100);
+                        progressBar.setProgress(progress);
                         if(progress == 100.0) {
                             progressBar.setVisibility(View.GONE);
                         }
                     }
                 }
+                progressview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for(DownloadInfo downloadInfo:downloadInfos) {
+                            downloadManager.pause(downloadInfo);
+                        }
+                        imageup.setVisibility(View.VISIBLE);
+                        progressview.setVisibility(View.GONE);
+                        uploadAndDownloadViewHandler.delete(messageId);
+                    }
+                });
             }
 
             @Override
@@ -137,7 +146,7 @@ public class DownloadHelper {
                 .check();
     }
 
-    public void downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, ImageView imageup) {
+    public void downloadSingle(SharedFile sharedFile, String dirPath, CircularProgressBar progressBar, String messageId, RelativeLayout progressview, View imageup) {
         PermissionListener permissionlistener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
@@ -181,7 +190,7 @@ public class DownloadHelper {
                             int progressDone = calculateProgress(progress,size);
                             if(progressDone > 0) {
                                 progressBar.setIndeterminateMode(false);
-                                progressBar.setProgress(calculateProgress(progress,size));
+                                progressBar.setProgress(progressDone);
                             }
                         }
 
