@@ -92,6 +92,7 @@ public class Helper {
         return this.messageIds.indexOf(messageId);
     }
 
+
     public void clearMessagedIds() {
         this.messageIds.clear();
     }

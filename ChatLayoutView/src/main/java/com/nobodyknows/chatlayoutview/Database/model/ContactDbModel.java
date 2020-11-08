@@ -22,7 +22,7 @@ public class ContactDbModel {
                 + COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_MESSAGE_ID +" TEXT NOT NULL,"
                 + COLUMN_NAME +" TEXT NOT NULL,"
-                + COLUMN_NUMBERS +" TEXT NOT NULL"
+                + COLUMN_NUMBERS +" TEXT"
                 +")";
         return CREATE_TABLE;
     }

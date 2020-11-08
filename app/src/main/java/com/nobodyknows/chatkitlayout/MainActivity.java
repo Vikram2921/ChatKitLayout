@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     LinearLayout linearLayout;
     Message selmessage;
     View selView;
+    ChatLayoutView chatLayoutView;
     ArrayList<String> ids = new ArrayList<>(Arrays.asList("7014550298","8442000360"));
     UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
     @Override
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         setContentView(R.layout.activity_main);
         linearLayout = findViewById(R.id.viewhold);
         uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getApplicationContext());
-        ChatLayoutView chatLayoutView = findViewById(R.id.chatlayout_view);
+        chatLayoutView = findViewById(R.id.chatlayout_view);
         chatLayoutView.setChatLayoutListener(this);
         chatLayoutView.setUploadAndDownloadViewHandler(uploadAndDownloadViewHandler);
         chatLayoutView.setMainActivityContext(getApplicationContext());
@@ -74,19 +76,24 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
             @Override
             public void onClick(View v) {
                 if(editText.getText().toString().trim().length() > 0) {
+                    Message message;
                     if(viewAdded) {
-                        chatLayoutView.addMessage(getReplyMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",selmessage.getMessageId()));
+                        message = getReplyMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",selmessage.getMessageId());
+                        
                         linearLayout.removeViewAt(0);
                         viewAdded = false;
                     } else {
-                        chatLayoutView.addMessage(getMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",false));
+                        message = getMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",false);
                     }
+                    chatLayoutView.addMessage(message);
                     editText.setText("");
+                    changeStatusafterTime(message);
                 }
             }
         });
 //        chatLayoutView.addMessage(getGifMessage("asdasd"));
         chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
+        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
         chatLayoutView.addMessage(getContactMessage("12345678",false));
         chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
         chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
@@ -99,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 //                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara_advani_1603192093.webp?alt=media&token=4033f3bf-2cd5-4c2b-99eb-c431eaf2ef78",
 //                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages.jfif?alt=media&token=1f379911-ef8c-4476-8125-1c793c17a6d8","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages%20(1).jfif?alt=media&token=0f155298-8051-4348-9603-cce1e2e6af28",
 //                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fsaree16.jpg?alt=media&token=a0feb64f-13e3-4704-b884-1f6fbc7dfff9")));
+    }
+
+    private void changeStatusafterTime(Message message) {
+        chatLayoutView.updateMessageStatus(message.getMessageId(),MessageStatus.SENT);
     }
 
 

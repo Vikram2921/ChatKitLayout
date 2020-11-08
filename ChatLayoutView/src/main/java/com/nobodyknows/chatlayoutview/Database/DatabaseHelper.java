@@ -111,9 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public long insertContact(Contact contact,Message message) {
         SQLiteDatabase db  = this.getWritableDatabase();
         long id = 0;
-        if(!isContactExist(message.getMessageId(),contact.getName(),contact.getContactNumbers(),db)) {
-            id = db.insert(ContactDbModel.getTableName(roomId),null,getContactContentValues(message,contact));
-        }
+        id = db.insert(ContactDbModel.getTableName(roomId),null,getContactContentValues(message,contact));
         db.close();
         return id;
     }
@@ -321,17 +319,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    private boolean isContactExist(String messageId, String name, String contactNumbers, SQLiteDatabase db) {
-        String selectQuery = "SELECT  * FROM " + ContactDbModel.getTableName(roomId) + " WHERE " +
-        ContactDbModel.COLUMN_MESSAGE_ID + " = "+messageId+" AND "+ContactDbModel.COLUMN_NAME+" = '"+name+"' AND "+ContactDbModel.COLUMN_NUMBERS+" = '"+contactNumbers+"'";
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        if(cursor.getCount() <=0) {
-            cursor.close();
-            return false;
-        }
-        cursor.close();
-        return true;
-    }
 
 
     private Message convertToMessage(Cursor cursor, String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
@@ -409,5 +396,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Date getReveretdDate(String date) {
         Date newdate = new Date(date);
         return newdate;
+    }
+
+    public int updateMessageStatus(String messageId, MessageStatus messageStatus) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Chats.COLUMN_MESSAGE_STATUS, messageStatus.ordinal());
+        return db.update(Chats.getTableName(roomId), values, Chats.COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
+
     }
 }

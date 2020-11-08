@@ -92,7 +92,6 @@ public class DownloadHelper {
                             public void onDownloadSuccess() {
                                 downloadCompleted[0]++;
                                 double progress = (((double)downloadCompleted[0]/(double)finalTotalDownloads)*100);
-                                Log.d("TAGPROG", "onDownloadSuccess: "+progress);
                                 if(progress > 0) {
                                     progressBar.setIndeterminateMode(false);
                                     progressBar.setProgress((float) progress);

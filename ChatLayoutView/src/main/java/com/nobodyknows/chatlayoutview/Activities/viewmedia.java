@@ -75,7 +75,6 @@ public class viewmedia extends AppCompatActivity {
             } else {
                 url = urls.get(i);
             }
-            Log.d("TAGURL", "addFragments: "+url);
             if(type == MessageType.IMAGE || type == MessageType.GIF) {
                 viewPagerAdapter.addFragment(new ImageViewFragment(url),"");
             } else if(type == MessageType.VIDEO) {

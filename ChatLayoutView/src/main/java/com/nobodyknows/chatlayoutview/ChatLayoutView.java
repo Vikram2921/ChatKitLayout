@@ -25,6 +25,7 @@ import com.capybaralabs.swipetoreply.ISwipeControllerActions;
 import com.capybaralabs.swipetoreply.SwipeController;
 import com.nobodyknows.chatlayoutview.Adapters.ListViewAdapter;
 import com.nobodyknows.chatlayoutview.Adapters.RecyclerViewAdapter;
+import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Database.DatabaseHelper;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
@@ -69,6 +70,10 @@ public class ChatLayoutView extends RelativeLayout {
     private Boolean canSave = false;
     private Context mainActivityContext;
     private Integer chatLimit = 30;
+    private Boolean playSentAndReceivedSoundEffect = true;
+    private int sentSoundEffect = R.raw.message_added;
+    private ArrayList<View> selectedView= new ArrayList<>();
+    private int receivedSoundEffect = R.raw.message_received;
     private ImageView backgroundImage;
     private int offset = 0;
     private boolean dynamicScrolling = false;
@@ -77,6 +82,7 @@ public class ChatLayoutView extends RelativeLayout {
     public static DownloadHelper downloadHelper;
     private Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;
+    private Boolean isSelecting = false;
     private MediaPlayer mediaPlayer;
     protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
@@ -163,6 +169,22 @@ public class ChatLayoutView extends RelativeLayout {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
+    public ListView getListView() {
+        return listView;
+    }
+
+    public RecyclerViewAdapter getRecyclerViewAdapter() {
+        return recyclerViewAdapter;
+    }
+
+    public ListViewAdapter getListViewAdapter() {
+        return listViewAdapter;
+    }
+
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
@@ -222,6 +244,9 @@ public class ChatLayoutView extends RelativeLayout {
                     message.getMessageConfiguration().setMessagePosition(MessagePosition.RIGHT);
                 } else {
                     message.getMessageConfiguration().setMessagePosition(MessagePosition.LEFT);
+                    if(playSentAndReceivedSoundEffect) {
+                        MediaPlayer.create(getContext(),receivedSoundEffect).start();
+                    }
                 }
             }
             checkForDate(message,messages,dates);
@@ -239,18 +264,33 @@ public class ChatLayoutView extends RelativeLayout {
         return null;
     }
 
-    public void updateMessage(Message message) {
-        if(helper.messageIdExists(message.getMessageId())) {
-            int index = helper.getMessageIdPositon(message.getMessageId());
-            messages.remove(index);
-            messages.add(index,message);
-            if(mode == RECYCLERVIEW) {
-                recyclerViewAdapter.notifyItemChanged(index);
-            } else {
-                listViewAdapter.notifyDataSetChanged();
+    public void updateMessageStatus(String messageId, MessageStatus newStatus) {
+        if(helper.messageIdExists(messageId)) {
+            int index = helper.getMessageIdPositon(messageId);
+            Message message = messages.get(index);
+            if(message.getMessageStatus() != newStatus) {
+                message.setMessageStatus(newStatus);
+                messages.remove(index);
+                messages.add(index,message);
+                if(mode == RECYCLERVIEW) {
+                    recyclerViewAdapter.notifyItemChanged(index);
+                } else {
+                    listViewAdapter.notifyDataSetChanged();
+                }
+                if(playSentAndReceivedSoundEffect && newStatus == MessageStatus.SENT && message.getSender().equalsIgnoreCase(myId)) {
+                    MediaPlayer.create(getContext(),sentSoundEffect).start();
+                }
+                updateMessageToDatabase(message);
             }
         }
     }
+
+    private void updateMessageToDatabase(Message message) {
+        if(useDatabase) {
+            databaseHelper.updateMessageStatus(message.getMessageId(),message.getMessageStatus());
+        }
+    }
+
     private String getFormattedDate(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
         return simpleDateFormat.format(date);
@@ -294,6 +334,9 @@ public class ChatLayoutView extends RelativeLayout {
         if(message.getSender().equals(myId)) {
             return rightMessageConfiguration;
         } else {
+            if(playSentAndReceivedSoundEffect) {
+                MediaPlayer.create(getContext(),receivedSoundEffect).start();
+            }
             return leftMessageConfiguration;
         }
     }
@@ -400,4 +443,27 @@ public class ChatLayoutView extends RelativeLayout {
         notifyAdapter(false);
     }
 
+    public Boolean getPlaySentAndReceivedSoundEffect() {
+        return playSentAndReceivedSoundEffect;
+    }
+
+    public void setPlaySentAndReceivedSoundEffect(Boolean playSentAndReceivedSoundEffect) {
+        this.playSentAndReceivedSoundEffect = playSentAndReceivedSoundEffect;
+    }
+
+    public int getSentSoundEffect() {
+        return sentSoundEffect;
+    }
+
+    public void setSentSoundEffect(int sentSoundEffect) {
+        this.sentSoundEffect = sentSoundEffect;
+    }
+
+    public int getReceivedSoundEffect() {
+        return receivedSoundEffect;
+    }
+
+    public void setReceivedSoundEffect(int receivedSoundEffect) {
+        this.receivedSoundEffect = receivedSoundEffect;
+    }
 }

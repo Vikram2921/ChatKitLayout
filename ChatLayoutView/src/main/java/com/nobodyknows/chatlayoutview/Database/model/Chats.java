@@ -60,7 +60,6 @@ public class Chats {
                 + COLUMN_IS_REPLY_MESSAGE +" INTEGER,"
                 + COLUMN_SEENAT +" TEXT"
                 +")";
-        Log.d("QUERY",CREATE_TABLE);
         return CREATE_TABLE;
     }
 

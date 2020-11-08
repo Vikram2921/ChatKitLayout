@@ -3,6 +3,7 @@ package com.nobodyknows.chatlayoutview;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -84,7 +85,6 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         public void run() {
             while (!stop.get()) {
                 progressBar.setProgress((int)((double)mediaPlayer.getCurrentPosition() / (double)mediaPlayer.getDuration()*100));
-               // duration.setText(mediaPlayer.getCurrentPosition()+" / "+mediaPlayer.getDuration());
                 try {
                     Thread.sleep(200);
                 } catch (Exception ex) {
@@ -221,7 +221,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
        return time;
     }
 
-    private void configRootView(MessagePosition position) {
+    private void configRootView() {
         this.message.setTextSize(currentMessage.getMessageConfiguration().getMessageTextSize());
         this.message.setTextColor(currentMessage.getMessageConfiguration().getTextColor());
         this.messageTime.setTextColor(currentMessage.getMessageConfiguration().getTimeTextColor());
@@ -236,7 +236,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             this.dateview.setVisibility(VISIBLE);
             this.rootview.setVisibility(GONE);
         } else {
-            configRootView(message.getMessageConfiguration().getMessagePosition());
+            configRootView();
             if(message.getMessageStatus() != MessageStatus.DELETED) {
                 updateStickerView(message.getMessageConfiguration().getMessagePosition());
                 this.message.setText(message.getMessage());
@@ -301,10 +301,14 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         } else if(currentMessage.getMessageType() == MessageType.GIF) {
             playIcon.setVisibility(VISIBLE);
             playIcon.setImageResource(R.drawable.ic_baseline_gif_24);
-            Glide.with(getContext()).asBitmap().load(url).override(200, 200).into(imageView);
+            Glide.with(getContext()).asBitmap().load(url).into(imageView);
         } else if(currentMessage.getMessageType() == MessageType.STICKER) {
             playIcon.setVisibility(GONE);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            if(direction == LEFT) {
+                imageView.setScaleType(ImageView.ScaleType.FIT_START);
+            } else {
+                imageView.setScaleType(ImageView.ScaleType.FIT_END);
+            }
             Glide.with(getContext()).load(url).into(imageView);
         } else {
             Glide.with(getContext()).load(url).into(imageView);
@@ -521,7 +525,6 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             Boolean canDownload = canShowDownloadButton(downloadPath,sharedFiles);
             filename.setText(sharedFiles.get(0).getName());
             int resId = getResources().getIdentifier(sharedFiles.get(0).getExtension(),"drawable",getContext().getPackageName());
-            Log.d("TAGRESID", "getDocumentLayout: "+resId);
             if(resId != 0){
                 fileicon.setImageResource(resId);
             }
