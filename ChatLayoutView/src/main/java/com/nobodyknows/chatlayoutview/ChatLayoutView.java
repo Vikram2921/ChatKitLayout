@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -62,7 +63,8 @@ public class ChatLayoutView extends RelativeLayout {
     protected static TextView lastPlayingDuration;
     private ListViewAdapter listViewAdapter;
     private DatabaseHelper databaseHelper;
-    private String roomId,myId="";
+    private String roomId;
+    public static String myId="";
     private Boolean useDatabase = false;
     private Boolean canSave = false;
     private Context mainActivityContext;
@@ -71,6 +73,7 @@ public class ChatLayoutView extends RelativeLayout {
     private int offset = 0;
     private boolean dynamicScrolling = false;
     protected static ChatLayoutListener chatLayoutListener;
+    protected static View currentPlayerView;
     public static DownloadHelper downloadHelper;
     private Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;

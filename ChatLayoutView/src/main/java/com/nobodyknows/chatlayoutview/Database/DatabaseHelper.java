@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.Database.model.Chats;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.Database.model.ContactDbModel;
 import com.nobodyknows.chatlayoutview.Database.model.Urls;
+import com.nobodyknows.chatlayoutview.Model.Contact;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
@@ -44,12 +46,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(Chats.getCreateTableQuery(roomId));
         db.execSQL(Urls.getCreateTableQuery(roomId));
+        db.execSQL(ContactDbModel.getCreateTableQuery(roomId));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + Chats.getTableName(roomId));
         db.execSQL("DROP TABLE IF EXISTS " + Urls.getTableName(roomId));
+        db.execSQL("DROP TABLE IF EXISTS " + ContactDbModel.getTableName(roomId));
         onCreate(db);
     }
 
@@ -83,6 +87,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     insertSharedFile(message.getMessageId(),sharedFile);
                 }
             }
+
+            if(message.getMessageType() == MessageType.CONTACT) {
+                for(Contact contact:message.getContacts()) {
+                    insertContact(contact,message);
+                }
+            }
         }
         db.close();
         return id;
@@ -96,6 +106,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         db.close();
         return id;
+    }
+
+    public long insertContact(Contact contact,Message message) {
+        SQLiteDatabase db  = this.getWritableDatabase();
+        long id = 0;
+        if(!isContactExist(message.getMessageId(),contact.getName(),contact.getContactNumbers(),db)) {
+            id = db.insert(ContactDbModel.getTableName(roomId),null,getContactContentValues(message,contact));
+        }
+        db.close();
+        return id;
+    }
+
+    private ContentValues getContactContentValues(Message message, Contact contact) {
+        ContentValues values = new ContentValues();
+        values.put(ContactDbModel.COLUMN_MESSAGE_ID,message.getMessageId());
+        values.put(ContactDbModel.COLUMN_NAME,contact.getName());
+        values.put(ContactDbModel.COLUMN_NUMBERS,contact.getContactNumbers());
+        return values;
     }
 
     private ContentValues getSharedFileContentValues(String messageId, SharedFile sharedFile) {
@@ -173,6 +201,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 files.add(convertToSharedFile(cursor));
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return files;
+    }
+
+    public ArrayList<Contact> getContacts(String messageId) {
+        ArrayList<Contact> files = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + ContactDbModel.getTableName(roomId) + " WHERE " +
+                ContactDbModel.COLUMN_MESSAGE_ID + " = "+messageId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                files.add(convertToContact(cursor));
             } while (cursor.moveToNext());
         }
         db.close();
@@ -277,6 +321,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    private boolean isContactExist(String messageId, String name, String contactNumbers, SQLiteDatabase db) {
+        String selectQuery = "SELECT  * FROM " + ContactDbModel.getTableName(roomId) + " WHERE " +
+        ContactDbModel.COLUMN_MESSAGE_ID + " = "+messageId+" AND "+ContactDbModel.COLUMN_NAME+" = '"+name+"' AND "+ContactDbModel.COLUMN_NUMBERS+" = '"+contactNumbers+"'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() <=0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+
     private Message convertToMessage(Cursor cursor, String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
         Message message = convertToMessage(cursor);
         if(myId.equals(message.getSender())) {
@@ -285,6 +342,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             message.setMessageConfiguration(leftMessageConfiguration);
         }
         message.setSharedFiles(getSharedFiles(message.getMessageId()));
+        if(message.getMessageType() == MessageType.CONTACT) {
+            message.setContacts(getContacts(message.getMessageId()));
+        }
         return message;
     }
 
@@ -305,6 +365,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         message.setSeenAt(getReveretdDate(cursor.getString(cursor.getColumnIndex(Chats.COLUMN_SEENAT))));
         message.setIsRepliedMessage(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Chats.COLUMN_IS_REPLY_MESSAGE))));
         return message;
+    }
+
+    private Contact convertToContact(Cursor cursor) {
+        Contact contact = new Contact();
+        contact.setName(cursor.getString(cursor.getColumnIndex(ContactDbModel.COLUMN_NAME)));
+        contact.setContactNumbers(cursor.getString(cursor.getColumnIndex(ContactDbModel.COLUMN_NUMBERS)));
+        return contact;
     }
 
     private boolean getBooleanValue(int value) {

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.downloadHelper;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.myId;
 
 public class ListViewAdapter extends ArrayAdapter {
     private ArrayList<Message> messages;
@@ -39,13 +40,19 @@ public class ListViewAdapter extends ArrayAdapter {
     }
 
     public View getView(int position, View view, ViewGroup parent) {
-       View messageView = layoutInflater.inflate(R.layout.message_box,null,true);
+        Message message = messages.get(position);
+        View messageView;
+        if(message.getSender() != null && message.getSender().length() > 0 && message.getSender().equalsIgnoreCase(myId)) {
+            messageView = layoutInflater.inflate(R.layout.message_box_right,null,true);
+        } else {
+            messageView = layoutInflater.inflate(R.layout.message_box,null,true);
+        }
        ChatMessageView chatMessageView = messageView.findViewById(R.id.messageview);
-       chatMessageView.setDownloadPath(downloadPath.get(messages.get(position).getMessageType()));
+       chatMessageView.setDownloadPath(downloadPath.get(message.getMessageType()));
        chatMessageView.setDownloadHelper(downloadHelper);
-       chatMessageView.setUser(userMap.get(messages.get(position).getSender()));
+       chatMessageView.setUser(userMap.get(message.getSender()));
        chatMessageView.setMediaPlayer(mediaPlayer);
-        chatMessageView.setMessage(messages.get(position));
+       chatMessageView.setMessage(message);
        return messageView;
     }
 }

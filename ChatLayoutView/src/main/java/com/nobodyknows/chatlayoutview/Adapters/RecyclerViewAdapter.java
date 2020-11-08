@@ -17,9 +17,11 @@ import com.nobodyknows.chatlayoutview.ChatMessageView;
 import com.nobodyknows.chatlayoutview.Model.Message;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.downloadHelper;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.myId;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
@@ -28,6 +30,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Map<String,User> userMap;
     private Map<MessageType,String> downloadPath;
     private MediaPlayer mediaPlayer;
+    private int SENT_MESSAGE = 0;
+    private int RECEIVE_MESSAGE = 1;
     public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths,MediaPlayer mediaPlayer) {
         this.context = context;
         this.messages = messages;
@@ -40,7 +44,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View item = layoutInflater.inflate(R.layout.message_box,parent,false);
+        View item;
+        if(viewType == SENT_MESSAGE) {
+            item = layoutInflater.inflate(R.layout.message_box_right,parent,false);
+        } else {
+            item = layoutInflater.inflate(R.layout.message_box,parent,false);
+        }
         ViewHolder viewHolder = new ViewHolder(item);
         return viewHolder;
     }
@@ -58,6 +67,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private String getUrl(MessageType messageType) {
         return downloadPath.get(messageType);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+       Message message = messages.get(position);
+       if(message.getSender() != null && message.getSender().length() > 0 && message.getSender().equalsIgnoreCase(myId)) {
+           return SENT_MESSAGE;
+       } else {
+           return RECEIVE_MESSAGE;
+       }
     }
 
     @Override

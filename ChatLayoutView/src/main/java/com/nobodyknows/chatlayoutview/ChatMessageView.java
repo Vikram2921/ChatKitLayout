@@ -2,7 +2,7 @@ package com.nobodyknows.chatlayoutview;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,15 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -31,6 +28,7 @@ import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Model.Contact;
+import com.nobodyknows.chatlayoutview.Model.ContactParceable;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
@@ -39,14 +37,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLayoutListener;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.currentPlayerView;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.helper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingAudioMessageId;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingDuration;
@@ -72,6 +69,9 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
     private MediaObserver observer = null;
     private SeekBar progressBar;
     private TextView duration;
+    private int LEFT = 0;
+    private int RIGHT = 1;
+    private int direction = 0;
 
     private class MediaObserver implements Runnable {
         private AtomicBoolean stop = new AtomicBoolean(false);
@@ -106,6 +106,8 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 mediaPlayer.reset();
                 lastPlayingImageView.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 lastPlayingProgressBar.setProgress(0);
+                lastPlayingAudioMessageId = "";
+                currentPlayerView = null;
             }
         });
         mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
@@ -139,7 +141,13 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
 
     private void init(AttributeSet attrs, int defStyleAttr) {
         layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        root = (RelativeLayout) layoutInflater.inflate(R.layout.messageview,this,true);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs,R.styleable.ChatMessageView);
+        direction= typedArray.getInt(R.styleable.ChatMessageView_chat_direction,0);
+        if(direction == LEFT) {
+            root = (RelativeLayout) layoutInflater.inflate(R.layout.messageview_left,this,true);
+        } else {
+            root = (RelativeLayout) layoutInflater.inflate(R.layout.messageview_right,this,true);
+        }
         rootview = root.findViewById(R.id.rootview);
         dateview = root.findViewById(R.id.dateView);
         message = root.findViewById(R.id.message);
@@ -152,20 +160,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
 
     }
 
-    private void configRootView(MessagePosition position) {
-        RelativeLayout.LayoutParams params = (LayoutParams) rootview.getLayoutParams();
-        if(position == MessagePosition.LEFT) {
-            params.setMargins(0,0,100,0);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            this.messagestatus.setVisibility(GONE);
-        } else if(position == MessagePosition.RIGHT) {
-            senderName.setVisibility(GONE);
-            params.setMargins(100,0,0,0);
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        }
-        messageBox.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
-        rootview.setLayoutParams(params);
-    }
+
 
     private String getMessageTime(Message message) {
         long size = 0;
@@ -174,23 +169,64 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         }
         String time= getFormatedDate("hh:mm aa", message.getSentAt());
         if(message.getMessageType() == MessageType.AUDIO) {
-            time+=DOT_SEPRATOR+"Audio "+DOT_SEPRATOR+helper.getSize(size);
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Audio "+DOT_SEPRATOR+helper.getSize(size);
+            } else {
+                time="Audio "+DOT_SEPRATOR+helper.getSize(size)+DOT_SEPRATOR+time;
+            }
+
         } else if(message.getMessageType() == MessageType.VIDEO) {
-            time+=DOT_SEPRATOR+"Video "+DOT_SEPRATOR+helper.getSize(size);
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Video "+DOT_SEPRATOR+helper.getSize(size);
+            } else {
+                time="Video "+DOT_SEPRATOR+helper.getSize(size)+DOT_SEPRATOR+time;
+            }
+
         }  else if(message.getMessageType() == MessageType.IMAGE) {
-            time+=DOT_SEPRATOR+"Image "+DOT_SEPRATOR+helper.getSize(size);
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Image "+DOT_SEPRATOR+helper.getSize(size);
+            } else {
+                time="Image "+DOT_SEPRATOR+helper.getSize(size)+DOT_SEPRATOR+time;
+            }
+
         }  else if(message.getMessageType() == MessageType.GIF) {
-            time+=DOT_SEPRATOR+"Gif ";
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Gif ";
+            } else {
+                time="Gif "+DOT_SEPRATOR+time;
+            }
+
         }  else if(message.getMessageType() == MessageType.DOCUMENT) {
-            time+=DOT_SEPRATOR+"Document "+DOT_SEPRATOR+helper.getSize(size);
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Document "+DOT_SEPRATOR+helper.getSize(size);
+            } else {
+                time="Document "+DOT_SEPRATOR+helper.getSize(size)+DOT_SEPRATOR+time;
+            }
+
         }  else if(message.getMessageType() == MessageType.RECORDING) {
-            time+=DOT_SEPRATOR+"Recording "+DOT_SEPRATOR+helper.getSize(size);
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Recording "+DOT_SEPRATOR+helper.getSize(size);
+            } else {
+                time="Recording "+DOT_SEPRATOR+helper.getSize(size)+DOT_SEPRATOR+time;
+            }
+
         }  else if(message.getMessageType() == MessageType.CONTACT) {
-            time+=DOT_SEPRATOR+"Contacts ";
+            if(direction == LEFT) {
+                time+=DOT_SEPRATOR+"Contacts ";
+            } else {
+                time="Contacts "+DOT_SEPRATOR+time;
+            }
+
         }
        return time;
     }
 
+    private void configRootView(MessagePosition position) {
+        this.message.setTextSize(currentMessage.getMessageConfiguration().getMessageTextSize());
+        this.message.setTextColor(currentMessage.getMessageConfiguration().getTextColor());
+        this.messageTime.setTextColor(currentMessage.getMessageConfiguration().getTimeTextColor());
+        messageBox.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
+    }
 
     public void setMessage(Message message) {
         this.currentMessage = message;
@@ -200,9 +236,6 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             this.dateview.setVisibility(VISIBLE);
             this.rootview.setVisibility(GONE);
         } else {
-            this.message.setTextSize(message.getMessageConfiguration().getMessageTextSize());
-            this.message.setTextColor(message.getMessageConfiguration().getTextColor());
-            this.messageTime.setTextColor(message.getMessageConfiguration().getTimeTextColor());
             configRootView(message.getMessageConfiguration().getMessagePosition());
             if(message.getMessageStatus() != MessageStatus.DELETED) {
                 updateStickerView(message.getMessageConfiguration().getMessagePosition());
@@ -237,33 +270,12 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
 
     private void updateStickerView(MessagePosition position) {
         if(currentMessage.getMessageType() == MessageType.STICKER && currentMessage.getMessageStatus() != MessageStatus.DELETED) {
-            LayoutParams layoutParams = new LayoutParams(STICKER_SIZE,LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW,R.id.sendername);
+            message.setVisibility(GONE);
             innerView.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
             senderName.setBackgroundResource(currentMessage.getMessageConfiguration().getBackgroundResource());
-            if(position == MessagePosition.LEFT) {
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            } else if(position == MessagePosition.RIGHT) {
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                LayoutParams layoutParamsinnerview = (LayoutParams) innerView.getLayoutParams();
-                layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                innerView.setLayoutParams(layoutParamsinnerview);
-                LayoutParams layoutParamsName = (LayoutParams) senderName.getLayoutParams();
-                layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                senderName.setLayoutParams(layoutParamsName);
-            }
-            customView.setLayoutParams(layoutParams);
             if(!currentMessage.getIsRepliedMessage()) {
                 messageBox.setBackgroundResource(0);
-            } else {
-                if(position == MessagePosition.RIGHT) {
-                    LayoutParams layoutParamsinnerview = (LayoutParams) messageBox.getLayoutParams();
-                    layoutParamsinnerview.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    layoutParamsinnerview.width = STICKER_SIZE;
-                    messageBox.setLayoutParams(layoutParamsinnerview);
-                }
             }
-            message.setVisibility(GONE);
         }
     }
 
@@ -281,6 +293,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         if(url == null || url.length() == 0) {
             url = sharedFile.getUrl();
         }
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         if(currentMessage.getMessageType() == MessageType.VIDEO) {
             imageView.setVisibility(VISIBLE);
             playIcon.setVisibility(VISIBLE);
@@ -291,17 +304,11 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             Glide.with(getContext()).asBitmap().load(url).override(200, 200).into(imageView);
         } else if(currentMessage.getMessageType() == MessageType.STICKER) {
             playIcon.setVisibility(GONE);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            imageView.setPadding(15,15,15,15);
-            LayoutParams layoutParams = (LayoutParams) imageView.getLayoutParams();
-            layoutParams.width = STICKER_SIZE;
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            imageView.setLayoutParams(layoutParams);
-            Glide.with(getContext()).load(url).override(200, 200).into(imageView);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            Glide.with(getContext()).load(url).into(imageView);
         } else {
             Glide.with(getContext()).load(url).into(imageView);
         }
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, height);
         layoutParams.weight =1;
         layoutParams.setMargins(3,3,3,3);
@@ -479,10 +486,21 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ViewContacts.class);
+                intent.putParcelableArrayListExtra("contacts",getParceableList(contacts));
                 getContext().startActivity(intent);
             }
         });
         return view;
+    }
+
+    private ArrayList<ContactParceable> getParceableList(ArrayList<Contact> contacts) {
+        ContactParceable contactParceable;
+        ArrayList<ContactParceable> parceableArrayList = new ArrayList<>();
+        for(Contact contact:contacts) {
+             contactParceable = new ContactParceable(contact.getName(),contact.getContactNumbers());
+            parceableArrayList.add(contactParceable);
+        }
+        return parceableArrayList;
     }
 
     private View getDocumentLayout(ArrayList<SharedFile> sharedFiles) {
@@ -515,12 +533,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 @Override
                 public void onClick(View v) {
                     if(canShowDownloadButton(downloadPath,sharedFiles)) {
-//                        File temp_file=new File(envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension());
-//                        try {
-//                            openFile(getContext(),temp_file);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
+
                     }
                 }
             });
@@ -546,61 +559,17 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         return view;
     }
 
-    private void openFile(Context context, File url) throws IOException {
-        // Create URI
-        File file=url;
-        Uri uri = Uri.fromFile(file);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        // Check what kind of file you are trying to open, by comparing the url with extensions.
-        // When the if condition is matched, plugin sets the correct intent (mime) type,
-        // so Android knew what application to use to open the file
-        if (url.toString().contains(".doc") || url.toString().contains(".docx")) {
-            // Word document
-            intent.setDataAndType(uri, "application/msword");
-        } else if(url.toString().contains(".pdf")) {
-            // PDF file
-            intent.setDataAndType(uri, "application/pdf");
-        } else if(url.toString().contains(".ppt") || url.toString().contains(".pptx")) {
-            // Powerpoint file
-            intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
-        } else if(url.toString().contains(".xls") || url.toString().contains(".xlsx")) {
-            // Excel file
-            intent.setDataAndType(uri, "application/vnd.ms-excel");
-        } else if(url.toString().contains(".zip") || url.toString().contains(".rar")) {
-            // ZIP Files
-            intent.setDataAndType(uri, "application/zip");
-        } else if(url.toString().contains(".rtf")) {
-            // RTF file
-            intent.setDataAndType(uri, "application/rtf");
-        } else if(url.toString().contains(".wav") || url.toString().contains(".mp3")) {
-            // WAV audio file
-            intent.setDataAndType(uri, "audio/x-wav");
-        } else if(url.toString().contains(".gif")) {
-            // GIF file
-            intent.setDataAndType(uri, "image/gif");
-        } else if(url.toString().contains(".jpg") || url.toString().contains(".jpeg") || url.toString().contains(".png")) {
-            // JPG file
-            intent.setDataAndType(uri, "image/jpeg");
-        } else if(url.toString().contains(".txt")) {
-            // Text file
-            intent.setDataAndType(uri, "text/plain");
-        } else if(url.toString().contains(".3gp") || url.toString().contains(".mpg") || url.toString().contains(".mpeg") || url.toString().contains(".mpe") || url.toString().contains(".mp4") || url.toString().contains(".avi")) {
-            // Video files
-            intent.setDataAndType(uri, "video/*");
-        } else {
-            intent.setDataAndType(uri, "*/*");
-        }
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
     private View getAudioLayout(ArrayList<SharedFile> sharedFiles) {
         message.setVisibility(GONE);
         View view = null;
         if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
             view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        } else if(lastPlayingAudioMessageId.equalsIgnoreCase(currentMessage.getMessageId())) {
+            ViewGroup parentGroup = ((ViewGroup) currentPlayerView.getParent());
+            if(parentGroup != null) {
+                parentGroup.removeView(currentPlayerView);
+            }
+            view = currentPlayerView;
         } else {
             view =layoutInflater.inflate(R.layout.audio,null);
             ImageView pp = view.findViewById(R.id.playpause);
@@ -611,6 +580,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             TextView durationview = view.findViewById(R.id.duration);
             SeekBar progressBar = view.findViewById(R.id.progressbar);
             final Boolean[] isPlaying = {false};
+            View finalView1 = view;
             pp.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -623,7 +593,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                             url[0] = envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension();
                         }
                         pp.setImageResource(R.drawable.ic_baseline_pause_24);
-                        playeAudio(url[0],progressBar,pp,durationview);
+                        playeAudio(url[0],progressBar,pp,durationview, finalView1);
                         isPlaying[0] = true;
                     }
                 }
@@ -666,6 +636,12 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         View view = null;
         if(uploadAndDownloadViewHandler.isExist(currentMessage.getMessageId())) {
             view = uploadAndDownloadViewHandler.getUploadView(currentMessage.getMessageId()).getView();
+        }  else if(lastPlayingAudioMessageId.equalsIgnoreCase(currentMessage.getMessageId())) {
+            ViewGroup parentGroup = ((ViewGroup) currentPlayerView.getParent());
+            if(parentGroup != null) {
+                parentGroup.removeView(currentPlayerView);
+            }
+            view = currentPlayerView;
         } else {
             view =layoutInflater.inflate(R.layout.recording,null);
             ImageView pp = view.findViewById(R.id.playpause);
@@ -678,6 +654,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             final String[] url = {sharedFiles.get(0).getUrl()};
             SeekBar progressBar = view.findViewById(R.id.progressbar);
             final Boolean[] isPlaying = {false};
+            View finalView = view;
             pp.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -690,7 +667,7 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                             url[0] = envPath+downloadPath+"/"+sharedFiles.get(0).getName()+"."+sharedFiles.get(0).getExtension();
                         }
                         pp.setImageResource(R.drawable.ic_baseline_pause_24);
-                        playeAudio(url[0],progressBar,pp,durationview);
+                        playeAudio(url[0],progressBar,pp,durationview, finalView);
                         isPlaying[0] = true;
                     }
                 }
@@ -771,12 +748,13 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         mediaPlayer.prepareAsync();
     }
 
-    private void playeAudio(String url, SeekBar progressBar, ImageView pp, TextView durationview) {
+    private void playeAudio(String url, SeekBar progressBar, ImageView pp, TextView durationview,View currentView) {
         this.progressBar = progressBar;
         if(lastPlayingAudioMessageId == null || lastPlayingAudioMessageId.length() ==0) {
             lastPlayingAudioMessageId = currentMessage.getMessageId();
             lastPlayingProgressBar = progressBar;
             lastPlayingImageView = pp;
+            currentPlayerView = currentView;
             this.duration = durationview;
             lastPlayingDuration = durationview;
             playMusic(url);
@@ -788,10 +766,10 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
                 mediaPlayer.reset();
                 lastPlayingImageView.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 lastPlayingProgressBar.setProgress(0);
-                lastPlayingDuration.setText("00:00 / 00:00");
                 lastPlayingAudioMessageId = currentMessage.getMessageId();
                 lastPlayingProgressBar = progressBar;
                 lastPlayingImageView = pp;
+                currentPlayerView = currentView;
                 this.duration = durationview;
                 lastPlayingDuration = durationview;
                 playMusic(url);

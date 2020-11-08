@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
     <com.nobodyknows.chatlayoutview.ChatMessageView
         android:id="@+id/messageview"
-        app:chat_direction="Left"
+        app:chat_direction="Right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </com.nobodyknows.chatlayoutview.ChatMessageView>

@@ -56,9 +56,8 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.setDownloadPath(MessageType.DOCUMENT,"/ChatKitLayout/Documents");
         chatLayoutView.setIds("ROOM1","7014550298");
         User myUserObject = new User();
-        myUserObject.setName("Sunny Leone");
+        myUserObject.setName("Vikram Singh Rawat");
         myUserObject.setColor(Color.BLUE);
-        myUserObject.setProfileUrl("https://www.bollywoodhungama.com/wp-content/uploads/2018/09/Sunny-Leone-05-3.jpg");
         myUserObject.setUserId("7014550298");
         User freindUserObject = new User();
         freindUserObject.setName("Pritam Singh Rathore");
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.addUser(myUserObject);
         chatLayoutView.addUser(freindUserObject);
         chatLayoutView.loadAllDBMessage();
-        //chatLayoutView.setBackgroundImage("https://wallpaperaccess.com/full/1288076.jpg");
+
         Button button = findViewById(R.id.clickme);
         EditText editText = findViewById(R.id.message);
         button.setOnClickListener(new View.OnClickListener() {
@@ -86,19 +85,24 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                 }
             }
         });
-        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2F1596103576_K_Advani.jpg?alt=media&token=b7655d77-eb2e-4dff-a348-cd8ae0a365b9")));
-        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FActress-Kiara-Advani-Gorgeous-new-still-.jpg?alt=media&token=a88e01ac-49bf-4134-8104-934ba1bf79dd","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKatrina-Kaif-in-pink-saree.jpg?alt=media&token=58091660-c0f6-4d76-bae1-1e8f89e35852")));
-        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara-Advani-Photo.jpg?alt=media&token=6bbf1c1b-0947-4b6b-896b-a09d95f01d68")));
-        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara_Advani_walks_for_Shyamal-Bhumika_at_India_Couture_Week_2018_Day_4_(03)_(cropped).jpg?alt=media&token=1c284215-bb2e-4e41-9cac-3e3f731a4e2e")));
-        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fbollywood-actresses-saree-slips_13620316171.jpg?alt=media&token=38479b5b-7665-43e6-b4ab-c57c793194fb",
-                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara-advani-1200.jpg?alt=media&token=f5f566ba-e8c0-4d7b-8774-2644cc95739b",
-                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara_advani_1603192093.webp?alt=media&token=4033f3bf-2cd5-4c2b-99eb-c431eaf2ef78",
-                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages.jfif?alt=media&token=1f379911-ef8c-4476-8125-1c793c17a6d8","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages%20(1).jfif?alt=media&token=0f155298-8051-4348-9603-cce1e2e6af28",
-                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fsaree16.jpg?alt=media&token=a0feb64f-13e3-4704-b884-1f6fbc7dfff9")));
+//        chatLayoutView.addMessage(getGifMessage("asdasd"));
+        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
+        chatLayoutView.addMessage(getContactMessage("12345678",false));
+        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
+        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
+//        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2F1596103576_K_Advani.jpg?alt=media&token=b7655d77-eb2e-4dff-a348-cd8ae0a365b9")));
+//        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FActress-Kiara-Advani-Gorgeous-new-still-.jpg?alt=media&token=a88e01ac-49bf-4134-8104-934ba1bf79dd","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKatrina-Kaif-in-pink-saree.jpg?alt=media&token=58091660-c0f6-4d76-bae1-1e8f89e35852")));
+//        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara-Advani-Photo.jpg?alt=media&token=6bbf1c1b-0947-4b6b-896b-a09d95f01d68")));
+//        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2FKiara_Advani_walks_for_Shyamal-Bhumika_at_India_Couture_Week_2018_Day_4_(03)_(cropped).jpg?alt=media&token=1c284215-bb2e-4e41-9cac-3e3f731a4e2e")));
+//        chatLayoutView.addMessage(getImageMessages("Dummy Message",Arrays.asList("https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fbollywood-actresses-saree-slips_13620316171.jpg?alt=media&token=38479b5b-7665-43e6-b4ab-c57c793194fb",
+//                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara-advani-1200.jpg?alt=media&token=f5f566ba-e8c0-4d7b-8774-2644cc95739b",
+//                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fkiara_advani_1603192093.webp?alt=media&token=4033f3bf-2cd5-4c2b-99eb-c431eaf2ef78",
+//                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages.jfif?alt=media&token=1f379911-ef8c-4476-8125-1c793c17a6d8","https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fimages%20(1).jfif?alt=media&token=0f155298-8051-4348-9603-cce1e2e6af28",
+//                "https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/Testing%2Fsaree16.jpg?alt=media&token=a0feb64f-13e3-4704-b884-1f6fbc7dfff9")));
     }
 
 
-    private Message getContactMessage(String string, String s, boolean b) {
+    private Message getContactMessage( String s, boolean b) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
         message.setMessageId(s);
@@ -107,10 +111,18 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setMessage("");
         message.setSender(random);
         Contact contact = new Contact();
-        contact.setName("Vishal Pambla");
-        message.addContact(contact);
-        message.addContact(contact);
-        message.addContact(contact);
+        contact.setName("NobodyKnows");
+        contact.setContactNumbers("+91 7014550298");
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Vishal Pamble","8290879124,7014560298"));
+        message.addContact(getContact("Pritam Singh Rathore","8442000360"));
+        message.addContact(getContact("Vikram Singh Rawat","7014550298"));
         message.addContact(contact);
         message.setMessageStatus(MessageStatus.SENT);
         message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
@@ -118,6 +130,13 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setSentAt(new Date());
         message.setReceivedAt(new Date());
         return message;
+    }
+
+    private Contact getContact(String name,String number) {
+        Contact contact = new Contact();
+        contact.setName(name);
+        contact.setContactNumbers(number);
+        return contact;
     }
 
     private Message getDocumentMessage(String string, String s, boolean b, String url) {
@@ -160,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setMessageId(s);
         message.setIsRepliedMessage(b);
         message.setMessageType(MessageType.AUDIO);
-        message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"mp3"));
+        message.addSharedFile(getSharedFile("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3",message.getMessageId()+"_"+i,"mp3"));
         message.setMessage("");
         message.setSender(random);
         message.setMessageStatus(MessageStatus.SENT);
@@ -248,11 +267,16 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     private Message getGifMessage(String messageText) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
-        message.setMessageType(MessageType.GIF);
+        message.setMessageType(MessageType.IMAGE);
         message.setMessageId("2751300");
         message.setMessage(messageText);
         message.setSender(random);
         message.addSharedFile(getSharedFile("https://media3.giphy.com/media/26ybvqyqoH7UbyHeg/giphy.gif",message.getMessageId()+"5","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
+        message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
         message.addSharedFile(getSharedFile("https://media4.giphy.com/media/3o6YgaqfCPku7lUSoE/giphy.gif",message.getMessageId()+"6","gif"));
         message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
         message.setSeenAt(new Date());
@@ -265,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
         message.setMessageType(MessageType.STICKER);
-        message.setMessageStatus(MessageStatus.DELETED);
         message.setMessageId("2751400"+i);
         message.setMessage(messageText);
         message.setSender(random);
