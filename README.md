@@ -18,7 +18,7 @@ Add the dependency
 
 ```css
 dependencies {
-	        implementation 'com.github.Vikram2921:AsthaChammaView:<Latest Version>'
+	        implementation 'com.github.Vikram2921:ChatKitLayout:<Latest Version>'
 	}
 ```
 **How to use :** 
