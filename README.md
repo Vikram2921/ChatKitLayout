@@ -2,6 +2,9 @@
 # Chat Kit Layout
 
 An Android Library to create a complete chat layout.
+
+[![](https://jitpack.io/v/Vikram2921/ChatKitLayout.svg)](https://jitpack.io/#Vikram2921/ChatKitLayout)
+
 ### Installation
 Add it in your root build.gradle at the end of repositories:
         
