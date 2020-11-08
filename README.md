@@ -33,7 +33,6 @@ dependencies {
       android:id="@+id/chatlayout_view"  
       app:view_mode="RecyclerView"  //There is two option ListView,RecycleView
       app:useDatabase="true"  //If you want to in library database 
-      android:layout_above="@id/messageentry"  
       android:layout_height="match_parent">  
     </com.nobodyknows.chatlayoutview.ChatLayoutView>
 
