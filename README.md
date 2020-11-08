@@ -103,24 +103,27 @@ In **ChatActivity**
 
 
 ## Message Type Supported
-
- 1. IMAGE
- 2. GIF
- 3. VIDEO
- 4. AUDIO
- 5. RECORDING
- 6. TEXT
- 7. DOCUMENT
- 8. CONTACT
- 9. DATE
- 10. STICKER 
- 11. CUSTOM
+| Message Type |
+|--|
+| IMAGE |
+| GIF |
+| VIDEO |
+| AUDIO |
+| RECORDING |
+| TEXT |
+| DOCUMENT |
+| CONTACT |
+| DATE |
+| STICKER | 
+| CUSTOM |
 
 
 ## Message Status Avaialable
 
- 1. SENDING
- 2. SENT
- 3. RECEIVED
- 4. SEEN
- 5. DELETED
+| Message Status |
+|--|
+| SENDING |
+| SENT |
+| RECEIVED |
+| SEEN |
+| DELETED |
