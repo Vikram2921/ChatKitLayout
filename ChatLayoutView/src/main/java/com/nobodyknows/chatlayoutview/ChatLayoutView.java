@@ -206,10 +206,10 @@ public class ChatLayoutView extends RelativeLayout {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
-                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration, dates, chatLimit,getNextOffset()));
-                    notifyAdapter(false);
-                }
+//                if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
+//                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration, dates, chatLimit,getNextOffset()));
+//                    notifyAdapter(false);
+//                }
             }
         });
         addSwipeRecyclerView();
