@@ -1,3 +1,4 @@
+include ':ChatLinkPreview'
 include ':ChatLayoutView'
 include ':app'
 rootProject.name = "ChatKitLayout"

@@ -69,12 +69,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         delete(db,Chats.getTableName(roomId));
         delete(db,Urls.getTableName(roomId));
+        delete(db,ContactDbModel.getTableName(roomId));
     }
 
     public void clearAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         clear(db,Chats.getTableName(roomId));
         clear(db,Urls.getTableName(roomId));
+        clear(db,ContactDbModel.getTableName(roomId));
     }
 
     public long insertMessage(Message message) {
@@ -319,8 +321,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-
-
     private Message convertToMessage(Cursor cursor, String myId, MessageConfiguration leftMessageConfiguration, MessageConfiguration rightMessageConfiguration) {
         Message message = convertToMessage(cursor);
         if(myId.equals(message.getSender())) {
@@ -360,6 +360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contact.setContactNumbers(cursor.getString(cursor.getColumnIndex(ContactDbModel.COLUMN_NUMBERS)));
         return contact;
     }
+
 
     private boolean getBooleanValue(int value) {
         if(value >= 1) {

@@ -35,6 +35,7 @@ import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
 import com.nobodyknows.chatlayoutview.Model.User;
 import com.nobodyknows.chatlayoutview.Services.Helper;
 import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
+import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -56,6 +57,7 @@ public class ChatLayoutView extends RelativeLayout {
     private MessageConfiguration leftMessageConfiguration;
     private MessageConfiguration rightMessageConfiguration;
     private ListView listView;
+    protected static ChatLinkDatabaseHelper chatLinkDatabaseHelper;
     private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
     protected static String lastPlayingAudioMessageId = "";
@@ -63,7 +65,7 @@ public class ChatLayoutView extends RelativeLayout {
     protected static ImageView lastPlayingImageView;
     protected static TextView lastPlayingDuration;
     private ListViewAdapter listViewAdapter;
-    private DatabaseHelper databaseHelper;
+    public static DatabaseHelper databaseHelper;
     private String roomId;
     public static String myId="";
     private Boolean useDatabase = false;
@@ -93,6 +95,7 @@ public class ChatLayoutView extends RelativeLayout {
     public void setMainActivityContext(Context mainActivityContext) {
         this.mainActivityContext = mainActivityContext;
         downloadHelper = new DownloadHelper(mainActivityContext);
+        chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(getContext());
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -234,8 +237,15 @@ public class ChatLayoutView extends RelativeLayout {
         return messages;
     }
 
+    private void correctMessage(Message message) {
+        if(message.getMessageType() == MessageType.GIF || message.getMessageType() == MessageType.STICKER) {
+            message.setMessage("");
+        }
+    }
+
     public void addMessage(Message message) {
         if(!helper.messageIdExists(message.getMessageId())) {
+            correctMessage(message);
             message.setRoomId(roomId);
             if(message.getMessageConfiguration() == null) {
                 message.setMessageConfiguration(getMessageConfig(message));

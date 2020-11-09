@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
         chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
         chatLayoutView.addMessage(getContactMessage("12345678",false));
-        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
-        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
+//        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
+//        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
     }
 
     private void changeStatusafterTime(Message message) {

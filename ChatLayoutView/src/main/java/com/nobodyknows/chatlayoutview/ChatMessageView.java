@@ -8,6 +8,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,11 +30,15 @@ import com.nobodyknows.chatlayoutview.Activities.viewmedia;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
+import com.nobodyknows.chatlayoutview.Database.model.Urls;
 import com.nobodyknows.chatlayoutview.Model.Contact;
 import com.nobodyknows.chatlayoutview.Model.ContactParceable;
 import com.nobodyknows.chatlayoutview.Model.Message;
 import com.nobodyknows.chatlayoutview.Model.SharedFile;
 import com.nobodyknows.chatlayoutview.Model.User;
+import com.nobodyknows.chatlinkpreview.ChatLinkView;
+import com.nobodyknows.chatlinkpreview.ChatViewListener;
+import com.nobodyknows.chatlinkpreview.MetaData;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +46,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLayoutListener;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.chatLinkDatabaseHelper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.currentPlayerView;
+import static com.nobodyknows.chatlayoutview.ChatLayoutView.databaseHelper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.helper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingAudioMessageId;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.lastPlayingDuration;
@@ -239,7 +246,9 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
             configRootView();
             if(message.getMessageStatus() != MessageStatus.DELETED) {
                 updateStickerView(message.getMessageConfiguration().getMessagePosition());
+                this.message.setAutoLinkMask(Linkify.ALL);
                 this.message.setText(message.getMessage());
+                checkForLink();
                 this.messageTime.setText(getMessageTime(message));
                 updateMessageStatus(message);
                 if(message.getIsRepliedMessage()) {
@@ -785,6 +794,32 @@ public class ChatMessageView extends RelativeLayout implements MediaPlayer.OnPre
         if(mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
 
+        }
+    }
+
+    private void checkForLink() {
+        if(currentMessage.getMessage().length() > 5) {
+            URLSpan span[] = message.getUrls();
+            if(span.length > 0) {
+                String link = span[0].getURL();
+                if(link != null && link.length() > 0) {
+                    View view = layoutInflater.inflate(R.layout.link_view,null);
+                    ChatLinkView chatLinkView = view.findViewById(R.id.richLinkView);
+                    chatLinkView.setChatLinkDatabaseHelper(chatLinkDatabaseHelper);
+                    chatLinkView.setFromLink(link, new ChatViewListener() {
+                        @Override
+                        public void onSuccess(MetaData metaData) {
+                            customView.setVisibility(VISIBLE);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+                    customView.addView(view);
+                }
+            }
         }
     }
 }
