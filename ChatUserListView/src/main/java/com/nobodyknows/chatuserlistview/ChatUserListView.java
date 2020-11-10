@@ -2,10 +2,14 @@ package com.nobodyknows.chatuserlistview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +24,7 @@ public class ChatUserListView extends RelativeLayout {
 
     private LayoutInflater layoutInflater;
     private Boolean useDatabase = false;
-    private String myId;
+    public static String myId;
     private RelativeLayout root;
     private DatabaseHelper databaseHelper;
     private RecyclerView recyclerView;
@@ -74,7 +78,9 @@ public class ChatUserListView extends RelativeLayout {
     }
 
     public void addUser(User user) {
-        if(!usersIds.contains(user.getUserId())) {
+//        if(!usersIds.contains(user.getUserId()))
+        {
+            user.setName(user.getName());
             usersIds.add(0,user.getUserId());
             users.add(0,user);
             recyclerViewAdapter.notifyItemInserted(0);
@@ -95,4 +101,5 @@ public class ChatUserListView extends RelativeLayout {
         users.add(0,user);
         recyclerViewAdapter.notifyItemMoved(index,0);
     }
+
 }

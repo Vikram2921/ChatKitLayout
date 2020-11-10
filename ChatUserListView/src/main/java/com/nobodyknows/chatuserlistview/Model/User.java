@@ -11,8 +11,12 @@ public class User {
     private String lastMessage;
     private String lastMessageSender;
     private Date lastMessageDate;
+    private Integer unreadMessageCount = 0;
     private MessageStatus lastMessageStatus = MessageStatus.SENDING;
     private boolean isGroup = false;
+    private boolean isBlocked = false;
+    private boolean isPinned = false;
+    private boolean isStared = false;
 
     public String getName() {
         return name;
@@ -76,5 +80,37 @@ public class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Integer getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void setUnreadMessageCount(Integer unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
+    }
+
+    public boolean getIsBlocked() {
+        return isBlocked;
+    }
+
+    public void setIsBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public boolean getIsPinned() {
+        return isPinned;
+    }
+
+    public void setIsPinned(boolean pinned) {
+        isPinned = pinned;
+    }
+
+    public boolean getIsStared() {
+        return isStared;
+    }
+
+    public void setIsStared(boolean stared) {
+        isStared = stared;
     }
 }
