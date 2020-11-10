@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/profile"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="#000000"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_baseline_person_24"></ImageView>
+
+    <TextView
+        android:padding="10dp"
+        android:text="Vikram Signh Rawat"
+        android:textColor="#fff"
+        android:id="@+id/name"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:background="#83000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+    </TextView>
+    <LinearLayout
+        android:layout_below="@id/profile"
+        android:orientation="horizontal"
+        android:background="#FFF"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/chat"
+            android:padding="10dp"
+            android:background="@drawable/custom_ripple"
+            android:src="@drawable/ic_baseline_chat_24"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tint="#009688">
+        </ImageView>
+        <ImageView
+            android:src="@drawable/ic_baseline_call_24"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:id="@+id/callaudio"
+            android:background="@drawable/custom_ripple"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tint="#009688">
+        </ImageView>
+        <ImageView
+            android:src="@drawable/ic_baseline_videocam_24"
+            android:layout_weight="1"
+            android:id="@+id/callvideo"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:background="@drawable/custom_ripple"
+            android:layout_height="match_parent"
+            app:tint="#009688">
+        </ImageView>
+        <ImageView
+            android:src="@drawable/ic_baseline_info_24"
+            android:layout_weight="1"
+            android:id="@+id/info"
+            android:padding="10dp"
+            android:background="@drawable/custom_ripple"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tint="#009688">
+        </ImageView>
+    </LinearLayout>
+</RelativeLayout>

@@ -34,6 +34,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.vistrav:pop:2.3'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.github.curioustechizen.android-ago:library:1.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'

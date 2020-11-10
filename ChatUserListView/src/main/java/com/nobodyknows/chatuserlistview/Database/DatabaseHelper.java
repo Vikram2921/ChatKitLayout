@@ -11,11 +11,15 @@ import com.nobodyknows.chatuserlistview.Database.model.Users;
 import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NOBODYKNOW_CHAT_USER_LIST";
+    private String datePattern = "DD-MM-YYYY HH:mm:ss";
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -49,13 +53,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         clear(db,Users.getTableName());
     }
 
-    public int updateUser(String userId, String lastMessage, String lastMessageSender, Date lastMessageDate, MessageStatus lastMessageStatus) {
+    public int updateUser(String userId, String lastMessage, String lastMessageSender, Date lastMessageDate, MessageStatus lastMessageStatus,Integer unreadCount) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Users.COLUMN_LASTMESSAGE, lastMessage);
         values.put(Users.COLUMN_LASTMESSAGEDATE, getConvertedDate(lastMessageDate));
+        values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING, getFormattedDateForSorting(lastMessageDate));
         values.put(Users.COLUMN_LASTMESSAGESENDER, lastMessageSender);
         values.put(Users.COLUMN_LASTMESSAGESTATUS, lastMessageStatus.ordinal());
+        values.put(Users.COLUMN_UNREADCOUNT, unreadCount);
         return db.update(Users.getTableName(), values, Users.COLUMN_USERID + " = ?", new String[]{userId});
     }
 
@@ -78,8 +84,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Users.COLUMN_LASTMESSAGE,user.getLastMessage());
         values.put(Users.COLUMN_LASTMESSAGESENDER,user.getLastMessageSender());
         values.put(Users.COLUMN_LASTMESSAGEDATE,getConvertedDate(user.getLastMessageDate()));
+        values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING,getFormattedDateForSorting(user.getLastMessageDate()));
         values.put(Users.COLUMN_LASTMESSAGESTATUS,user.getLastMessageStatus().ordinal());
         values.put(Users.COLUMN_ISGROUP,getBooleanToIntValue(user.getIsGroup()));
+        values.put(Users.COLUMN_ISBLOCKED,getBooleanToIntValue(user.getIsBlocked()));
+        values.put(Users.COLUMN_ISPINNED,getBooleanToIntValue(user.getIsPinned()));
+        values.put(Users.COLUMN_ISMUTED,getBooleanToIntValue(user.getIsMuted()));
+        values.put(Users.COLUMN_UNREADCOUNT,user.getUnreadMessageCount());
         return values;
     }
 
@@ -93,6 +104,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setLastMessageDate(getReveretdDate(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGEDATE))));
         user.setLastMessageStatus(MessageStatus.values()[cursor.getInt(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGESTATUS))]);
         user.setIsGroup(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISGROUP))));
+        user.setIsBlocked(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISBLOCKED))));
+        user.setIsPinned(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISPINNED))));
+        user.setIsMuted(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISMUTED))));
+        user.setUnreadMessageCount(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_UNREADCOUNT)));
         return user;
     }
 
@@ -106,15 +121,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return true;
-    }
-
-    private String getConvertedDate(Date date) {
-        return date.toString();
-    }
-
-    private Date getReveretdDate(String date) {
-        Date newdate = new Date(date);
-        return newdate;
     }
 
     private boolean getBooleanValue(int value) {
@@ -131,6 +137,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+
+    public void getOrderedList(ArrayList<String> usersIds, ArrayList<User> users) {
+        String selectQuery = "SELECT  * FROM " + Users.getTableName() + " ORDER BY " + Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING + " DESC";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                User user = convertToUser(cursor);
+                usersIds.add(user.getUserId());
+                users.add(user);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+    }
+
+    private long getFormattedDateForSorting(Date date) {
+        return date.getTime();
+    }
+
+    private String getConvertedDate(Date date) {
+        return date.toString();
+    }
+
+    private Date getReveretdDate(String date) {
+        Date newdate = new Date(date);
+        return newdate;
+    }
 
 
 }

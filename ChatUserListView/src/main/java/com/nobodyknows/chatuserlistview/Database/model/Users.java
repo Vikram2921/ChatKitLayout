@@ -14,8 +14,13 @@ public class Users {
     private String lastMessage;
     private String lastMessageSender;
     private String lastMessageDate;
+    private Integer lastMessageDateForSorting;
     private Integer lastMessageStatus;
     private Integer isGroup;
+    private Integer isBlocked;
+    private Integer isPinned;
+    private Integer isMuted;
+    private Integer unreadCount;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERID = "userId";
@@ -24,8 +29,13 @@ public class Users {
     public static final String COLUMN_LASTMESSAGE = "lastMessage";
     public static final String COLUMN_LASTMESSAGESENDER = "lastMessageSender";
     public static final String COLUMN_LASTMESSAGEDATE = "lastMessageDate";
+    public static final String COLUMN_LASTMESSAGEDATE_FOR_SORTING = "lastMessageDateForSorting";
     public static final String COLUMN_LASTMESSAGESTATUS = "lastMessageStatus";
     public static final String COLUMN_ISGROUP = "isGroup";
+    public static final String COLUMN_ISBLOCKED = "isBlocked";
+    public static final String COLUMN_ISPINNED = "isPinned";
+    public static final String COLUMN_ISMUTED = "isMuted";
+    public static final String COLUMN_UNREADCOUNT = "unreadCount";
 
 
     public static final String getTableName() {
@@ -41,8 +51,13 @@ public class Users {
                 + COLUMN_LASTMESSAGE +" TEXT,"
                 + COLUMN_LASTMESSAGESENDER +" TEXT,"
                 + COLUMN_LASTMESSAGEDATE +" TEXT,"
+                + COLUMN_LASTMESSAGEDATE_FOR_SORTING +" INTEGER,"
                 + COLUMN_LASTMESSAGESTATUS +" INTEGER,"
-                + COLUMN_ISGROUP +" INTEGER"
+                + COLUMN_ISGROUP +" INTEGER,"
+                + COLUMN_ISBLOCKED +" INTEGER,"
+                + COLUMN_ISPINNED +" INTEGER,"
+                + COLUMN_UNREADCOUNT +" INTEGER,"
+                + COLUMN_ISMUTED +" INTEGER"
                 +")";
         return CREATE_TABLE;
     }
@@ -103,6 +118,14 @@ public class Users {
         this.lastMessageDate = lastMessageDate;
     }
 
+    public Integer getLastMessageDateForSorting() {
+        return lastMessageDateForSorting;
+    }
+
+    public void setLastMessageDateForSorting(Integer lastMessageDateForSorting) {
+        this.lastMessageDateForSorting = lastMessageDateForSorting;
+    }
+
     public Integer getLastMessageStatus() {
         return lastMessageStatus;
     }
@@ -117,5 +140,37 @@ public class Users {
 
     public void setIsGroup(Integer isGroup) {
         this.isGroup = isGroup;
+    }
+
+    public Integer getIsBlocked() {
+        return isBlocked;
+    }
+
+    public void setIsBlocked(Integer blocked) {
+        isBlocked = blocked;
+    }
+
+    public Integer getIsPinned() {
+        return isPinned;
+    }
+
+    public void setIsPinned(Integer pinned) {
+        isPinned = pinned;
+    }
+
+    public Integer getIsMuted() {
+        return isMuted;
+    }
+
+    public void setIsMuted(Integer isMuted) {
+        this.isMuted = isMuted;
+    }
+
+    public Integer getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(Integer unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }

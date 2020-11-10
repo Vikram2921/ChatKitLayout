@@ -16,7 +16,7 @@ public class User {
     private boolean isGroup = false;
     private boolean isBlocked = false;
     private boolean isPinned = false;
-    private boolean isStared = false;
+    private boolean isMuted = false;
 
     public String getName() {
         return name;
@@ -106,11 +106,11 @@ public class User {
         isPinned = pinned;
     }
 
-    public boolean getIsStared() {
-        return isStared;
+    public boolean getIsMuted() {
+        return isMuted;
     }
 
-    public void setIsStared(boolean stared) {
-        isStared = stared;
+    public void setIsMuted(boolean muted) {
+        isMuted = muted;
     }
 }

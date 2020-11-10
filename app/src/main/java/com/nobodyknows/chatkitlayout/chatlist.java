@@ -3,8 +3,10 @@ package com.nobodyknows.chatkitlayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.nobodyknows.chatuserlistview.ChatUserListView;
+import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
 import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
 
@@ -20,6 +22,34 @@ public class chatlist extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatlist);
         chatUserListView = findViewById(R.id.chatuserlistview);
+        chatUserListView.initialize(this, new ChatUserListViewListener() {
+            @Override
+            public void onUserSelect(User user) {
+                int index = user.getLastMessageStatus().ordinal();
+                index++;
+                if(index <=4) {
+                    user.setLastMessageStatus(MessageStatus.values()[index]);
+                }
+                user.setUnreadMessageCount(user.getUnreadMessageCount() -1);
+                user.setLastMessageDate(new Date());
+                chatUserListView.updateLastMessage(user);
+            }
+
+            @Override
+            public void onClickAudioCall(User user) {
+
+            }
+
+            @Override
+            public void onClickVideoCall(User user) {
+
+            }
+
+            @Override
+            public void onClickInfoButton(User user) {
+
+            }
+        });
         addUser("https://image.winudf.com/v2/image/Y29tLmRlc2l3YWxscGFwZXJzLlN1bm55TGVvbmVfc2NyZWVuXzRfMTUyOTE2MjM1OV8wNDA/screen-4.jpg?fakeurl=1&type=.jpg");
         addUser("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg");
         addUser("https://c8.alamy.com/comp/W59HGN/new-delhi-india-26th-july-2019-bollywood-actress-warina-hussain-during-india-couture-week-2019-credit-jyoti-kapoorpacific-pressalamy-live-news-W59HGN.jpg");
@@ -50,14 +80,15 @@ public class chatlist extends AppCompatActivity {
 
     private void addUser(String url) {
         User user = new User();
+        i++;
         user.setIsGroup(false);
         user.setLastMessageStatus(MessageStatus.SENDING);
         user.setUnreadMessageCount(randBetween(-10,40));
         user.setLastMessage("Hello are you busy i want to to meet you can you meet me at that place today at 10:30");
         user.setLastMessageDate(getRandomeDate());
         user.setLastMessageSender("7014550298");
-        user.setUserId("8442000360");
-        user.setName("Actress # "+(i++));
+        user.setUserId("8442000360"+i);
+        user.setName("Actress # "+(i));
         user.setProfileUrl(url);
         chatUserListView.addUser(user);
     }

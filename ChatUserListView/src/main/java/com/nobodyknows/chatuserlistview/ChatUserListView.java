@@ -1,10 +1,12 @@
 package com.nobodyknows.chatuserlistview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nobodyknows.chatuserlistview.Adapters.RecyclerViewAdapter;
 import com.nobodyknows.chatuserlistview.Database.DatabaseHelper;
+import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
 import com.nobodyknows.chatuserlistview.Model.User;
 
 import java.util.ArrayList;
@@ -28,9 +31,15 @@ public class ChatUserListView extends RelativeLayout {
     private RelativeLayout root;
     private DatabaseHelper databaseHelper;
     private RecyclerView recyclerView;
+    private Activity activity;
     private RecyclerViewAdapter recyclerViewAdapter;
+    private ChatUserListViewListener chatUserListViewListener;
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<String> usersIds = new ArrayList<>();
+    public ChatUserListViewListener getChatUserListViewListener() {
+        return chatUserListViewListener;
+    }
+
     public ChatUserListView(Context context) {
         super(context);
         init(null,0);
@@ -60,12 +69,25 @@ public class ChatUserListView extends RelativeLayout {
         if(useDatabase) {
             databaseHelper = new DatabaseHelper(getContext());
         }
+    }
+
+    public void initialize(Activity activity,ChatUserListViewListener chatUserListViewListener) {
+        this.chatUserListViewListener = chatUserListViewListener;
+        this.activity = activity;
+        if(useDatabase) {
+            loadUsersFromDB();
+        }
         continueRecyclerView();
+
+    }
+
+    private void loadUsersFromDB() {
+        databaseHelper.getOrderedList(usersIds,users);
     }
 
     private void continueRecyclerView() {
         recyclerView = findViewById(R.id.userlistview);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),users);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),users,chatUserListViewListener,activity);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -78,28 +100,34 @@ public class ChatUserListView extends RelativeLayout {
     }
 
     public void addUser(User user) {
-//        if(!usersIds.contains(user.getUserId()))
-        {
+        if(!usersIds.contains(user.getUserId())) {
             user.setName(user.getName());
             usersIds.add(0,user.getUserId());
             users.add(0,user);
             recyclerViewAdapter.notifyItemInserted(0);
+            if(useDatabase) {
+                databaseHelper.insertUser(user);
+            }
         }
     }
 
-    public void updateLastMessage(String userId, String lastMessage, String lastMessageSender, Date lastMessageDate, MessageStatus lastMessageStatus) {
-        databaseHelper.updateUser(userId,lastMessage,lastMessageSender,lastMessageDate,lastMessageStatus);
-        changeToTop(userId);
+    public void updateLastMessage(User user) {
+        if(useDatabase) {
+            databaseHelper.updateUser(user.getUserId(),user.getLastMessage(),user.getLastMessageSender(),user.getLastMessageDate(),user.getLastMessageStatus(),user.getUnreadMessageCount());
+        }
+        changeToTop(user);
     }
 
-    private void changeToTop(String userId) {
-        int index = usersIds.indexOf(userId);
-        User user = users.get(index);
+    private void changeToTop(User user) {
+        int index = usersIds.indexOf(user.getUserId());
+        Log.d("TAGINDEX",index+"");
         usersIds.remove(index);
         users.remove(index);
         usersIds.add(0,user.getUserId());
         users.add(0,user);
         recyclerViewAdapter.notifyItemMoved(index,0);
+        recyclerViewAdapter.notifyItemChanged(0);
+        recyclerView.scrollToPosition(0);
     }
 
 }

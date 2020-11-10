@@ -6,12 +6,12 @@
     android:id="@+id/layout"
     android:background="@drawable/custom_ripple"
     android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_height="80dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageView"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         app:civ_circle_background_color="#000"
         app:civ_border_width="0dp"
         android:src="@drawable/ic_baseline_person_24"
@@ -22,14 +22,14 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_marginLeft="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:fontFamily="sans-serif-condensed-medium"
         android:singleLine="true"
-        android:textSize="14dp"
         android:text="Vikram Singh Rawat"
         android:textColor="#000"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintBottom_toTopOf="@id/lastemessage"
         app:layout_constraintStart_toEndOf="@+id/circleImageView"
         app:layout_constraintTop_toTopOf="@id/circleImageView"></TextView>

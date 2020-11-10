@@ -1,6 +1,8 @@
 package com.nobodyknows.chatuserlistview.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
 import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
 import com.nobodyknows.chatuserlistview.R;
+import com.nobodyknows.chatuserlistview.view_profile;
+import com.vistrav.pop.Pop;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,9 +35,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private ArrayList<User> users;
     private Context context;
-    public RecyclerViewAdapter(Context context, ArrayList<User> users) {
+    private AlertDialog pop;
+    private Activity activity;
+    private ChatUserListViewListener chatUserListViewListener;
+    public RecyclerViewAdapter(Context context, ArrayList<User> users, ChatUserListViewListener chatUserListViewListener, Activity activity) {
         this.context = context;
         this.users = users;
+        this.chatUserListViewListener = chatUserListViewListener;
+        this.activity = activity;
     }
 
     @NonNull
@@ -78,6 +90,81 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             holder.lastDate.setTextColor(Color.parseColor("#757575"));
              holder.unreadMessageCount.setVisibility(View.GONE);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chatUserListViewListener.onUserSelect(user);
+            }
+        });
+
+        holder.profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 pop = Pop.on(activity).with()
+                        .cancelable(true)
+                        .layout(R.layout.profile_view)
+                        .show(new Pop.View() {
+                            @Override
+                            public void prepare(@Nullable View view) {
+                                ImageView profile = view.findViewById(R.id.profile);
+                                if (user.getProfileUrl() != null && user.getProfileUrl().length() > 0) {
+                                    Glide.with(context).load(user.getProfileUrl()).placeholder(R.drawable.ic_baseline_person_24).into(profile);
+                                } else {
+                                    Glide.with(context).load(R.drawable.ic_baseline_person_24).into(profile);
+                                }
+                                profile.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(context, view_profile.class);
+                                        intent.putExtra("name",holder.name.getText());
+                                        intent.putExtra("profile",user.getProfileUrl());
+                                        context.startActivity(intent);
+                                        pop.cancel();
+                                    }
+                                });
+                                TextView name = view.findViewById(R.id.name);
+                                name.setText(holder.name.getText());
+                                ImageView chat = view.findViewById(R.id.chat);
+                                ImageView callaudio = view.findViewById(R.id.callaudio);
+                                ImageView callvideo = view.findViewById(R.id.callvideo);
+                                ImageView info = view.findViewById(R.id.info);
+                                chat.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        chatUserListViewListener.onUserSelect(user);
+                                        pop.cancel();
+                                    }
+                                });
+
+                                callaudio.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        chatUserListViewListener.onClickAudioCall(user);
+                                        pop.cancel();
+                                    }
+                                });
+
+                                callvideo.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        chatUserListViewListener.onClickVideoCall(user);
+                                        pop.cancel();
+                                    }
+                                });
+
+                                info.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        chatUserListViewListener.onClickInfoButton(user);
+                                        pop.cancel();
+                                    }
+                                });
+
+                            }
+                        });
+
+            }
+        });
     }
 
 
