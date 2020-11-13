@@ -1,8 +1,8 @@
 package com.nobodyknows.chatkitlayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.nobodyknows.chatuserlistview.ChatUserListView;
 import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;

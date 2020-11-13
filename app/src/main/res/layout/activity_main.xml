@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     tools:context=".MainActivity">
-    <com.nobodyknows.chatlayoutview.ChatLayoutView
+    <com.nobodyknows.chatlistlayoutview.ChatLayoutView
         android:layout_width="match_parent"
         android:id="@+id/chatlayout_view"
         app:view_mode="RecyclerView"
         app:useDatabase="true"
         android:layout_above="@id/messageentry"
         android:layout_height="match_parent">
-    </com.nobodyknows.chatlayoutview.ChatLayoutView>
+    </com.nobodyknows.chatlistlayoutview.ChatLayoutView>
     <LinearLayout
         android:id="@+id/messageentry"
         android:layout_alignParentBottom="true"

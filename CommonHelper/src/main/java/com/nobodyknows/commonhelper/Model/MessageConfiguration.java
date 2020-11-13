@@ -3,7 +3,6 @@ package com.nobodyknows.commonhelper.Model;
 import android.graphics.Color;
 
 import com.nobodyknows.commonhelper.CONSTANT.MessagePosition;
-import com.nobodyknows.commonhelper.R;
 
 import static com.nobodyknows.commonhelper.CONSTANT.MessagePosition.LEFT;
 

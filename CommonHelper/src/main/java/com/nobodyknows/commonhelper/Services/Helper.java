@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
 import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 import com.nobodyknows.commonhelper.Model.Message;

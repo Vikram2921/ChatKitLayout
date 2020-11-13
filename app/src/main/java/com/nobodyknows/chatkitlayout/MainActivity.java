@@ -1,7 +1,5 @@
 package com.nobodyknows.chatkitlayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,8 +10,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import com.nobodyknows.chatlayoutview.ChatLayoutView;
-import com.nobodyknows.chatlayoutview.LayoutService;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.nobodyknows.chatlistlayoutview.ChatLayoutView;
+import com.nobodyknows.chatlistlayoutview.Services.LayoutService;
 import com.nobodyknows.commonhelper.CONSTANT.MessagePosition;
 import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
 import com.nobodyknows.commonhelper.CONSTANT.MessageType;

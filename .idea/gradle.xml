@@ -11,8 +11,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/ChatLayoutView" />
             <option value="$PROJECT_DIR$/ChatLinkPreview" />
+            <option value="$PROJECT_DIR$/ChatListLayoutView" />
             <option value="$PROJECT_DIR$/ChatUserListView" />
             <option value="$PROJECT_DIR$/CommonHelper" />
             <option value="$PROJECT_DIR$/MessageView" />

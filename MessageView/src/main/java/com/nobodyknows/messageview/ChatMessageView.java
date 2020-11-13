@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +40,6 @@ import com.nobodyknows.commonhelper.Services.Helper;
 import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 import com.nobodyknows.messageview.Activities.ViewContacts;
 import com.nobodyknows.messageview.Activities.viewmedia;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;

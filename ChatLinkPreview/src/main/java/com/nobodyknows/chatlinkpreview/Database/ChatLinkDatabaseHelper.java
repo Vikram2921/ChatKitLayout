@@ -11,11 +11,6 @@ import androidx.annotation.Nullable;
 import com.nobodyknows.chatlinkpreview.Database.model.Links;
 import com.nobodyknows.chatlinkpreview.MetaData;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
 public class ChatLinkDatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NOBODYKNOW_LINKS";

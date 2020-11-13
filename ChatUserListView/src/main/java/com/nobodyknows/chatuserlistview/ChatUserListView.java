@@ -3,15 +3,11 @@ package com.nobodyknows.chatuserlistview;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +17,6 @@ import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
 import com.nobodyknows.chatuserlistview.Model.User;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ChatUserListView extends RelativeLayout {
 
