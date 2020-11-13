@@ -8,18 +8,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 import com.nobodyknows.chatuserlistview.Database.model.Users;
-import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NOBODYKNOW_CHAT_USER_LIST";
-    private String datePattern = "DD-MM-YYYY HH:mm:ss";
+
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -53,16 +52,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         clear(db,Users.getTableName());
     }
 
-    public int updateUser(String userId, String lastMessage, String lastMessageSender, Date lastMessageDate, MessageStatus lastMessageStatus,Integer unreadCount) {
+    public int updateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(Users.COLUMN_LASTMESSAGE, lastMessage);
-        values.put(Users.COLUMN_LASTMESSAGEDATE, getConvertedDate(lastMessageDate));
-        values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING, getFormattedDateForSorting(lastMessageDate));
-        values.put(Users.COLUMN_LASTMESSAGESENDER, lastMessageSender);
-        values.put(Users.COLUMN_LASTMESSAGESTATUS, lastMessageStatus.ordinal());
-        values.put(Users.COLUMN_UNREADCOUNT, unreadCount);
-        return db.update(Users.getTableName(), values, Users.COLUMN_USERID + " = ?", new String[]{userId});
+        values.put(Users.COLUMN_LASTMESSAGE, user.getLastMessage());
+        values.put(Users.COLUMN_LASTMESSAGETYPE,user.getLastMessageType().ordinal());
+        values.put(Users.COLUMN_LASTMESSAGEDATE, getConvertedDate(user.getLastMessageDate()));
+        values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING, getFormattedDateForSorting(user.getLastMessageDate()));
+        values.put(Users.COLUMN_LASTMESSAGESENDER, user.getLastMessageSender());
+        values.put(Users.COLUMN_LASTMESSAGESTATUS, user.getLastMessageStatus().ordinal());
+        values.put(Users.COLUMN_UNREADCOUNT, user.getUnreadMessageCount());
+        return db.update(Users.getTableName(), values, Users.COLUMN_USERID + " = ?", new String[]{user.getUserId()});
     }
 
     public long insertUser(User user) {
@@ -86,6 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Users.COLUMN_LASTMESSAGEDATE,getConvertedDate(user.getLastMessageDate()));
         values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING,getFormattedDateForSorting(user.getLastMessageDate()));
         values.put(Users.COLUMN_LASTMESSAGESTATUS,user.getLastMessageStatus().ordinal());
+        values.put(Users.COLUMN_LASTMESSAGETYPE,user.getLastMessageType().ordinal());
         values.put(Users.COLUMN_ISGROUP,getBooleanToIntValue(user.getIsGroup()));
         values.put(Users.COLUMN_ISBLOCKED,getBooleanToIntValue(user.getIsBlocked()));
         values.put(Users.COLUMN_ISPINNED,getBooleanToIntValue(user.getIsPinned()));
@@ -103,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setLastMessageSender(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGESENDER)));
         user.setLastMessageDate(getReveretdDate(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGEDATE))));
         user.setLastMessageStatus(MessageStatus.values()[cursor.getInt(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGESTATUS))]);
+        user.setLastMessageType(MessageType.values()[cursor.getInt(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGETYPE))]);
         user.setIsGroup(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISGROUP))));
         user.setIsBlocked(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISBLOCKED))));
         user.setIsPinned(getBooleanValue(cursor.getInt(cursor.getColumnIndex(Users.COLUMN_ISPINNED))));

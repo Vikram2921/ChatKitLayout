@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.bumptech.glide.Glide;
 import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 
@@ -20,12 +23,12 @@ import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
  * Created by ponna on 16-01-2018.
  */
 
-public class ChatLinkView extends RelativeLayout {
+public class ChatLinkView extends ConstraintLayout {
 
     private View view;
     private Context context;
     private ImageView imageView;
-    private LinearLayout root;
+    private ConstraintLayout root;
     private TextView textViewTitle;
     private TextView textViewDesp;
     private TextView textViewUrl;
@@ -56,11 +59,11 @@ public class ChatLinkView extends RelativeLayout {
         view = inflater.inflate(R.layout.link_layout,this,true);
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs,R.styleable.ChatLinkView);
         useDatabase= typedArray.getBoolean(R.styleable.ChatLinkView_useDatabase,false);
-        imageView = (ImageView) findViewById(R.id.rich_link_image);
+        imageView = findViewById(R.id.rich_link_image);
         root = view.findViewById(R.id.rich_link_card);
-        textViewTitle = (TextView) findViewById(R.id.rich_link_title);
-        textViewDesp = (TextView) findViewById(R.id.rich_link_desp);
-        textViewUrl = (TextView) findViewById(R.id.rich_link_url);
+        textViewTitle = findViewById(R.id.rich_link_title);
+        textViewDesp = findViewById(R.id.rich_link_desp);
+        textViewUrl = findViewById(R.id.rich_link_url);
     }
 
     public void setFromLink(String url,ChatViewListener chatViewListener) {
@@ -139,6 +142,7 @@ public class ChatLinkView extends RelativeLayout {
     }
 
     private void setLink(String url, final ChatViewListener chatViewListener) {
+        Log.d("TAGURL", "setLink: "+url);
         LinkPreview linkPreview = new LinkPreview(new ResponseListener() {
             @Override
             public void onData(MetaData metaData) {

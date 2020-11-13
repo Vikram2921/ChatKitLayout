@@ -7,17 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
-
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
 import com.nobodyknows.chatlayoutview.Database.model.Chats;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Database.model.ContactDbModel;
 import com.nobodyknows.chatlayoutview.Database.model.Urls;
-import com.nobodyknows.chatlayoutview.Model.Contact;
-import com.nobodyknows.chatlayoutview.Model.Message;
-import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
-import com.nobodyknows.chatlayoutview.Model.SharedFile;
-import com.nobodyknows.chatlayoutview.Services.Helper;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
+import com.nobodyknows.commonhelper.Model.Contact;
+import com.nobodyknows.commonhelper.Model.Message;
+import com.nobodyknows.commonhelper.Model.MessageConfiguration;
+import com.nobodyknows.commonhelper.Model.SharedFile;
+import com.nobodyknows.commonhelper.Services.Helper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -178,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Message getMessage(String messageId) {
         Message message = null;
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " WHERE " +
-                Chats.COLUMN_MESSAGE_ID + " = "+messageId;
+                Chats.COLUMN_MESSAGE_ID + " = '"+messageId+"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -194,7 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<SharedFile> getSharedFiles(String messageId) {
         ArrayList<SharedFile> files = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + Urls.getTableName(roomId) + " WHERE " +
-                Urls.COLUMN_MESSAGE_ID + " = "+messageId;
+                Urls.COLUMN_MESSAGE_ID + " = '"+messageId+"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -210,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Contact> getContacts(String messageId) {
         ArrayList<Contact> files = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + ContactDbModel.getTableName(roomId) + " WHERE " +
-                ContactDbModel.COLUMN_MESSAGE_ID + " = "+messageId;
+                ContactDbModel.COLUMN_MESSAGE_ID + " = '"+messageId+"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -299,7 +298,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private Boolean isMessageExist(String messageId,SQLiteDatabase db) {
         String selectQuery = "SELECT  * FROM " + Chats.getTableName(roomId) + " WHERE " +
-                Chats.COLUMN_MESSAGE_ID + " = "+messageId;
+                Chats.COLUMN_MESSAGE_ID + " = '"+messageId+"'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if(cursor.getCount() <=0) {
             cursor.close();

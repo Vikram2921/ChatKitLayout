@@ -113,7 +113,7 @@ public class ChatUserListView extends RelativeLayout {
 
     public void updateLastMessage(User user) {
         if(useDatabase) {
-            databaseHelper.updateUser(user.getUserId(),user.getLastMessage(),user.getLastMessageSender(),user.getLastMessageDate(),user.getLastMessageStatus(),user.getUnreadMessageCount());
+            databaseHelper.updateUser(user);
         }
         changeToTop(user);
     }

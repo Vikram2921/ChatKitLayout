@@ -4,25 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.ChatLayoutView;
-import com.nobodyknows.chatlayoutview.Interfaces.ChatLayoutListener;
-import com.nobodyknows.chatlayoutview.Model.Contact;
-import com.nobodyknows.chatlayoutview.Model.Message;
-import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
-import com.nobodyknows.chatlayoutview.Model.SharedFile;
-import com.nobodyknows.chatlayoutview.Model.User;
-import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadView;
-import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
+import com.nobodyknows.chatlayoutview.LayoutService;
+import com.nobodyknows.commonhelper.CONSTANT.MessagePosition;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
+import com.nobodyknows.commonhelper.Interfaces.ChatLayoutListener;
+import com.nobodyknows.commonhelper.Model.Contact;
+import com.nobodyknows.commonhelper.Model.Message;
+import com.nobodyknows.commonhelper.Model.MessageConfiguration;
+import com.nobodyknows.commonhelper.Model.SharedFile;
+import com.nobodyknows.commonhelper.Model.User;
+import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     Boolean viewAdded = false;
     LinearLayout linearLayout;
     Message selmessage;
+    private Boolean haveLink = false;
     View selView;
     ChatLayoutView chatLayoutView;
     ArrayList<String> ids = new ArrayList<>(Arrays.asList("7014550298","8442000360"));
@@ -47,9 +49,8 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         linearLayout = findViewById(R.id.viewhold);
         uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getApplicationContext());
         chatLayoutView = findViewById(R.id.chatlayout_view);
-        chatLayoutView.setChatLayoutListener(this);
         chatLayoutView.setUploadAndDownloadViewHandler(uploadAndDownloadViewHandler);
-        chatLayoutView.setMainActivityContext(getApplicationContext());
+        chatLayoutView.initialize(getApplicationContext(),this);
         chatLayoutView.setDownloadPath(MessageType.IMAGE,"/ChatKitLayout/Images");
         chatLayoutView.setDownloadPath(MessageType.VIDEO,"/ChatKitLayout/Videos");
         chatLayoutView.setDownloadPath(MessageType.AUDIO,"/ChatKitLayout/Audios");
@@ -64,13 +65,34 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         User freindUserObject = new User();
         freindUserObject.setName("Pritam Singh Rathore");
         freindUserObject.setProfileUrl("");
-        freindUserObject.setColor(Color.RED);
+        freindUserObject.setColor(-806962);
         freindUserObject.setUserId("8442000360");
         chatLayoutView.addUser(myUserObject);
         chatLayoutView.addUser(freindUserObject);
         chatLayoutView.loadAllDBMessage();
         Button button = findViewById(R.id.clickme);
         EditText editText = findViewById(R.id.message);
+        editText.setAutoLinkMask(Linkify.ALL);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(LayoutService.containsURL(s.toString())) {
+                    haveLink = true;
+                } else {
+                    haveLink = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,11 +100,15 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                     Message message;
                     if(viewAdded) {
                         message = getReplyMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",selmessage.getMessageId());
-                        
                         linearLayout.removeViewAt(0);
                         viewAdded = false;
-                    } else {
+                    }
+                    else {
                         message = getMessages(editText.getText().toString().trim(),new Random().nextInt(9999)+"",false);
+                    }
+                    if(haveLink) {
+                        message.setMessageType(MessageType.LINK_TEXT_VIEW);
+                        haveLink = false;
                     }
                     chatLayoutView.addMessage(message);
                     editText.setText("");
@@ -90,15 +116,16 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                 }
             }
         });
-        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
-        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
-        chatLayoutView.addMessage(getContactMessage("12345678",false));
+        chatLayoutView.addMessage(getInfoMessages("Messaged and calls are ene-to-end encrypted. No one outside of this chat,Not even ChatMe, can read or listen to them. Tap to learn more","rightInfo",false,"7014550298","8014550298"));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
+//        chatLayoutView.addMessage(getContactMessage("12345678",false));
 //        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
 //        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
     }
 
     private void changeStatusafterTime(Message message) {
-        chatLayoutView.updateMessageStatus(message.getMessageId(),MessageStatus.SENT);
+        chatLayoutView.updateMessageStatus(message.getMessageId(), MessageStatus.SENT);
     }
 
 
@@ -118,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         return message;
     }
 
-    private Contact getContact(String name,String number) {
+    private Contact getContact(String name, String number) {
         Contact contact = new Contact();
         contact.setName(name);
         contact.setContactNumbers(number);
@@ -189,6 +216,26 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         message.setMessage(messageText);
         message.setSender(random);
         message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
+        message.setSeenAt(new Date());
+        message.setSentAt(new Date());
+        message.setReceivedAt(new Date());
+        return message;
+    }
+
+    private Message getInfoMessages(String messageText,String id,Boolean isReplied,String sender,String reciver) {
+        //String random = ids.get(new Random().nextInt(2));
+        Message message = new Message();
+        message.setMessageId(id);
+        message.setMessageType(MessageType.WARNING);
+        message.setIsRepliedMessage(isReplied);
+        message.setRepliedMessageId("1126");
+        if(isReplied) {
+            message.setMessageType(MessageType.VIDEO);
+            message.addSharedFile(getSharedFile("https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4",message.getMessageId()+"_"+i++,"jpg"));
+        }
+        message.setMessage(messageText);
+        message.setSender(sender);
+        message.setReceiver(reciver);
         message.setSeenAt(new Date());
         message.setSentAt(new Date());
         message.setReceivedAt(new Date());
@@ -292,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         return message;
     }
 
-    private SharedFile getSharedFile(String url,String name,String exetension) {
+    private SharedFile getSharedFile(String url, String name, String exetension) {
         SharedFile sharedFile = new SharedFile();
         sharedFile.setFileId("FILE_"+name+"_7014550298_"+new Random().nextInt(9999));
         sharedFile.setSize(10000.0);

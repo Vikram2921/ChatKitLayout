@@ -3,12 +3,12 @@ package com.nobodyknows.chatkitlayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.nobodyknows.chatuserlistview.ChatUserListView;
 import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
-import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,7 +16,7 @@ import java.util.GregorianCalendar;
 public class chatlist extends AppCompatActivity {
 
     private ChatUserListView chatUserListView;
-    int i=0;
+    int i=0,j=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +81,12 @@ public class chatlist extends AppCompatActivity {
     private void addUser(String url) {
         User user = new User();
         i++;
+        j++;
+        if(j >= 11) {
+            j=0;
+        }
         user.setIsGroup(false);
+        user.setLastMessageType(MessageType.values()[j]);
         user.setLastMessageStatus(MessageStatus.SENDING);
         user.setUnreadMessageCount(randBetween(-10,40));
         user.setLastMessage("Hello are you busy i want to to meet you can you meet me at that place today at 10:30");

@@ -1,9 +1,5 @@
 package com.nobodyknows.chatuserlistview.Database.model;
 
-import com.nobodyknows.chatuserlistview.MessageStatus;
-
-import java.util.Date;
-
 public class Users {
     public static final String TABLE_NAME = "Users";
 
@@ -16,6 +12,7 @@ public class Users {
     private String lastMessageDate;
     private Integer lastMessageDateForSorting;
     private Integer lastMessageStatus;
+    private Integer lastMessageType;
     private Integer isGroup;
     private Integer isBlocked;
     private Integer isPinned;
@@ -31,6 +28,7 @@ public class Users {
     public static final String COLUMN_LASTMESSAGEDATE = "lastMessageDate";
     public static final String COLUMN_LASTMESSAGEDATE_FOR_SORTING = "lastMessageDateForSorting";
     public static final String COLUMN_LASTMESSAGESTATUS = "lastMessageStatus";
+    public static final String COLUMN_LASTMESSAGETYPE = "lastMessageType";
     public static final String COLUMN_ISGROUP = "isGroup";
     public static final String COLUMN_ISBLOCKED = "isBlocked";
     public static final String COLUMN_ISPINNED = "isPinned";
@@ -53,6 +51,7 @@ public class Users {
                 + COLUMN_LASTMESSAGEDATE +" TEXT,"
                 + COLUMN_LASTMESSAGEDATE_FOR_SORTING +" INTEGER,"
                 + COLUMN_LASTMESSAGESTATUS +" INTEGER,"
+                + COLUMN_LASTMESSAGETYPE +" INTEGER,"
                 + COLUMN_ISGROUP +" INTEGER,"
                 + COLUMN_ISBLOCKED +" INTEGER,"
                 + COLUMN_ISPINNED +" INTEGER,"
@@ -172,5 +171,13 @@ public class Users {
 
     public void setUnreadCount(Integer unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public Integer getLastMessageType() {
+        return lastMessageType;
+    }
+
+    public void setLastMessageType(Integer lastMessageType) {
+        this.lastMessageType = lastMessageType;
     }
 }

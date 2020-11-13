@@ -10,9 +10,6 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
-    <application>
-        <activity android:name=".Activities.ViewContacts"></activity>
-        <activity android:name=".Activities.viewmedia" />
-    </application>
+    <application></application>
 
 </manifest>

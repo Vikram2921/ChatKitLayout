@@ -25,17 +25,17 @@ import com.capybaralabs.swipetoreply.ISwipeControllerActions;
 import com.capybaralabs.swipetoreply.SwipeController;
 import com.nobodyknows.chatlayoutview.Adapters.ListViewAdapter;
 import com.nobodyknows.chatlayoutview.Adapters.RecyclerViewAdapter;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageStatus;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
 import com.nobodyknows.chatlayoutview.Database.DatabaseHelper;
-import com.nobodyknows.chatlayoutview.CONSTANT.MessagePosition;
-import com.nobodyknows.chatlayoutview.Interfaces.ChatLayoutListener;
-import com.nobodyknows.chatlayoutview.Model.Message;
-import com.nobodyknows.chatlayoutview.Model.MessageConfiguration;
-import com.nobodyknows.chatlayoutview.Model.User;
-import com.nobodyknows.chatlayoutview.Services.Helper;
-import com.nobodyknows.chatlayoutview.Services.UploadAndDownloadViewHandler;
 import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
+import com.nobodyknows.commonhelper.CONSTANT.MessagePosition;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
+import com.nobodyknows.commonhelper.Interfaces.ChatLayoutListener;
+import com.nobodyknows.commonhelper.Model.Message;
+import com.nobodyknows.commonhelper.Model.MessageConfiguration;
+import com.nobodyknows.commonhelper.Model.User;
+import com.nobodyknows.commonhelper.Services.Helper;
+import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -60,10 +60,6 @@ public class ChatLayoutView extends RelativeLayout {
     protected static ChatLinkDatabaseHelper chatLinkDatabaseHelper;
     private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
-    protected static String lastPlayingAudioMessageId = "";
-    protected static ProgressBar lastPlayingProgressBar;
-    protected static ImageView lastPlayingImageView;
-    protected static TextView lastPlayingDuration;
     private ListViewAdapter listViewAdapter;
     public static DatabaseHelper databaseHelper;
     private String roomId;
@@ -74,17 +70,12 @@ public class ChatLayoutView extends RelativeLayout {
     private Integer chatLimit = 30;
     private Boolean playSentAndReceivedSoundEffect = true;
     private int sentSoundEffect = R.raw.message_added;
-    private ArrayList<View> selectedView= new ArrayList<>();
     private int receivedSoundEffect = R.raw.message_received;
     private ImageView backgroundImage;
     private int offset = 0;
-    private boolean dynamicScrolling = false;
     protected static ChatLayoutListener chatLayoutListener;
-    protected static View currentPlayerView;
-    public static DownloadHelper downloadHelper;
     private Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;
-    private Boolean isSelecting = false;
     private MediaPlayer mediaPlayer;
     protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
@@ -92,11 +83,6 @@ public class ChatLayoutView extends RelativeLayout {
         return mainActivityContext;
     }
 
-    public void setMainActivityContext(Context mainActivityContext) {
-        this.mainActivityContext = mainActivityContext;
-        downloadHelper = new DownloadHelper(mainActivityContext);
-        chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(getContext());
-    }
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
@@ -154,6 +140,12 @@ public class ChatLayoutView extends RelativeLayout {
         leftMessageConfiguration.setBackgroundResource(R.drawable.left_message_drawable);
         rightMessageConfiguration.setMessagePosition(MessagePosition.RIGHT);
         rightMessageConfiguration.setBackgroundResource(R.drawable.right_message_drawable);
+    }
+
+    public void initialize(Context mainActivityContext,ChatLayoutListener chatLayoutListener) {
+        this.chatLayoutListener = chatLayoutListener;
+        this.mainActivityContext = mainActivityContext;
+        chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(getContext());
         if(mode == RECYCLERVIEW) {
             continueRecyclerView();
         } else {
@@ -191,7 +183,7 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths,mediaPlayer);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths,mediaPlayer,chatLinkDatabaseHelper);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -425,10 +417,6 @@ public class ChatLayoutView extends RelativeLayout {
 
     public ChatLayoutListener getChatLayoutListener() {
         return chatLayoutListener;
-    }
-
-    public void setChatLayoutListener(ChatLayoutListener chatLayoutListener) {
-        this.chatLayoutListener = chatLayoutListener;
     }
 
     public UploadAndDownloadViewHandler getUploadAndDownloadViewHandler() {

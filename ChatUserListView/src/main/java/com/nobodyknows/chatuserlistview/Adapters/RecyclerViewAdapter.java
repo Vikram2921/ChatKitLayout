@@ -18,14 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.nobodyknows.chatuserlistview.Listeners.ChatUserListViewListener;
-import com.nobodyknows.chatuserlistview.MessageStatus;
 import com.nobodyknows.chatuserlistview.Model.User;
 import com.nobodyknows.chatuserlistview.R;
 import com.nobodyknows.chatuserlistview.view_profile;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 import com.vistrav.pop.Pop;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -54,6 +54,42 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return viewHolder;
     }
 
+    private void updateDrawable(TextView textView, MessageType messageType, String messgae, String senderId, String name) {
+        String message = "You shared ";
+        if(!senderId.equalsIgnoreCase(myId)) {
+            message = name + " has shared ";
+        }
+        if(messageType == MessageType.IMAGE) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_image_24,0,0,0);
+            message+="images";
+        } else if(messageType == MessageType.VIDEO) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_videocam_14,0,0,0);
+            message+="videos";
+        } else if(messageType == MessageType.AUDIO) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headset_14,0,0,0);
+            message+="audios";
+        }  else if(messageType == MessageType.GIF) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_gif_24,0,0,0);
+            message="";
+        }  else if(messageType == MessageType.RECORDING) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_mic_24,0,0,0);
+            message+="an audio message";
+        }  else if(messageType == MessageType.DOCUMENT) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_insert_drive_file_24,0,0,0);
+            message+="documents";
+        }  else if(messageType == MessageType.CONTACT) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_contacts_24,0,0,0);
+            message+="contacts";
+        }  else if(messageType == MessageType.STICKER) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_emoji_emotions_24,0,0,0);
+            message+="sticker";
+        }   else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+            message = messgae;
+        }
+        textView.setText(message);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = users.get(position);
@@ -68,6 +104,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Glide.with(context).load(R.drawable.ic_baseline_person_24).into(holder.profile);
         }
         holder.lasteMessage.setText(user.getLastMessage());
+        updateDrawable(holder.lasteMessage,user.getLastMessageType(),user.getLastMessage(),user.getUserId(),user.getName());
         holder.lastDate.setReferenceTime(user.getLastMessageDate().getTime());
         if(user.getLastMessageSender().equalsIgnoreCase(myId)) {
             if(user.getLastMessageStatus() == MessageStatus.SENT) {

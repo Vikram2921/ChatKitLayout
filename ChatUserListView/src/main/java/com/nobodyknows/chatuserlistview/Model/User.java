@@ -1,6 +1,7 @@
 package com.nobodyknows.chatuserlistview.Model;
 
-import com.nobodyknows.chatuserlistview.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ public class User {
     private Date lastMessageDate;
     private Integer unreadMessageCount = 0;
     private MessageStatus lastMessageStatus = MessageStatus.SENDING;
+    private MessageType lastMessageType = MessageType.TEXT;
     private boolean isGroup = false;
     private boolean isBlocked = false;
     private boolean isPinned = false;
@@ -112,5 +114,13 @@ public class User {
 
     public void setIsMuted(boolean muted) {
         isMuted = muted;
+    }
+
+    public MessageType getLastMessageType() {
+        return lastMessageType;
+    }
+
+    public void setLastMessageType(MessageType lastMessageType) {
+        this.lastMessageType = lastMessageType;
     }
 }

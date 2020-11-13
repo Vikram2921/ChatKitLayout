@@ -8,18 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-
-import com.nobodyknows.chatlayoutview.CONSTANT.MessageType;
-import com.nobodyknows.chatlayoutview.DownloadHelper;
-import com.nobodyknows.chatlayoutview.Model.User;
 import com.nobodyknows.chatlayoutview.R;
-import com.nobodyknows.chatlayoutview.ChatMessageView;
-import com.nobodyknows.chatlayoutview.Model.Message;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
+import com.nobodyknows.commonhelper.Model.Message;
+import com.nobodyknows.commonhelper.Model.User;
+import com.nobodyknows.messageview.ChatMessageView;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.nobodyknows.chatlayoutview.ChatLayoutView.downloadHelper;
 import static com.nobodyknows.chatlayoutview.ChatLayoutView.myId;
 
 public class ListViewAdapter extends ArrayAdapter {
@@ -48,11 +44,11 @@ public class ListViewAdapter extends ArrayAdapter {
             messageView = layoutInflater.inflate(R.layout.message_box,null,true);
         }
        ChatMessageView chatMessageView = messageView.findViewById(R.id.messageview);
-       chatMessageView.setDownloadPath(downloadPath.get(message.getMessageType()));
-       chatMessageView.setDownloadHelper(downloadHelper);
-       chatMessageView.setUser(userMap.get(message.getSender()));
-       chatMessageView.setMediaPlayer(mediaPlayer);
-       chatMessageView.setMessage(message);
+//       chatMessageView.setDownloadPath(downloadPath.get(message.getMessageType()));
+//       chatMessageView.setDownloadHelper(downloadHelper);
+//       chatMessageView.setUser(userMap.get(message.getSender()));
+//       chatMessageView.setMediaPlayer(mediaPlayer);
+//       chatMessageView.setMessage(message);
        return messageView;
     }
 }
