@@ -1,6 +1,6 @@
+include ':CircularProgressButton'
 include ':ChatListLayoutView'
 include ':CommonHelper'
-include ':MessageView'
 include ':ChatUserListView'
 include ':ChatLinkPreview'
 include ':app'

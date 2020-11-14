@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.capybaralabs.swipetoreply.ISwipeControllerActions;
 import com.capybaralabs.swipetoreply.SwipeController;
+import com.ixuea.android.downloader.DownloadService;
+import com.ixuea.android.downloader.callback.DownloadManager;
 import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 import com.nobodyknows.chatlistlayoutview.Adapters.ListViewAdapter;
 import com.nobodyknows.chatlistlayoutview.Adapters.RecyclerViewAdapter;
@@ -70,10 +72,11 @@ public class ChatLayoutView extends RelativeLayout {
     private ImageView backgroundImage;
     private int offset = 0;
     protected static ChatLayoutListener chatLayoutListener;
-    private Map<MessageType,String> downloadPaths = new HashMap<>();
+    public static Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;
     private MediaPlayer mediaPlayer;
-    protected static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
+    public static DownloadManager downloadManager;
+    public static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
     public Context getMainActivityContext() {
         return mainActivityContext;
@@ -141,12 +144,29 @@ public class ChatLayoutView extends RelativeLayout {
     public void initialize(Context mainActivityContext,ChatLayoutListener chatLayoutListener) {
         this.chatLayoutListener = chatLayoutListener;
         this.mainActivityContext = mainActivityContext;
+        downloadManager = DownloadService.getDownloadManager(mainActivityContext);
         chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(getContext());
         if(mode == RECYCLERVIEW) {
             continueRecyclerView();
         } else {
             continueListView();
         }
+    }
+
+    public static ChatLinkDatabaseHelper getChatLinkDatabaseHelper() {
+        return chatLinkDatabaseHelper;
+    }
+
+    public static void setChatLinkDatabaseHelper(ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
+        ChatLayoutView.chatLinkDatabaseHelper = chatLinkDatabaseHelper;
+    }
+
+    public static DownloadManager getDownloadManager() {
+        return downloadManager;
+    }
+
+    public static void setDownloadManager(DownloadManager downloadManager) {
+        ChatLayoutView.downloadManager = downloadManager;
     }
 
     private void addSwipeRecyclerView() {

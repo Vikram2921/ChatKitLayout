@@ -14,8 +14,8 @@
             <option value="$PROJECT_DIR$/ChatLinkPreview" />
             <option value="$PROJECT_DIR$/ChatListLayoutView" />
             <option value="$PROJECT_DIR$/ChatUserListView" />
+            <option value="$PROJECT_DIR$/CircularProgressButton" />
             <option value="$PROJECT_DIR$/CommonHelper" />
-            <option value="$PROJECT_DIR$/MessageView" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

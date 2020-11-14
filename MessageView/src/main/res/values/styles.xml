@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="windowContentTransitions" type="bool">true</item>
-    <item name="windowEnterTransition" type="transition">@transition/change_image_transform</item>
-    <item name="windowExitTransition" type="transition">@transition/change_image_transform</item>
-</resources>

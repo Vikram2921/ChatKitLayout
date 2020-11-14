@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="updownsize">40dp</dimen>
+    <dimen name="viewgap">2dp</dimen>
+    <dimen name="multiviewheight">150dp</dimen>
+    <dimen name="messagetime_top_padding">3dp</dimen>
 </resources>

@@ -21,7 +21,7 @@ public class TextMessageViewLeft extends RecyclerView.ViewHolder {
         view = itemView;
     }
 
-    public void initalize(Message message, User user, ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
+    public void initalize(Message message, User user) {
         TextView messageText = view.findViewById(R.id.message);
         TextView messageTime = view.findViewById(R.id.messagetime);
         messageText.setAutoLinkMask(Linkify.ALL);

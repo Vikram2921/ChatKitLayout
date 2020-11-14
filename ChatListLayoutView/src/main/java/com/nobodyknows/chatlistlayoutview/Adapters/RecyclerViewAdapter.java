@@ -12,8 +12,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 import com.nobodyknows.chatlistlayoutview.R;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.DateAndInfoView;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.DocumentMessageViewLeft;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.DocumentMessageViewRight;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.LinkTextMessageViewLeft;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.LinkTextMessageViewRight;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveAudio;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveContact;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveGif;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveMultipleImages;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveMultipleVideos;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveRecording;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveSingleImage;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveSingleVideo;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.ReceiveSticker;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentAudio;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentContact;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentGif;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentMultipleImages;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentMultipleVideos;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentRecording;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentSingleImage;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentSingleVideo;
+import com.nobodyknows.chatlistlayoutview.ViewHolders.SentSticker;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.TextMessageViewLeft;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.TextMessageViewRight;
 import com.nobodyknows.chatlistlayoutview.ViewHolders.WarningView;
@@ -25,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.myId;
+import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -48,6 +69,29 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int SENT_MULTIPLE_IMAGES = 22;
     private final int RECEIVE_SINGLE_IMAGE = 23;
     private final int RECEIVE_MULTIPLE_IMAGES = 24;
+    //**************VIDEOS *************//
+    private final int SENT_SINGLE_VIDEO = 31;
+    private final int SENT_MULTIPLE_VIDEOS = 32;
+    private final int RECEIVE_SINGLE_VIDEO = 33;
+    private final int RECEIVE_MULTIPLE_VIDEOS = 34;
+    //**************DOCUMENT *************//
+    private final int SENT_DOCUMENT = 41;
+    private final int RECEIVE_DOCUMENT = 42;
+    //**************AUDIO FILES *************//
+    private final int SENT_AUDIO = 51;
+    private final int RECEIVE_AUDIO = 52;
+    //**************RECORDING*************//
+    private final int SENT_RECORDING = 61;
+    private final int RECEIVE_RECORDING = 62;
+    //**************GIF*************//
+    private final int SENT_GIF = 71;
+    private final int RECEIVE_GIF = 72;
+    //**************STICKER*************//
+    private final int SENT_STICKER = 81;
+    private final int RECEIVE_STICKER = 82;
+    //**************CONTACTS*************//
+    private final int SENT_CONTACT = 91;
+    private final int RECEIVE_CONTACT = 92;
 
     public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths, MediaPlayer mediaPlayer, ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
         this.context = context;
@@ -64,24 +108,113 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View item = null;
         RecyclerView.ViewHolder  viewHolder = null;
-        if(viewType == DATE_AND_INFO_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.extra_info_view,parent,false);
-            viewHolder = new DateAndInfoView(item);
-        } else if(viewType == WARNNIG_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.warning_view,parent,false);
-            viewHolder = new WarningView(item);
-        } else if(viewType == SENT_TEXT_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.messageview_right_text,parent,false);
-            viewHolder = new TextMessageViewRight(item);
-        } else if(viewType == RECEIVE_TEXT_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.messageview_left_text,parent,false);
-            viewHolder = new TextMessageViewLeft(item);
-        } else if(viewType == SENT_LINK_TEXT_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.messageview_right_linktext,parent,false);
-            viewHolder = new LinkTextMessageViewRight(item);
-        } else if(viewType == RECEIVE_LINK_TEXT_MESSAGE) {
-            item = layoutInflater.inflate(R.layout.messageview_left_linktext,parent,false);
-            viewHolder = new LinkTextMessageViewLeft(item);
+        switch (viewType) {
+            case DATE_AND_INFO_MESSAGE:
+                item = layoutInflater.inflate(R.layout.extra_info_view,parent,false);
+                viewHolder = new DateAndInfoView(item);
+                break;
+            case WARNNIG_MESSAGE:
+                item = layoutInflater.inflate(R.layout.warning_view,parent,false);
+                viewHolder = new WarningView(item);
+                break;
+            case SENT_TEXT_MESSAGE:
+                item = layoutInflater.inflate(R.layout.messageview_right_text,parent,false);
+                viewHolder = new TextMessageViewRight(item);
+                break;
+            case RECEIVE_TEXT_MESSAGE:
+                item = layoutInflater.inflate(R.layout.messageview_left_text,parent,false);
+                viewHolder = new TextMessageViewLeft(item);
+                break;
+            case SENT_LINK_TEXT_MESSAGE:
+                item = layoutInflater.inflate(R.layout.messageview_right_linktext,parent,false);
+                viewHolder = new LinkTextMessageViewRight(item);
+                break;
+            case RECEIVE_LINK_TEXT_MESSAGE:
+                item = layoutInflater.inflate(R.layout.messageview_left_linktext,parent,false);
+                viewHolder = new LinkTextMessageViewLeft(item);
+                break;
+            case SENT_SINGLE_IMAGE:
+                item = layoutInflater.inflate(R.layout.messageview_right_single_image,parent,false);
+                viewHolder = new SentSingleImage(item);
+                break;
+            case RECEIVE_SINGLE_IMAGE:
+                item = layoutInflater.inflate(R.layout.messageview_left_single_image,parent,false);
+                viewHolder = new ReceiveSingleImage(item);
+                break;
+            case SENT_SINGLE_VIDEO:
+                item = layoutInflater.inflate(R.layout.messageview_right_single_video,parent,false);
+                viewHolder = new SentSingleVideo(item);
+                break;
+            case RECEIVE_SINGLE_VIDEO:
+                item = layoutInflater.inflate(R.layout.messageview_left_single_video,parent,false);
+                viewHolder = new ReceiveSingleVideo(item);
+                break;
+            case SENT_MULTIPLE_IMAGES:
+                item = layoutInflater.inflate(R.layout.messageview_right_multiple_image,parent,false);
+                viewHolder = new SentMultipleImages(item);
+                break;
+            case RECEIVE_MULTIPLE_IMAGES:
+                item = layoutInflater.inflate(R.layout.messageview_left_mutiple_image,parent,false);
+                viewHolder = new ReceiveMultipleImages(item);
+                break;
+            case SENT_MULTIPLE_VIDEOS:
+                item = layoutInflater.inflate(R.layout.messageview_right_multiple_videos,parent,false);
+                viewHolder = new SentMultipleVideos(item);
+                break;
+            case RECEIVE_MULTIPLE_VIDEOS:
+                item = layoutInflater.inflate(R.layout.messageview_left_mutiple_video,parent,false);
+                viewHolder = new ReceiveMultipleVideos(item);
+                break;
+            case SENT_DOCUMENT:
+                item = layoutInflater.inflate(R.layout.messageview_right_document,parent,false);
+                viewHolder = new DocumentMessageViewRight(item);
+                break;
+            case RECEIVE_DOCUMENT:
+                item = layoutInflater.inflate(R.layout.messageview_left_document,parent,false);
+                viewHolder = new DocumentMessageViewLeft(item);
+                break;
+            case SENT_AUDIO:
+                item = layoutInflater.inflate(R.layout.messageview_right_audio,parent,false);
+                viewHolder = new SentAudio(item);
+                break;
+            case RECEIVE_AUDIO:
+                item = layoutInflater.inflate(R.layout.messageview_left_audio,parent,false);
+                viewHolder = new ReceiveAudio(item);
+                break;
+            case SENT_RECORDING:
+                item = layoutInflater.inflate(R.layout.messageview_right_recording,parent,false);
+                viewHolder = new SentRecording(item);
+                break;
+            case RECEIVE_RECORDING:
+                item = layoutInflater.inflate(R.layout.messageview_left_recording,parent,false);
+                viewHolder = new ReceiveRecording(item);
+                break;
+            case SENT_GIF:
+                item = layoutInflater.inflate(R.layout.messageview_right_gif,parent,false);
+                viewHolder = new SentGif(item);
+                break;
+            case RECEIVE_GIF:
+                item = layoutInflater.inflate(R.layout.messageview_left_gif,parent,false);
+                viewHolder = new ReceiveGif(item);
+                break;
+            case SENT_STICKER:
+                item = layoutInflater.inflate(R.layout.messageview_right_sticker,parent,false);
+                viewHolder = new SentSticker(item);
+                break;
+            case RECEIVE_STICKER:
+                item = layoutInflater.inflate(R.layout.messageview_left_sticker,parent,false);
+                viewHolder = new ReceiveSticker(item);
+                break;
+            case SENT_CONTACT:
+                item = layoutInflater.inflate(R.layout.messageview_right_contact,parent,false);
+                viewHolder = new SentContact(item);
+                break;
+            case RECEIVE_CONTACT:
+                item = layoutInflater.inflate(R.layout.messageview_left_contact,parent,false);
+                viewHolder = new ReceiveContact(item);
+                break;
+            default:
+                break;
         }
         return viewHolder;
     }
@@ -89,6 +222,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
+        holder.setIsRecyclable(true);
         switch (holder.getItemViewType()){
             case DATE_AND_INFO_MESSAGE:
                 ((DateAndInfoView) holder).initalize(message.getMessage());
@@ -97,16 +231,76 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((WarningView) holder).initalize(message.getMessage());
                 break;
             case SENT_TEXT_MESSAGE:
-                ((TextMessageViewRight) holder).initalize(message,chatLinkDatabaseHelper);
+                ((TextMessageViewRight) holder).initalize(message);
                 break;
             case RECEIVE_TEXT_MESSAGE:
-                ((TextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()),chatLinkDatabaseHelper);
+                ((TextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()));
                 break;
             case SENT_LINK_TEXT_MESSAGE:
                 ((LinkTextMessageViewRight) holder).initalize(message,chatLinkDatabaseHelper);
                 break;
             case RECEIVE_LINK_TEXT_MESSAGE:
                 ((LinkTextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()),chatLinkDatabaseHelper);
+                break;
+            case SENT_SINGLE_IMAGE:
+                ((SentSingleImage) holder).initalize(context,message);
+                break;
+            case RECEIVE_SINGLE_IMAGE:
+                ((ReceiveSingleImage) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_SINGLE_VIDEO:
+                ((SentSingleVideo) holder).initalize(context,message);
+                break;
+            case RECEIVE_SINGLE_VIDEO:
+                ((ReceiveSingleVideo) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_MULTIPLE_IMAGES:
+                ((SentMultipleImages) holder).initalize(context,message);
+                break;
+            case RECEIVE_MULTIPLE_IMAGES:
+                ((ReceiveMultipleImages) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_MULTIPLE_VIDEOS:
+                ((SentMultipleVideos) holder).initalize(context,message);
+                break;
+            case RECEIVE_MULTIPLE_VIDEOS:
+                ((ReceiveMultipleVideos) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_DOCUMENT:
+                ((DocumentMessageViewRight) holder).initalize(context,message);
+                break;
+            case RECEIVE_DOCUMENT:
+                ((DocumentMessageViewLeft) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_AUDIO:
+                ((SentAudio) holder).initalize(context,message);
+                break;
+            case RECEIVE_AUDIO:
+                ((ReceiveAudio) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_RECORDING:
+                ((SentRecording) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case RECEIVE_RECORDING:
+                ((ReceiveRecording) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_GIF:
+                ((SentGif) holder).initalize(context,message);
+                break;
+            case RECEIVE_GIF:
+                ((ReceiveGif) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_STICKER:
+                ((SentSticker) holder).initalize(context,message);
+                break;
+            case RECEIVE_STICKER:
+                ((ReceiveSticker) holder).initalize(context,message,userMap.get(message.getSender()));
+                break;
+            case SENT_CONTACT:
+                ((SentContact) holder).initalize(context,message);
+                break;
+            case RECEIVE_CONTACT:
+                ((ReceiveContact) holder).initalize(context,message,userMap.get(message.getSender()));
                 break;
             default:
                 break;
@@ -126,12 +320,60 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                    return SENT_TEXT_MESSAGE;
                } else  if(message.getMessageType() == MessageType.LINK_TEXT_VIEW) {
                    return SENT_LINK_TEXT_MESSAGE;
+               }  else if(message.getMessageType() == MessageType.IMAGE) {
+                   if(message.getSharedFiles().size() < 4) {
+                       return SENT_SINGLE_IMAGE;
+                   } else {
+                       return SENT_MULTIPLE_IMAGES;
+                   }
+               } else if(message.getMessageType() == MessageType.VIDEO) {
+                   if(message.getSharedFiles().size() < 4) {
+                       return SENT_SINGLE_VIDEO;
+                   } else {
+                       return SENT_MULTIPLE_VIDEOS;
+                   }
+               }  else if(message.getMessageType() == MessageType.DOCUMENT) {
+                   return SENT_DOCUMENT;
+               } else if(message.getMessageType() == MessageType.AUDIO) {
+                   return SENT_AUDIO;
+               } else if(message.getMessageType() == MessageType.RECORDING) {
+                   return SENT_RECORDING;
+               } else if(message.getMessageType() == MessageType.GIF) {
+                   return SENT_GIF;
+               } else if(message.getMessageType() == MessageType.STICKER) {
+                   return SENT_STICKER;
+               } else if(message.getMessageType() == MessageType.CONTACT) {
+                   return SENT_CONTACT;
                }
            } else {
                if(message.getMessageType() == MessageType.TEXT) {
                    return RECEIVE_TEXT_MESSAGE;
                } else if(message.getMessageType() == MessageType.LINK_TEXT_VIEW) {
                    return RECEIVE_LINK_TEXT_MESSAGE;
+               }  else if(message.getMessageType() == MessageType.IMAGE) {
+                   if(message.getSharedFiles().size() < 4) {
+                       return RECEIVE_SINGLE_IMAGE;
+                   } else {
+                       return RECEIVE_MULTIPLE_IMAGES;
+                   }
+               } else if(message.getMessageType() == MessageType.VIDEO) {
+                   if(message.getSharedFiles().size() < 4) {
+                       return RECEIVE_SINGLE_VIDEO;
+                   } else {
+                       return RECEIVE_MULTIPLE_VIDEOS;
+                   }
+               } else if(message.getMessageType() == MessageType.DOCUMENT) {
+                   return RECEIVE_DOCUMENT;
+               }  else if(message.getMessageType() == MessageType.AUDIO) {
+                   return RECEIVE_AUDIO;
+               }  else if(message.getMessageType() == MessageType.RECORDING) {
+                   return RECEIVE_RECORDING;
+               } else if(message.getMessageType() == MessageType.GIF) {
+                   return RECEIVE_GIF;
+               } else if(message.getMessageType() == MessageType.STICKER) {
+                   return RECEIVE_STICKER;
+               } else if(message.getMessageType() == MessageType.CONTACT) {
+                   return RECEIVE_CONTACT;
                }
            }
        }

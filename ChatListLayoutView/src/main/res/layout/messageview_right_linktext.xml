@@ -9,7 +9,7 @@
         android:layout_alignParentRight="true"
         android:clickable="true"
         android:background="@drawable/right_message_drawable"
-        android:layout_margin="3dp"
+        android:layout_margin="@dimen/viewgap"
         android:layout_height="wrap_content">
         <com.nobodyknows.chatlinkpreview.ChatLinkView
             android:id="@+id/linkview"
@@ -31,7 +31,8 @@
             android:layout_height="wrap_content"
             android:textColor="#000"></TextView>
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/message"
+            app:layout_constraintTop_toTopOf="@id/messagestatus"
+            app:layout_constraintBottom_toBottomOf="@id/messagestatus"
             app:layout_constraintRight_toLeftOf="@id/messagestatus"
             android:id="@+id/messagetime"
             android:layout_width="wrap_content"
@@ -45,6 +46,7 @@
         <ImageView
             android:id="@+id/messagestatus"
             android:layout_width="15dp"
+            android:layout_marginTop="@dimen/messagetime_top_padding"
             android:layout_height="15dp"
             android:src="@drawable/sent"
             app:layout_constraintEnd_toEndOf="@id/linkview"

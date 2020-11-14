@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:clickable="true"
         android:background="@drawable/left_message_drawable"
-        android:layout_margin="3dp"
+        android:layout_margin="@dimen/viewgap"
         android:layout_height="wrap_content">
         <TextView
             app:layout_constraintTop_toTopOf="parent"
@@ -51,6 +51,7 @@
             android:id="@+id/messagetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/messagetime_top_padding"
             android:layout_marginRight="3dp"
             android:text="05:30 PM"
             android:textColor="#969696"

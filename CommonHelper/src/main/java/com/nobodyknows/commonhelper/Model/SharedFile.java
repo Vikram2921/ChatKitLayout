@@ -45,7 +45,10 @@ public class SharedFile {
     }
 
     public String getPreviewUrl() {
-        return previewUrl;
+        if(previewUrl != null && previewUrl.length() > 0) {
+            return previewUrl;
+        }
+        return url;
     }
 
     public void setPreviewUrl(String previewUrl) {

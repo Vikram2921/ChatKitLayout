@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingRight="80dp"
+    android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:clickable="true"
+        android:background="@drawable/left_message_drawable"
+        android:layout_margin="3dp"
+        android:layout_height="wrap_content">
+        <TextView
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="Vikram Singh Rawat"
+            android:textStyle="bold"
+            android:textSize="10dp"
+            android:id="@+id/sendername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#4003A9F4"></TextView>
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/image"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:src="@drawable/background"
+            android:layout_height="300dp"
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="5dp"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintTop_toBottomOf="@id/sendername"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"></com.makeramen.roundedimageview.RoundedImageView>
+        <TextView
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            android:id="@+id/messagetime"
+            android:layout_marginTop="@dimen/messagetime_top_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:text="05:30 PM"
+            android:textColor="#969696"
+            android:textSize="10dp"
+            android:textStyle="normal"></TextView>
+        <com.nobodyknows.circularprogressbutton.ProgressButton
+            app:layout_constraintTop_toTopOf="@id/image"
+            app:layout_constraintBottom_toBottomOf="@id/image"
+            app:layout_constraintLeft_toLeftOf="@id/image"
+            app:layout_constraintRight_toRightOf="@id/image"
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </com.nobodyknows.circularprogressbutton.ProgressButton>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
