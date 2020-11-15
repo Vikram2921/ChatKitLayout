@@ -73,6 +73,7 @@
                 android:layout_width="wrap_content"
                 app:icon_mode="true"
                 android:id="@+id/probutton"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
             </com.nobodyknows.circularprogressbutton.ProgressButton>
         </androidx.constraintlayout.widget.ConstraintLayout>

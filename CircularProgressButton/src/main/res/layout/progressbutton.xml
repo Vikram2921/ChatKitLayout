@@ -26,15 +26,16 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:visibility="gone"
+            app:cpb_progress="0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:cpb_indeterminate_mode="true"
+            app:cpb_indeterminate_mode="false"
             app:cpb_progress_max="100"
             app:cpb_background_progressbar_color="#C5C5C5"
             app:cpb_background_progressbar_width="1dp"
             app:cpb_progress_direction="to_right"
-            app:cpb_progressbar_color="#989898"
+            app:cpb_progressbar_color="#4CAF50"
             app:cpb_progressbar_width="2dp"
             app:cpb_round_border="false" />
         <ImageView

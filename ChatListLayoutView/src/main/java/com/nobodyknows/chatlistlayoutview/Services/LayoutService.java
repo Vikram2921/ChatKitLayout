@@ -2,6 +2,7 @@ package com.nobodyknows.chatlistlayoutview.Services;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -25,12 +26,14 @@ import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 import com.nobodyknows.chatlinkpreview.MetaData;
 import com.nobodyknows.chatlistlayoutview.R;
 import com.nobodyknows.circularprogressbutton.ProgressButton;
+import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
 import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 import com.nobodyknows.commonhelper.Model.Contact;
 import com.nobodyknows.commonhelper.Model.ContactParceable;
 import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.SharedFile;
+import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,13 +41,17 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.view.View.VISIBLE;
+import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.chatLayoutListener;
 import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.downloadPaths;
+import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.myId;
 
 public class LayoutService {
     public static DownloadManager downloadManager;
@@ -54,6 +61,8 @@ public class LayoutService {
     private static String LmessageId;
     private static MediaPlayer mediaPlayer;
     private static MediaObserver observer;
+    private static Map<String,ArrayList<DownloadInfo>> downloadInfos;
+    private static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
     public static void checkForLink(ChatLinkView chatLinkView, TextView message) {
         URLSpan span[] = message.getUrls();
         if(span.length > 0) {
@@ -83,6 +92,8 @@ public class LayoutService {
         LseekBar = null;
         LplayPause = null;
         mediaPlayer = new MediaPlayer();
+        downloadInfos = new HashMap<>();
+        uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(context);
     }
 
     public static DownloadManager getDownloadManager() {
@@ -153,11 +164,11 @@ public class LayoutService {
         return time;
     }
 
-    public static Boolean canShowDownloadButton(String downloadPath, ArrayList<SharedFile> sharedFiles) {
+    public static Boolean canShowDownloadButton(MessageType messageType, ArrayList<SharedFile> sharedFiles) {
         String envPath = Environment.getExternalStorageDirectory().getPath();
         Boolean canShow = false;
         for(SharedFile sharedFile:sharedFiles) {
-            if(!new File(envPath+downloadPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension()).exists()) {
+            if(!new File(envPath+downloadPaths.get(messageType)+"/"+sharedFile.getName()+"."+sharedFile.getExtension()).exists()) {
                 canShow = true;
                 break;
             }
@@ -179,27 +190,26 @@ public class LayoutService {
         return parceableArrayList;
     }
 
-    public static void downloadFiles(Context context,ArrayList<SharedFile> sharedFiles, String downloadPath, ProgressButton progressButton,String messageId) {
+    public static void downloadFiles(Context context,ArrayList<SharedFile> sharedFiles, MessageType messageType, ProgressButton progressButton,String messageId) {
+        downloadInfos.put(messageId,new ArrayList<>());
         if(sharedFiles.size() == 1) {
-            downloadSingle(sharedFiles.get(0),downloadPath,progressButton,messageId,context);
+            downloadSingle(sharedFiles.get(0),messageType,progressButton,messageId,context);
         } else {
-            downloadAll(sharedFiles,downloadPath,progressButton,messageId,context);
+            downloadAll(sharedFiles,messageType,progressButton,messageId,context);
         }
     }
 
-    public static void downloadAll(ArrayList<SharedFile> urls, String dirPath, ProgressButton progressBar, String messageId, Context context) {
+    private static void downloadAll(ArrayList<SharedFile> urls, MessageType messageType, ProgressButton progressBar, String messageId, Context context) {
+        String dirPath = downloadPaths.get(messageType);
         PermissionListener permissionlistener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
                 String envPath = Environment.getExternalStorageDirectory().getPath();
-
                 if (!new File(envPath +dirPath).exists()) {
                     new File(envPath + dirPath).mkdirs();
                 }
                 int totalDownloads = urls.size();
                 final int[] downloadCompleted = {0};
-                String filename = "";
-                ArrayList<DownloadInfo> downloadInfos = new ArrayList<>();
                 for(int i=0;i<urls.size();i++) {
                     String partialUrl = envPath+dirPath+"/"+urls.get(i).getName()+"_PARTIALLY."+urls.get(i).getExtension();
                     String realname = envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension();
@@ -208,8 +218,8 @@ public class LayoutService {
                     }
                     if(!new File(envPath+dirPath+"/"+urls.get(i).getName()+"."+urls.get(i).getExtension()).exists()) {
                         DownloadInfo downloadInfo  = new DownloadInfo.Builder().setUrl(urls.get(i).getUrl()).setPath(partialUrl).build();
-                        downloadInfos.add(downloadInfo);
                         int finalTotalDownloads = totalDownloads;
+                        int finalI = i;
                         downloadInfo.setDownloadListener(new DownloadListener() {
                             @Override
                             public void onStart() {
@@ -239,8 +249,12 @@ public class LayoutService {
                                 downloadCompleted[0]++;
                                 double progress = (((double)downloadCompleted[0]/(double)finalTotalDownloads)*100);
                                 if(progress > 0) {
+                                    progressBar.setIndeterminateMode(false);
+                                    progressBar.setProgress((float) progress);
                                 }
                                 if(progress == 100.0) {
+                                    progressBar.setVisibility(View.GONE);
+                                    downloadInfos.remove(messageId);
                                 }
                                 renameFile(partialUrl,realname);
                             }
@@ -248,26 +262,22 @@ public class LayoutService {
                             @Override
                             public void onDownloadFailed(DownloadException e) {
                                 downloadManager.remove(downloadInfo);
+                                downloadInfos.get(messageId).remove(finalI);
+                                downloadInfos.get(messageId).add(finalI,null);
                             }
                         });
+                        downloadInfos.get(messageId).add(i,downloadInfo);
                         downloadManager.download(downloadInfo);
                     } else {
                         downloadCompleted[0]++;
-                        int progress = ((downloadCompleted[0] /totalDownloads)*100);
-                        progressBar.setProgress(progress);
+                        double progress = (((double)downloadCompleted[0]/(double)totalDownloads)*100);
+                        progressBar.setProgress((float) progress);
+                        downloadInfos.get(messageId).add(i,null);
                         if(progress == 100.0) {
                             progressBar.setVisibility(View.GONE);
                         }
                     }
                 }
-                progressBar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        for(DownloadInfo downloadInfo:downloadInfos) {
-                            downloadManager.pause(downloadInfo);
-                        }
-                    }
-                });
             }
 
             @Override
@@ -281,7 +291,8 @@ public class LayoutService {
                 .check();
     }
 
-    public static void downloadSingle(SharedFile sharedFile, String dirPath, ProgressButton progressBar, String messageId, Context context) {
+    private static void downloadSingle(SharedFile sharedFile, MessageType messageType, ProgressButton progressBar, String messageId, Context context) {
+        String dirPath = downloadPaths.get(messageType);
         PermissionListener permissionlistener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
@@ -328,13 +339,18 @@ public class LayoutService {
                         @Override
                         public void onDownloadSuccess() {
                             renameFile(partialUrl,envPath+dirPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension());
+                            progressBar.setVisibility(View.GONE);
+                            downloadInfos.remove(messageId);
                         }
 
                         @Override
                         public void onDownloadFailed(DownloadException e) {
                             downloadManager.remove(downloadInfo);
+                            downloadInfos.remove(messageId);
+                            progressBar.resetProgressButton();
                         }
                     });
+                    downloadInfos.get(messageId).add(downloadInfo);
                     downloadManager.download(downloadInfo);
                 } else {
                     progressBar.setVisibility(View.GONE);
@@ -479,7 +495,7 @@ public class LayoutService {
                     stopAudio();
                 } else {
                     String url = message.getSharedFiles().get(0).getUrl();
-                    if(!canShowDownloadButton(downloadPaths.get(message.getMessageType()),message.getSharedFiles())) {
+                    if(!canShowDownloadButton(message.getMessageType(),message.getSharedFiles())) {
                         url = getFullFileUrl(downloadPaths.get(message.getMessageType()),message.getSharedFiles().get(0));
                     }
                     playeAudio(context,message.getMessageId(),url,seekBar,playPause);
@@ -508,6 +524,76 @@ public class LayoutService {
                 view.findViewById(R.id.rootBox).setBackgroundResource(message.getMessageConfiguration().getBackgroundResource());
             }
         }
+    }
+
+    public static void handlerDownloadAndUploadCase(Context context,View view,Message message) {
+        ProgressButton progressButton = view.findViewById(R.id.probutton);
+        progressButton.initalize();
+        if(message.getSender().equals(myId)) {
+            if(message.getMessageStatus() == MessageStatus.SENDING) {
+                progressButton.setVisibility(VISIBLE);
+                progressButton.setUploadType();
+                progressButton.setProgressClickListener(new ProgressClickListener() {
+                    @Override
+                    public void onStart() {
+                        chatLayoutListener.onUploadRetry(message);
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+            } else {
+                progressButton.setVisibility(View.GONE);
+            }
+        } else {
+            if(canShowDownloadButton(message.getMessageType(),message.getSharedFiles())) {
+                progressButton.setVisibility(VISIBLE);
+                progressButton.setDownloadType();
+                progressButton.setProgressClickListener(new ProgressClickListener() {
+                    @Override
+                    public void onStart() {
+                        downloadFiles(context,message.getSharedFiles(),message.getMessageType(),progressButton,message.getMessageId());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        cancelDownload(message.getMessageId());
+                    }
+                });
+            }
+        }
+    }
+
+    private static void cancelDownload(String messageId) {
+        for(DownloadInfo downloadInfo : downloadInfos.get(messageId)) {
+            if(downloadInfo != null) {
+                downloadManager.pause(downloadInfo);
+                downloadManager.remove(downloadInfo);
+            }
+        }
+        downloadInfos.remove(messageId);
+    }
+
+    public static void changeToGalleryIntent(Context context,Message message) {
+//        Intent intent = new Intent(context, Gallery.class);
+//        intent.putExtra("type",message.getMessageType().name());
+//        intent.putStringArrayListExtra("urls",LayoutService.getUrlsFromSharedFiles(message.getSharedFiles()));
+//        context.startActivity(intent);
+    }
+
+    private static ArrayList<String> getUrlsFromSharedFiles(ArrayList<SharedFile> sharedFiles) {
+        ArrayList<String> urls = new ArrayList<>();
+        for(SharedFile sharedFile:sharedFiles) {
+            urls.add(sharedFile.getUrl());
+        }
+        return urls;
+    }
+
+    //Get Upload Views for while uploading
+    private static void getUploadView(Message message) {
+
     }
 
 

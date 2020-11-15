@@ -1,18 +1,27 @@
 package com.nobodyknows.chatkitlayout;
 
+import android.content.ClipDescription;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.webkit.MimeTypeMap;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.core.os.BuildCompat;
+import androidx.core.view.inputmethod.EditorInfoCompat;
+import androidx.core.view.inputmethod.InputConnectionCompat;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
 import com.nobodyknows.chatlistlayoutview.ChatLayoutView;
 import com.nobodyknows.chatlistlayoutview.Services.LayoutService;
 import com.nobodyknows.commonhelper.CONSTANT.MessagePosition;
@@ -24,8 +33,8 @@ import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.MessageConfiguration;
 import com.nobodyknows.commonhelper.Model.SharedFile;
 import com.nobodyknows.commonhelper.Model.User;
-import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -42,16 +51,13 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     View selView;
     ChatLayoutView chatLayoutView;
     ArrayList<String> ids = new ArrayList<>(Arrays.asList("7014550298","8442000360"));
-    UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         linearLayout = findViewById(R.id.viewhold);
         LayoutService.initialize(getApplicationContext());
-        uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getApplicationContext());
         chatLayoutView = findViewById(R.id.chatlayout_view);
-        chatLayoutView.setUploadAndDownloadViewHandler(uploadAndDownloadViewHandler);
         chatLayoutView.initialize(getApplicationContext(),this);
         chatLayoutView.setDownloadPath(MessageType.IMAGE,"/ChatKitLayout/Images");
         chatLayoutView.setDownloadPath(MessageType.VIDEO,"/ChatKitLayout/Videos");
@@ -122,43 +128,44 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
                 }
             }
         });
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
-//        chatLayoutView.addMessage(getInfoMessages("Messaged and calls are ene-to-end encrypted. No one outside of this chat,Not even ChatMe, can read or listen to them. Tap to learn more","rightInfo",false,"7014550298","8014550298"));
-//        //chatLayoutView.addMessage(getGifMessage(""));
-//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
-//        chatLayoutView.addMessage(getContactMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",false));
-//        chatLayoutView.addMessage(getContactMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",false));
-////        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
-//        chatLayoutView.addMessage(getContactMessage("12345678",false));
-//        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
-//        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
-        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getImageMessages("Single Image View",Arrays.asList("https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg","https://i.pinimg.com/originals/ed/8d/2a/ed8d2ab996f7c0b137e1b297c2c88333.jpg")));
+        chatLayoutView.addMessage(getInfoMessages("Messaged and calls are ene-to-end encrypted. No one outside of this chat,Not even ChatMe, can read or listen to them. Tap to learn more","rightInfo",false,"7014550298","8014550298"));
+        //chatLayoutView.addMessage(getGifMessage(""));
+        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",8));
+        chatLayoutView.addMessage(getContactMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",false));
+        chatLayoutView.addMessage(getContactMessage("https://i.giphy.com/media/9Dk1ba2smFg2KASTcz/200.webp",false));
+//        chatLayoutView.addMessage(getStickerMessage("https://i.giphy.com/media/3oFzmeVbeXIfBUl5sI/giphy.webp",10));
+        chatLayoutView.addMessage(getContactMessage("12345678",false));
+        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
+        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
+        chatLayoutView.addMessage(getVideoMessages(""));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+//        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
     }
 
     @Override
@@ -331,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
     private Message getImageMessages(String messageText,List<String> urls) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
-        message.setMessageType(MessageType.RECORDING);
+        message.setMessageType(MessageType.IMAGE);
         message.setMessageId("27517"+i++);
         message.setMessage(messageText);
         message.setSender(random);
@@ -349,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
         message.setMessageType(MessageType.VIDEO);
-        message.setMessageId("275199");
+        message.setMessageId("275199"+i++);
         message.setMessage(messageText);
         message.setSender(random);
         message.addSharedFile(getSharedFile("https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4",message.getMessageId()+"5","mp4"));
@@ -365,14 +372,14 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         return message;
     }
 
-    private Message getGifMessage(String messageText) {
+    private Message getGifMessage(String messageText,String url) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
         message.setMessageType(MessageType.GIF);
         message.setMessageId("2751300");
         message.setMessage("");
         message.setSender(random);
-        message.addSharedFile(getSharedFile("https://media3.giphy.com/media/26ybvqyqoH7UbyHeg/giphy.gif",message.getMessageId()+"5","gif"));
+        message.addSharedFile(getSharedFile(url,message.getMessageId()+"5","gif"));
         //        message.setReceiver(random.equals("7014550298")?"8442000360":"7014550298");
         message.setSeenAt(new Date());
         message.setSentAt(new Date());

@@ -17,6 +17,7 @@ public class ProgressButton extends RelativeLayout {
     private TextView label;
     private ImageView icon;
     private Boolean mode = false;
+    private ImageView close;
     private CircularProgressBar progressBar;
     private ProgressClickListener progressClickListener;
     public ProgressButton(Context context) {
@@ -53,7 +54,7 @@ public class ProgressButton extends RelativeLayout {
         label = root.findViewById(R.id.textlabel);
         icon = root.findViewById(R.id.icon);
         progressBar = root.findViewById(R.id.progressbar);
-        ImageView close = root.findViewById(R.id.closeicon);
+        close = root.findViewById(R.id.closeicon);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +89,21 @@ public class ProgressButton extends RelativeLayout {
         });
     }
 
+    public void resetProgressButton() {
+        if(!mode) {
+            label.setVisibility(VISIBLE);
+            icon.setVisibility(VISIBLE);
+            progressBar.setVisibility(GONE);
+            close.setVisibility(GONE);
+            progressClickListener.onCancel();
+        } else {
+            icon.setVisibility(VISIBLE);
+            progressBar.setVisibility(GONE);
+            close.setVisibility(GONE);
+            progressClickListener.onCancel();
+        }
+    }
+
     public ProgressClickListener getProgressClickListener() {
         return progressClickListener;
     }
@@ -115,6 +131,10 @@ public class ProgressButton extends RelativeLayout {
     }
 
     public void setProgress(float value) {
+        label.setVisibility(GONE);
+        icon.setVisibility(GONE);
+        progressBar.setVisibility(VISIBLE);
+        close.setVisibility(VISIBLE);
         progressBar.setProgress(value);
     }
 

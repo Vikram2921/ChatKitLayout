@@ -35,19 +35,12 @@ public class ReceiveSingleImage extends RecyclerView.ViewHolder {
         sender.setText(user.getName());
         sender.setTextColor(user.getColor());
         Glide.with(context).load(message.getSharedFiles().get(0).getPreviewUrl()).into(roundedImageView);
-        ProgressButton progressButton = view.findViewById(R.id.progress);
-        progressButton.initalize();
-        progressButton.setProgressClickListener(new ProgressClickListener() {
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        roundedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onCancel() {
-
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
             }
         });
-
     }
 }

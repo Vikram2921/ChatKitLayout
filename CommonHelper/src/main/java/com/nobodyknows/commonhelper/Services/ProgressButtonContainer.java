@@ -7,7 +7,7 @@ import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.commonhelper.Model.Message;
 
 
-public class UploadAndDownloadView {
+public class ProgressButtonContainer {
 
     private ProgressButton progressButton;
 

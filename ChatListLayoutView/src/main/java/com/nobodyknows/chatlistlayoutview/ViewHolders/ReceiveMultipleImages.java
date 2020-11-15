@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nobodyknows.chatlistlayoutview.R;
 import com.nobodyknows.chatlistlayoutview.Services.LayoutService;
+import com.nobodyknows.circularprogressbutton.ProgressButton;
+import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.SharedFile;
 import com.nobodyknows.commonhelper.Model.User;
@@ -48,5 +50,30 @@ public class ReceiveMultipleImages extends RecyclerView.ViewHolder {
         Glide.with(context).load(message.getSharedFiles().get(1).getPreviewUrl()).into(image2);
         Glide.with(context).load(message.getSharedFiles().get(2).getPreviewUrl()).into(image3);
         Glide.with(context).load(message.getSharedFiles().get(3).getPreviewUrl()).into(image4);
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        image1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
     }
 }

@@ -35,22 +35,9 @@ public class ReceiveAudio extends RecyclerView.ViewHolder {
         TextView sender = view.findViewById(R.id.sendername);
         sender.setText(user.getName());
         sender.setTextColor(user.getColor());
-        ProgressButton progressButton = view.findViewById(R.id.probutton);
-        progressButton.initalize();
-        progressButton.setProgressClickListener(new ProgressClickListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-        });
-
         ImageView imageView = view.findViewById(R.id.playpause);
         SeekBar seekBar = view.findViewById(R.id.progressbar);
         LayoutService.initAudioPlayerView(context,message,imageView,seekBar);
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
     }
 }

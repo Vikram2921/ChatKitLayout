@@ -55,5 +55,30 @@ public class ReceiveMultipleVideos extends RecyclerView.ViewHolder {
         duration2.setText(LayoutService.getDuration(message.getSharedFiles().get(1).getDuration()));
         duration3.setText(LayoutService.getDuration(message.getSharedFiles().get(2).getDuration()));
         duration4.setText(LayoutService.getDuration(message.getSharedFiles().get(3).getDuration()));
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        image1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
     }
 }

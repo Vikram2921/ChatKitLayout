@@ -17,10 +17,6 @@ import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.Model.Message;
 
-import org.w3c.dom.Text;
-
-import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
-
 public class SentSingleVideo extends RecyclerView.ViewHolder {
     View view;
     TextView textView;
@@ -38,17 +34,12 @@ public class SentSingleVideo extends RecyclerView.ViewHolder {
         Glide.with(context).load(message.getSharedFiles().get(0).getPreviewUrl()).into(roundedImageView);
         ImageView messageStatus = view.findViewById(R.id.messagestatus);
         LayoutService.updateMessageStatus(message.getMessageStatus(),messageStatus);
-        ProgressButton progressButton = view.findViewById(R.id.progress);
-        progressButton.initalize();
-        progressButton.setUploadType();
         duration.setText(LayoutService.getDuration(message.getSharedFiles().get(0).getDuration()));
-        progressButton.setProgressClickListener(new ProgressClickListener() {
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        roundedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onCancel() {
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
             }
         });
     }

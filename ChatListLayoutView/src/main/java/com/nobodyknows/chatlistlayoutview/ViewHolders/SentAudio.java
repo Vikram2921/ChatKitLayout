@@ -18,7 +18,6 @@ import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.Model.Message;
 
 import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.downloadPaths;
-import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
 
 public class SentAudio extends RecyclerView.ViewHolder {
     View view;
@@ -34,21 +33,9 @@ public class SentAudio extends RecyclerView.ViewHolder {
         messageTime.setText("Audio"+DOT_SEPRATOR+LayoutService.getSize(message.getSharedFiles().get(0).getSize())+DOT_SEPRATOR+LayoutService.getDuration(message.getSharedFiles().get(0).getDuration())+DOT_SEPRATOR+LayoutService.getFormatedDate("hh:mm aa", message.getSentAt()));
         ImageView messageStatus = view.findViewById(R.id.messagestatus);
         LayoutService.updateMessageStatus(message.getMessageStatus(),messageStatus);
-        ProgressButton progressButton = view.findViewById(R.id.probutton);
-        progressButton.initalize();
-        progressButton.setUploadType();
-        progressButton.setProgressClickListener(new ProgressClickListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onCancel() {
-            }
-        });
-
         ImageView imageView = view.findViewById(R.id.playpause);
         SeekBar seekBar = view.findViewById(R.id.progressbar);
         LayoutService.initAudioPlayerView(context,message,imageView,seekBar);
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
     }
 }

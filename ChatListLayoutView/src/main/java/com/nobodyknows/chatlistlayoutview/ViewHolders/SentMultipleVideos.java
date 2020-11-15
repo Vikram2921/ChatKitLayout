@@ -55,6 +55,30 @@ public class SentMultipleVideos extends RecyclerView.ViewHolder {
         duration4.setText(LayoutService.getDuration(message.getSharedFiles().get(3).getDuration()));
         ImageView messageStatus = view.findViewById(R.id.messagestatus);
         LayoutService.updateMessageStatus(message.getMessageStatus(),messageStatus);
-
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        image1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
     }
 }

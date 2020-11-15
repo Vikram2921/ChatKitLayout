@@ -19,7 +19,7 @@ import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.User;
 
 import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.downloadPaths;
-import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
+
 
 public class SentRecording extends RecyclerView.ViewHolder {
     View view;

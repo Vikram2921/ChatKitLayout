@@ -57,7 +57,7 @@ public class ChatLayoutView extends RelativeLayout {
     private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
     private ListViewAdapter listViewAdapter;
-    public static DatabaseHelper databaseHelper;
+    private DatabaseHelper databaseHelper;
     private String roomId;
     public static String myId="";
     private Boolean useDatabase = false;
@@ -69,15 +69,14 @@ public class ChatLayoutView extends RelativeLayout {
     private int receivedSoundEffect = R.raw.message_received;
     private ImageView backgroundImage;
     private int offset = 0;
-    protected static ChatLayoutListener chatLayoutListener;
+    public static ChatLayoutListener chatLayoutListener;
     public static Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;
-    public static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
     public Context getMainActivityContext() {
         return mainActivityContext;
     }
-    
+
 
     private int getNextOffset() {
         return offset+chatLimit;
@@ -122,7 +121,6 @@ public class ChatLayoutView extends RelativeLayout {
         helper.setRecyclerView(recyclerView);
         helper.setListView(listView);
         helper.setMode(mode);
-        uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getContext());
         backgroundImage = root.findViewById(R.id.background);
         leftMessageConfiguration = new MessageConfiguration();
         rightMessageConfiguration = new MessageConfiguration();
@@ -397,14 +395,6 @@ public class ChatLayoutView extends RelativeLayout {
 
     public ChatLayoutListener getChatLayoutListener() {
         return chatLayoutListener;
-    }
-
-    public UploadAndDownloadViewHandler getUploadAndDownloadViewHandler() {
-        return uploadAndDownloadViewHandler;
-    }
-
-    public void setUploadAndDownloadViewHandler(UploadAndDownloadViewHandler uploadAndDownloadViewHandler) {
-        ChatLayoutView.uploadAndDownloadViewHandler = uploadAndDownloadViewHandler;
     }
 
     public void deleteDatabase() {

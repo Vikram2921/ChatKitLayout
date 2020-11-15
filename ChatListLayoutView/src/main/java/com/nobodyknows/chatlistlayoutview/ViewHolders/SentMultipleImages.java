@@ -48,6 +48,30 @@ public class SentMultipleImages extends RecyclerView.ViewHolder {
         Glide.with(context).load(message.getSharedFiles().get(3).getPreviewUrl()).into(image4);
         ImageView messageStatus = view.findViewById(R.id.messagestatus);
         LayoutService.updateMessageStatus(message.getMessageStatus(),messageStatus);
-
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
+        image1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
+        image4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutService.changeToGalleryIntent(context,message);
+            }
+        });
     }
 }

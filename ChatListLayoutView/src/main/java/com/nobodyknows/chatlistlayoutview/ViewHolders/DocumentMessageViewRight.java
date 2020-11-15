@@ -44,23 +44,6 @@ public class DocumentMessageViewRight extends RecyclerView.ViewHolder {
         }
         documentName.setText(message.getSharedFiles().get(0).getName());
         documentInfo.setText(message.getSharedFiles().get(0).getFileInfo());
-        ProgressButton progressButton = view.findViewById(R.id.probutton);
-        if(LayoutService.canShowDownloadButton(downloadPaths.get(MessageType.DOCUMENT),message.getSharedFiles())) {
-            progressButton.initalize();
-            progressButton.setProgressClickListener(new ProgressClickListener() {
-                @Override
-                public void onStart() {
-
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
-        } else {
-            progressButton.setVisibility(View.GONE);
-
-        }
+        LayoutService.handlerDownloadAndUploadCase(context,view,message);
     }
 }

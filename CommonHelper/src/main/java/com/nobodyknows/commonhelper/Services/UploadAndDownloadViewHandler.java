@@ -1,7 +1,6 @@
 package com.nobodyknows.commonhelper.Services;
 
 import android.content.Context;
-import android.view.View;
 
 import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.commonhelper.Model.Message;
@@ -29,8 +28,8 @@ public class UploadAndDownloadViewHandler {
         return messageIds.contains(messageId);
     }
 
-    public UploadAndDownloadView getUploadView(String messageId) {
-        UploadAndDownloadView getChatView = new UploadAndDownloadView();
+    public ProgressButtonContainer getProgressButtonContainer(String messageId) {
+        ProgressButtonContainer getChatView = new ProgressButtonContainer();
         int index = messageIds.indexOf(messageId);
         if(index > -1) {
             getChatView.setMessage(messages.get(index));

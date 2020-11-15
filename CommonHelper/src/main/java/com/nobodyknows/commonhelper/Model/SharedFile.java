@@ -5,6 +5,7 @@ import java.util.Random;
 public class SharedFile {
     private String fileId = new Random().nextInt(9999)+"";
     private String url;
+    private String localPath;
     private String previewUrl;
     private String name;
     private String extension;
@@ -77,5 +78,13 @@ public class SharedFile {
 
     public void setFileInfo(String fileInfo) {
         this.fileInfo = fileInfo;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
     }
 }

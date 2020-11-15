@@ -4,4 +4,7 @@
     <dimen name="viewgap">2dp</dimen>
     <dimen name="multiviewheight">150dp</dimen>
     <dimen name="messagetime_top_padding">3dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="list_item_spacing">16dp</dimen>
+    <dimen name="list_item_spacing_half">8dp</dimen>
 </resources>

@@ -6,6 +6,7 @@ public class Urls {
     private int id;
     private String messageId;
     private String url;
+    private String localPath;
     private String previewUrl;
     private String fileId;
     private String extension;
@@ -18,6 +19,7 @@ public class Urls {
     public static final String COLUMN_FILE_ID = "fileId";
     public static final String COLUMN_MESSAGE_ID = "messageId";
     public static final String COLUMN_URL = "url";
+    public static final String COLUMN_LOCAL_PATH = "localPath";
     public static final String COLUMN_PREVIEW_URL = "previewUrl";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_FILE_INFO = "fileInfo";
@@ -35,6 +37,7 @@ public class Urls {
                 + COLUMN_FILE_ID +" TEXT NOT NULL,"
                 + COLUMN_MESSAGE_ID +" TEXT NOT NULL,"
                 + COLUMN_URL +" TEXT NOT NULL,"
+                + COLUMN_LOCAL_PATH +" TEXT,"
                 + COLUMN_PREVIEW_URL +" TEXT,"
                 + COLUMN_NAME +" TEXT NOT NULL,"
                 + COLUMN_FILE_INFO +" TEXT,"
@@ -123,5 +126,13 @@ public class Urls {
 
     public void setFileInfo(String fileInfo) {
         this.fileInfo = fileInfo;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
     }
 }

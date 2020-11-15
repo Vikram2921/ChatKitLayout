@@ -132,6 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Urls.COLUMN_FILE_ID,sharedFile.getFileId());
         values.put(Urls.COLUMN_NAME,sharedFile.getName());
         values.put(Urls.COLUMN_URL,sharedFile.getUrl());
+        values.put(Urls.COLUMN_LOCAL_PATH,sharedFile.getLocalPath());
         values.put(Urls.COLUMN_FILE_INFO,sharedFile.getFileInfo());
         values.put(Urls.COLUMN_PREVIEW_URL,sharedFile.getPreviewUrl());
         values.put(Urls.COLUMN_EXETENSION,sharedFile.getExtension());
@@ -228,6 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         file.setPreviewUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_PREVIEW_URL)));
         file.setFileId(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_FILE_ID)));
         file.setUrl(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_URL)));
+        file.setLocalPath(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_LOCAL_PATH)));
         file.setName(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_NAME)));
         file.setFileInfo(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_FILE_INFO)));
         file.setExtension(cursor.getString(cursor.getColumnIndex(Urls.COLUMN_EXETENSION)));

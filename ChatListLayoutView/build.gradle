@@ -37,8 +37,11 @@ dependencies {
     implementation 'gun0912.ted:tedpermission:2.2.3'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.veinhorn.scrollgalleryview:library:1.2.6'
     implementation 'com.ixuea:AndroidDownloader:+'
     implementation project(path: ':CircularProgressButton')
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.github.izjumovfs:SwipeToReply:1.0.1'
     implementation project(path: ':CommonHelper')

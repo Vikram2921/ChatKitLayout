@@ -17,7 +17,7 @@ import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.Model.Message;
 
-import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
+
 
 public class SentGif extends RecyclerView.ViewHolder {
     View view;

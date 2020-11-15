@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.myId;
-import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.uploadAndDownloadViewHandler;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

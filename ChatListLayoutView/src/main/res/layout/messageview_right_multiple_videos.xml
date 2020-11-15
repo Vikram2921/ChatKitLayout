@@ -233,7 +233,8 @@
             app:layout_constraintBottom_toBottomOf="@id/image3"
             app:layout_constraintLeft_toLeftOf="@id/image1"
             app:layout_constraintRight_toRightOf="@id/image4"
-            android:id="@+id/progress"
+            android:id="@+id/probutton"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         </com.nobodyknows.circularprogressbutton.ProgressButton>
