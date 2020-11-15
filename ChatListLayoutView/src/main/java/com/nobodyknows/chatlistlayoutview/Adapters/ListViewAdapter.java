@@ -22,12 +22,10 @@ public class ListViewAdapter extends ArrayAdapter {
     private LayoutInflater layoutInflater;
     private Map<String, User> userMap;
     private Map<MessageType,String> downloadPath;
-    private MediaPlayer mediaPlayer;
-    public ListViewAdapter(@NonNull Context context, int resource, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths,MediaPlayer mediaPlayer) {
+    public ListViewAdapter(@NonNull Context context, int resource, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths) {
         super(context, resource,messages);
         this.context = context;
         this.userMap = userMap;
-        this.mediaPlayer = mediaPlayer;
         this.messages = messages;
         this.downloadPath = downloadPaths;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

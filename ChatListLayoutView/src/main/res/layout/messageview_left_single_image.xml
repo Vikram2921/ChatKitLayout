@@ -8,6 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:clickable="true"
+        android:id="@+id/rootBox"
         android:background="@drawable/left_message_drawable"
         android:layout_margin="3dp"
         android:layout_height="wrap_content">

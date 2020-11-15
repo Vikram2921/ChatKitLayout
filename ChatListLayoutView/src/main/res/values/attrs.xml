@@ -3,7 +3,6 @@
     <declare-styleable name="ChatLayoutView">
         <attr name="view_mode">
             <enum name="RecyclerView" value="0"></enum>
-            <enum name="ListView" value="1"></enum>
         </attr>
         <attr name="useDatabase" format="boolean"></attr>
         <attr name="chatLimit" format="integer"></attr>

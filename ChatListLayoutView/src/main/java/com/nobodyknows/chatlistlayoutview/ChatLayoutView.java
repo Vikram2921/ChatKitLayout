@@ -47,7 +47,6 @@ import java.util.Map;
 public class ChatLayoutView extends RelativeLayout {
     private LayoutInflater layoutInflater;
     private Integer RECYCLERVIEW = 0;
-    private Integer LISTVIEW = 1;
     private int mode=0;
     private ArrayList<Message> messages = new ArrayList<>();
     private RelativeLayout root;
@@ -55,7 +54,6 @@ public class ChatLayoutView extends RelativeLayout {
     private MessageConfiguration leftMessageConfiguration;
     private MessageConfiguration rightMessageConfiguration;
     private ListView listView;
-    protected static ChatLinkDatabaseHelper chatLinkDatabaseHelper;
     private ArrayList<String> dates =new ArrayList<>();
     private RecyclerViewAdapter recyclerViewAdapter;
     private ListViewAdapter listViewAdapter;
@@ -74,18 +72,12 @@ public class ChatLayoutView extends RelativeLayout {
     protected static ChatLayoutListener chatLayoutListener;
     public static Map<MessageType,String> downloadPaths = new HashMap<>();
     protected static Helper helper;
-    private MediaPlayer mediaPlayer;
-    public static DownloadManager downloadManager;
     public static UploadAndDownloadViewHandler uploadAndDownloadViewHandler;
 
     public Context getMainActivityContext() {
         return mainActivityContext;
     }
-
-
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
-    }
+    
 
     private int getNextOffset() {
         return offset+chatLimit;
@@ -131,7 +123,6 @@ public class ChatLayoutView extends RelativeLayout {
         helper.setListView(listView);
         helper.setMode(mode);
         uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getContext());
-        mediaPlayer = new MediaPlayer();
         backgroundImage = root.findViewById(R.id.background);
         leftMessageConfiguration = new MessageConfiguration();
         rightMessageConfiguration = new MessageConfiguration();
@@ -144,8 +135,6 @@ public class ChatLayoutView extends RelativeLayout {
     public void initialize(Context mainActivityContext,ChatLayoutListener chatLayoutListener) {
         this.chatLayoutListener = chatLayoutListener;
         this.mainActivityContext = mainActivityContext;
-        downloadManager = DownloadService.getDownloadManager(mainActivityContext);
-        chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(getContext());
         if(mode == RECYCLERVIEW) {
             continueRecyclerView();
         } else {
@@ -153,21 +142,6 @@ public class ChatLayoutView extends RelativeLayout {
         }
     }
 
-    public static ChatLinkDatabaseHelper getChatLinkDatabaseHelper() {
-        return chatLinkDatabaseHelper;
-    }
-
-    public static void setChatLinkDatabaseHelper(ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
-        ChatLayoutView.chatLinkDatabaseHelper = chatLinkDatabaseHelper;
-    }
-
-    public static DownloadManager getDownloadManager() {
-        return downloadManager;
-    }
-
-    public static void setDownloadManager(DownloadManager downloadManager) {
-        ChatLayoutView.downloadManager = downloadManager;
-    }
 
     private void addSwipeRecyclerView() {
         SwipeController controller = new SwipeController(getContext(), new ISwipeControllerActions() {
@@ -199,7 +173,7 @@ public class ChatLayoutView extends RelativeLayout {
     private void continueRecyclerView() {
         recyclerView.setVisibility(VISIBLE);
         listView.setVisibility(GONE);
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths,mediaPlayer,chatLinkDatabaseHelper);
+        recyclerViewAdapter = new RecyclerViewAdapter(getContext(),messages,helper.getUserMap(),downloadPaths);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
@@ -209,24 +183,14 @@ public class ChatLayoutView extends RelativeLayout {
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-//                if(!recyclerView.canScrollVertically(-1)  && newState == RecyclerView.SCROLL_STATE_IDLE && dynamicScrolling) {
-//                    messages.addAll(0,databaseHelper.getLimitedMessages(myId,leftMessageConfiguration,rightMessageConfiguration, dates, chatLimit,getNextOffset()));
-//                    notifyAdapter(false);
-//                }
-            }
-        });
+        recyclerView.setAdapter(recyclerViewAdapter);;
         addSwipeRecyclerView();
     }
 
     private void continueListView() {
         recyclerView.setVisibility(GONE);
         listView.setVisibility(VISIBLE);
-        listViewAdapter = new ListViewAdapter(getContext(),0,messages,helper.getUserMap(),downloadPaths,mediaPlayer);
+        listViewAdapter = new ListViewAdapter(getContext(),0,messages,helper.getUserMap(),downloadPaths);
         listView.setAdapter(listViewAdapter);
     }
 

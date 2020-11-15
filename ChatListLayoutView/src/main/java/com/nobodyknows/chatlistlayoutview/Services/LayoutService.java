@@ -2,11 +2,14 @@ package com.nobodyknows.chatlistlayoutview.Services;
 
 import android.Manifest;
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Environment;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -23,24 +26,35 @@ import com.nobodyknows.chatlinkpreview.MetaData;
 import com.nobodyknows.chatlistlayoutview.R;
 import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
+import com.nobodyknows.commonhelper.CONSTANT.MessageType;
 import com.nobodyknows.commonhelper.Model.Contact;
 import com.nobodyknows.commonhelper.Model.ContactParceable;
+import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.SharedFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.view.View.VISIBLE;
+import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.downloadPaths;
 
 public class LayoutService {
     public static DownloadManager downloadManager;
-    public static void checkForLink(ChatLinkView chatLinkView, TextView message, ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
+    public static ChatLinkDatabaseHelper chatLinkDatabaseHelper;
+    private static SeekBar LseekBar;
+    private static ImageView LplayPause;
+    private static String LmessageId;
+    private static MediaPlayer mediaPlayer;
+    private static MediaObserver observer;
+    public static void checkForLink(ChatLinkView chatLinkView, TextView message) {
         URLSpan span[] = message.getUrls();
         if(span.length > 0) {
             String link = span[0].getURL();
@@ -61,8 +75,14 @@ public class LayoutService {
         }
     }
 
-    public static void initDownloadManager(Context context) {
+
+    public static void initialize(Context context) {
+        chatLinkDatabaseHelper = new ChatLinkDatabaseHelper(context);
         downloadManager = DownloadService.getDownloadManager(context);
+        LmessageId = "";
+        LseekBar = null;
+        LplayPause = null;
+        mediaPlayer = new MediaPlayer();
     }
 
     public static DownloadManager getDownloadManager() {
@@ -143,6 +163,10 @@ public class LayoutService {
             }
         }
         return canShow;
+    }
+
+    public static String getFullFileUrl(String downloadPath,SharedFile sharedFile) {
+        return Environment.getExternalStorageDirectory().getPath()+downloadPath+"/"+sharedFile.getName()+"."+sharedFile.getExtension();
     }
 
     public static ArrayList<ContactParceable> getParceableList(ArrayList<Contact> contacts) {
@@ -339,4 +363,152 @@ public class LayoutService {
     private static int calculateProgress(long progress, long size) {
         return (int) (((double) progress / (double) size) * 100);
     }
+
+    public static ChatLinkDatabaseHelper getChatLinkDatabaseHelper() {
+        return chatLinkDatabaseHelper;
+    }
+
+    private static class MediaObserver implements Runnable {
+        private AtomicBoolean stop = new AtomicBoolean(false);
+
+        public void stop() {
+            stop.set(true);
+        }
+
+        @Override
+        public void run() {
+            while (!stop.get()) {
+                LseekBar.setProgress((int)((double)mediaPlayer.getCurrentPosition() / (double)mediaPlayer.getDuration()*100));
+                try {
+                    Thread.sleep(200);
+                } catch (Exception ex) {
+                }
+
+            }
+        }
+    }
+
+    private static void playeAudio(Context context,String messageId,String url,SeekBar seekBar,ImageView playPause) {
+        if(messageId == null || messageId.length()  == 0) {
+            LmessageId = messageId;
+            LseekBar = seekBar;
+            LplayPause = playPause;
+            playMusic(context,url);
+        } else {
+            if(LmessageId.equals(messageId)) {
+                mediaPlayer.start();
+            } else {
+                stopAudio();
+                mediaPlayer.reset();
+                if(LseekBar != null) {
+                    LseekBar.setProgress(0);
+                    LseekBar.setSecondaryProgress(0);
+                }
+                LmessageId = messageId;
+                LseekBar = seekBar;
+                LplayPause = playPause;
+                playMusic(context,url);
+            }
+        }
+    }
+
+    private static void stopAudio() {
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            LplayPause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+        }
+    }
+
+    private static String getLastPlayingMessageId() {
+        return LmessageId;
+    }
+
+    private static boolean isPlayingAudio() {
+        return mediaPlayer.isPlaying();
+    }
+
+    private static void onSeekBarProgressChange(int progress) {
+        mediaPlayer.seekTo(progress);
+    }
+    private static void playMusic(Context context,String url) {
+        LplayPause.setImageResource(R.drawable.ic_baseline_pause_24);
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(context, Uri.parse(url));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        observer.stop();
+                        LseekBar.setProgress(0);
+                        LseekBar.setSecondaryProgress(0);
+                        LplayPause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                    }
+                });
+                mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                    @Override
+                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                        LseekBar.setSecondaryProgress(percent);
+                    }
+                });
+                observer = new MediaObserver();
+                new Thread(observer).start();
+            }
+        });
+        mediaPlayer.prepareAsync();
+    }
+
+    public static void initAudioPlayerView(Context context,Message message,ImageView playPause,SeekBar seekBar) {
+        if(LmessageId.equals(message.getMessageId())) {
+            seekBar.setProgress(LseekBar.getProgress());
+            seekBar.setSecondaryProgress(LseekBar.getSecondaryProgress());
+            if(isPlayingAudio()) {
+                playPause.setImageResource(R.drawable.ic_baseline_pause_24);
+            }
+        }
+        playPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getLastPlayingMessageId().equals(message.getMessageId()) && isPlayingAudio()) {
+                    stopAudio();
+                } else {
+                    String url = message.getSharedFiles().get(0).getUrl();
+                    if(!canShowDownloadButton(downloadPaths.get(message.getMessageType()),message.getSharedFiles())) {
+                        url = getFullFileUrl(downloadPaths.get(message.getMessageType()),message.getSharedFiles().get(0));
+                    }
+                    playeAudio(context,message.getMessageId(),url,seekBar,playPause);
+                }
+            }
+        });
+    }
+
+    public static void destroyPlayer() {
+        if(mediaPlayer != null) {
+            mediaPlayer.reset();
+        }
+        if(observer != null) {
+            observer.stop();
+        }
+    }
+
+    public static void configureMessageView(Message message,View view,Boolean isReceived) {
+        if(message.getMessageType() != MessageType.STICKER) {
+            view.findViewById(R.id.rootBox).setBackgroundResource(message.getMessageConfiguration().getBackgroundResource());
+        } else {
+            if(isReceived) {
+                view.findViewById(R.id.sendername).setBackgroundResource(message.getMessageConfiguration().getBackgroundResource());
+                view.findViewById(R.id.messagetime).setBackgroundResource(message.getMessageConfiguration().getBackgroundResource());
+            } else {
+                view.findViewById(R.id.rootBox).setBackgroundResource(message.getMessageConfiguration().getBackgroundResource());
+            }
+        }
+    }
+
+
 }

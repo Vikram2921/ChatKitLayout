@@ -53,8 +53,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context context;
     private Map<String, User> userMap;
     private Map<MessageType,String> downloadPath;
-    private MediaPlayer mediaPlayer;
-    private ChatLinkDatabaseHelper chatLinkDatabaseHelper;
 
     //*************EXTRAS **************//
     private final int DATE_AND_INFO_MESSAGE = 00;
@@ -93,12 +91,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int SENT_CONTACT = 91;
     private final int RECEIVE_CONTACT = 92;
 
-    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths, MediaPlayer mediaPlayer, ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
+    public RecyclerViewAdapter(Context context, ArrayList<Message> messages, Map<String, User> userMap, Map<MessageType,String> downloadPaths) {
         this.context = context;
         this.messages = messages;
-        this.mediaPlayer = mediaPlayer;
         this.userMap = userMap;
-        this.chatLinkDatabaseHelper = chatLinkDatabaseHelper;
         this.downloadPath = downloadPaths;
     }
 
@@ -237,10 +233,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((TextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()));
                 break;
             case SENT_LINK_TEXT_MESSAGE:
-                ((LinkTextMessageViewRight) holder).initalize(message,chatLinkDatabaseHelper);
+                ((LinkTextMessageViewRight) holder).initalize(message);
                 break;
             case RECEIVE_LINK_TEXT_MESSAGE:
-                ((LinkTextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()),chatLinkDatabaseHelper);
+                ((LinkTextMessageViewLeft) holder).initalize(message,userMap.get(message.getSender()));
                 break;
             case SENT_SINGLE_IMAGE:
                 ((SentSingleImage) holder).initalize(context,message);

@@ -2,6 +2,8 @@ package com.nobodyknows.chatlistlayoutview.ViewHolders;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,8 @@ import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.User;
+
+import static com.nobodyknows.chatlistlayoutview.ChatLayoutView.downloadPaths;
 
 public class ReceiveAudio extends RecyclerView.ViewHolder {
     View view;
@@ -45,5 +49,8 @@ public class ReceiveAudio extends RecyclerView.ViewHolder {
             }
         });
 
+        ImageView imageView = view.findViewById(R.id.playpause);
+        SeekBar seekBar = view.findViewById(R.id.progressbar);
+        LayoutService.initAudioPlayerView(context,message,imageView,seekBar);
     }
 }

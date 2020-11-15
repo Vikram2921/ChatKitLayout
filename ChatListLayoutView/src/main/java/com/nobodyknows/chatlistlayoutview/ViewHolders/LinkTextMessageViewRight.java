@@ -22,7 +22,7 @@ public class LinkTextMessageViewRight extends RecyclerView.ViewHolder {
         view = itemView;
     }
 
-    public void initalize(Message message,ChatLinkDatabaseHelper chatLinkDatabaseHelper) {
+    public void initalize(Message message) {
         ChatLinkView chatLinkView = view.findViewById(R.id.linkview);
         TextView messageText = view.findViewById(R.id.message);
         TextView messageTime = view.findViewById(R.id.messagetime);
@@ -31,6 +31,6 @@ public class LinkTextMessageViewRight extends RecyclerView.ViewHolder {
         messageTime.setText(LayoutService.getFormatedDate("hh:mm aa", message.getSentAt()));
         ImageView messageStatus = view.findViewById(R.id.messagestatus);
         LayoutService.updateMessageStatus(message.getMessageStatus(),messageStatus);
-        LayoutService.checkForLink(chatLinkView,messageText,chatLinkDatabaseHelper);
+        LayoutService.checkForLink(chatLinkView,messageText);
     }
 }

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         linearLayout = findViewById(R.id.viewhold);
-        LayoutService.initDownloadManager(getApplicationContext());
+        LayoutService.initialize(getApplicationContext());
         uploadAndDownloadViewHandler = new UploadAndDownloadViewHandler(getApplicationContext());
         chatLayoutView = findViewById(R.id.chatlayout_view);
         chatLayoutView.setUploadAndDownloadViewHandler(uploadAndDownloadViewHandler);
@@ -70,13 +70,15 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         freindUserObject.setProfileUrl("https://upload.wikimedia.org/wikipedia/commons/0/0c/Sunny_Leone_for_%27Sunny_Ka_New_Year_Call%27_campaign.jpg");
         freindUserObject.setColor(-806962);
         freindUserObject.setUserId("8442000360");
-        chatLayoutView.setPlaySentAndReceivedSoundEffect(false);
         chatLayoutView.addUser(myUserObject);
         chatLayoutView.addUser(freindUserObject);
         chatLayoutView.loadAllDBMessage();
         Button button = findViewById(R.id.clickme);
         EditText editText = findViewById(R.id.message);
         editText.setAutoLinkMask(Linkify.ALL);
+        MessageConfiguration messageConfiguration = new MessageConfiguration();
+        messageConfiguration.setBackgroundResource(R.drawable.left_message_drawable_demo);
+        chatLayoutView.setRightMessageConfiguration(messageConfiguration);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -144,7 +146,28 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
 //        chatLayoutView.addMessage(getContactMessage("12345678",false));
 //        chatLayoutView.addMessage(getAudioMessages("12345678","112312",false,""));
 //        chatLayoutView.addMessage(getAudioMessages("12345678","112316",false,""));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
+        chatLayoutView.addMessage(getRecordingMessages("111222333"+i++,false,"https://firebasestorage.googleapis.com/v0/b/chatme-9b152.appspot.com/o/On%20My%20Way%20-%20Alan%20Walker%20128%20Kbps(PagalWorldCom.Com).mp3?alt=media&token=65b58e7f-7bb0-498e-9c3f-3d93d2de108a"));
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LayoutService.destroyPlayer();
+    }
+
+
 
     private void changeStatusafterTime(Message message) {
         chatLayoutView.updateMessageStatus(message.getMessageId(), MessageStatus.SENT);
@@ -214,11 +237,11 @@ public class MainActivity extends AppCompatActivity implements ChatLayoutListene
         return message;
     }
 
-    private Message getRecordingMessages(String string, String s, boolean b, String url) {
+    private Message getRecordingMessages(String id, boolean isReplied, String url) {
         String random = ids.get(new Random().nextInt(2));
         Message message = new Message();
-        message.setMessageId(s);
-        message.setIsRepliedMessage(b);
+        message.setMessageId(id);
+        message.setIsRepliedMessage(isReplied);
         message.setMessageType(MessageType.RECORDING);
         message.addSharedFile(getSharedFile(url,message.getMessageId()+"_"+i,"mp3"));
         message.setMessage("");
