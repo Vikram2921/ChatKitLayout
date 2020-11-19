@@ -54,25 +54,25 @@ public class ReceiveMultipleImages extends RecyclerView.ViewHolder {
         image1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutService.changeToGalleryIntent(context,message);
+                LayoutService.changeToGalleryIntent(context,message,0);
             }
         });
         image2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutService.changeToGalleryIntent(context,message);
+                LayoutService.changeToGalleryIntent(context,message,1);
             }
         });
         image3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutService.changeToGalleryIntent(context,message);
+                LayoutService.changeToGalleryIntent(context,message,2);
             }
         });
         image4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutService.changeToGalleryIntent(context,message);
+                LayoutService.changeToGalleryIntent(context,message,3);
             }
         });
     }

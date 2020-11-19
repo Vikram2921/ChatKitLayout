@@ -16,7 +16,7 @@ public class PlayVideo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_video);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-     //   getSupportActionBar().hide();
+        getSupportActionBar().hide();
         url = getIntent().getStringExtra("url");
         init();
     }

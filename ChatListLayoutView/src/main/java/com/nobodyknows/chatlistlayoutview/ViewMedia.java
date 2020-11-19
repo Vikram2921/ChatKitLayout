@@ -18,6 +18,7 @@ public class ViewMedia extends AppCompatActivity {
 
     private ArrayList<String> urls;
     private String type;
+    private int num;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +26,7 @@ public class ViewMedia extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         type = getIntent().getStringExtra("type");
+        num = getIntent().getIntExtra("num",0);
         urls = getIntent().getStringArrayListExtra("urls");
         init();
     }
@@ -42,5 +44,6 @@ public class ViewMedia extends AppCompatActivity {
         }
         ViewPager verticalViewPager = findViewById(R.id.viewpager);
         verticalViewPager.setAdapter(new ViewMediaAdapter.Holder(getSupportFragmentManager()).add(fragments).set());
+        verticalViewPager.setCurrentItem(num);
     }
 }

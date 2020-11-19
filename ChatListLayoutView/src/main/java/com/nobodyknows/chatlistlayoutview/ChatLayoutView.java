@@ -171,7 +171,7 @@ public class ChatLayoutView extends RelativeLayout {
         layoutManager.setReverseLayout(false);
         layoutManager.setItemPrefetchEnabled(true);
         layoutManager.setSmoothScrollbarEnabled(true);
-        layoutManager.setInitialPrefetchItemCount(5);
+        layoutManager.setInitialPrefetchItemCount(20);
         layoutManager.setRecycleChildrenOnDetach(true);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);

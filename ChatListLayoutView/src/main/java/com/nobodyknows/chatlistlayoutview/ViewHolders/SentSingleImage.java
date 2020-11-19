@@ -34,7 +34,7 @@ public class SentSingleImage extends RecyclerView.ViewHolder {
         roundedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutService.changeToGalleryIntent(context,message);
+                LayoutService.changeToGalleryIntent(context,message,0);
             }
         });
     }

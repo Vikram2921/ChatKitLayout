@@ -577,9 +577,10 @@ public class LayoutService {
         downloadInfos.remove(messageId);
     }
 
-    public static void changeToGalleryIntent(Context context,Message message) {
+    public static void changeToGalleryIntent(Context context,Message message,int pos) {
         Intent intent = new Intent(context, ViewMedia.class);
         intent.putExtra("type",message.getMessageType().name());
+        intent.putExtra("num",pos);
         intent.putStringArrayListExtra("urls",LayoutService.getUrlsFromSharedFiles(message.getSharedFiles()));
         context.startActivity(intent);
     }
