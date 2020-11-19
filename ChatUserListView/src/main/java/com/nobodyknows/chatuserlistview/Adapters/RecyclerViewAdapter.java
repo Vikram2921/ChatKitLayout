@@ -99,7 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             holder.name.setText(user.getUserId());
         }
         if(user.getProfileUrl() != null && user.getProfileUrl().length() > 0 ){
-            Glide.with(context).load(user.getProfileUrl()).placeholder(R.drawable.ic_baseline_person_24).into(holder.profile);
+            Glide.with(context).load(user.getProfileUrl()).placeholder(R.drawable.ic_baseline_person_24).override(200).into(holder.profile);
         } else {
             Glide.with(context).load(R.drawable.ic_baseline_person_24).into(holder.profile);
         }
@@ -165,6 +165,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                                 ImageView callaudio = view.findViewById(R.id.callaudio);
                                 ImageView callvideo = view.findViewById(R.id.callvideo);
                                 ImageView info = view.findViewById(R.id.info);
+                                if(user.getIsGroup()) {
+                                    callaudio.setVisibility(View.GONE);
+                                    callvideo.setVisibility(View.GONE);
+                                }
                                 chat.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {

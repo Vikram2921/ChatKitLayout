@@ -85,7 +85,7 @@ public class chatlist extends AppCompatActivity {
         if(j >= 11) {
             j=0;
         }
-        user.setIsGroup(false);
+        user.setIsGroup(true);
         user.setLastMessageType(MessageType.values()[j]);
         user.setLastMessageStatus(MessageStatus.SENDING);
         user.setUnreadMessageCount(randBetween(-10,40));

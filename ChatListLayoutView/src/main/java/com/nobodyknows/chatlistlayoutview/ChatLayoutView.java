@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.capybaralabs.swipetoreply.ISwipeControllerActions;
 import com.capybaralabs.swipetoreply.SwipeController;
-import com.ixuea.android.downloader.DownloadService;
-import com.ixuea.android.downloader.callback.DownloadManager;
-import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 import com.nobodyknows.chatlistlayoutview.Adapters.ListViewAdapter;
 import com.nobodyknows.chatlistlayoutview.Adapters.RecyclerViewAdapter;
 import com.nobodyknows.chatlistlayoutview.Database.DatabaseHelper;
@@ -34,7 +30,6 @@ import com.nobodyknows.commonhelper.Model.Message;
 import com.nobodyknows.commonhelper.Model.MessageConfiguration;
 import com.nobodyknows.commonhelper.Model.User;
 import com.nobodyknows.commonhelper.Services.Helper;
-import com.nobodyknows.commonhelper.Services.UploadAndDownloadViewHandler;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

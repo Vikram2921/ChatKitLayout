@@ -25,6 +25,7 @@ import com.nobodyknows.chatlinkpreview.ChatViewListener;
 import com.nobodyknows.chatlinkpreview.Database.ChatLinkDatabaseHelper;
 import com.nobodyknows.chatlinkpreview.MetaData;
 import com.nobodyknows.chatlistlayoutview.R;
+import com.nobodyknows.chatlistlayoutview.ViewMedia;
 import com.nobodyknows.circularprogressbutton.ProgressButton;
 import com.nobodyknows.circularprogressbutton.ProgressClickListener;
 import com.nobodyknows.commonhelper.CONSTANT.MessageStatus;
@@ -577,10 +578,10 @@ public class LayoutService {
     }
 
     public static void changeToGalleryIntent(Context context,Message message) {
-//        Intent intent = new Intent(context, Gallery.class);
-//        intent.putExtra("type",message.getMessageType().name());
-//        intent.putStringArrayListExtra("urls",LayoutService.getUrlsFromSharedFiles(message.getSharedFiles()));
-//        context.startActivity(intent);
+        Intent intent = new Intent(context, ViewMedia.class);
+        intent.putExtra("type",message.getMessageType().name());
+        intent.putStringArrayListExtra("urls",LayoutService.getUrlsFromSharedFiles(message.getSharedFiles()));
+        context.startActivity(intent);
     }
 
     private static ArrayList<String> getUrlsFromSharedFiles(ArrayList<SharedFile> sharedFiles) {
