@@ -156,16 +156,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private long getFormattedDateForSorting(Date date) {
-        return date.getTime();
+        if(date != null) {
+            return date.getTime();
+        }
+        return 0;
     }
 
     private String getConvertedDate(Date date) {
-        return date.toString();
+        if(date != null) {
+            return date.toString();
+        }
+        return "";
     }
 
     private Date getReveretdDate(String date) {
-        Date newdate = new Date(date);
-        return newdate;
+        if(date.length() > 0) {
+            Date newdate = new Date(date);
+            return newdate;
+        }
+        return null;
     }
 
 

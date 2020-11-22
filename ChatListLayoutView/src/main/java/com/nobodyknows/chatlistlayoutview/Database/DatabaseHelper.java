@@ -393,12 +393,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     private String getConvertedDate(Date date) {
-        return date.toString();
+        if(date != null) {
+            return date.toString();
+        }
+        return "";
     }
 
     private Date getReveretdDate(String date) {
-        Date newdate = new Date(date);
-        return newdate;
+        if(date.length() > 0) {
+            Date newdate = new Date(date);
+            return newdate;
+        }
+        return null;
     }
 
     public int updateMessageStatus(String messageId, MessageStatus messageStatus) {
@@ -406,6 +412,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(Chats.COLUMN_MESSAGE_STATUS, messageStatus.ordinal());
         return db.update(Chats.getTableName(roomId), values, Chats.COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
-
     }
 }
