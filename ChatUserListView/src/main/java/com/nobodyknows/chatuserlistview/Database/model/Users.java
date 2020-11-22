@@ -8,6 +8,7 @@ public class Users {
     private String userId;
     private String profileUrl;
     private String lastMessage;
+    private String lastMessageId;
     private String lastMessageSender;
     private String lastMessageDate;
     private Integer lastMessageDateForSorting;
@@ -24,6 +25,7 @@ public class Users {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_PROFILEURL = "profileUrl";
     public static final String COLUMN_LASTMESSAGE = "lastMessage";
+    public static final String COLUMN_LASTMESSAGE_ID = "lastMessageId";
     public static final String COLUMN_LASTMESSAGESENDER = "lastMessageSender";
     public static final String COLUMN_LASTMESSAGEDATE = "lastMessageDate";
     public static final String COLUMN_LASTMESSAGEDATE_FOR_SORTING = "lastMessageDateForSorting";
@@ -47,6 +49,7 @@ public class Users {
                 + COLUMN_NAME+" TEXT,"
                 + COLUMN_PROFILEURL +" TEXT,"
                 + COLUMN_LASTMESSAGE +" TEXT,"
+                + COLUMN_LASTMESSAGE_ID +" TEXT,"
                 + COLUMN_LASTMESSAGESENDER +" TEXT,"
                 + COLUMN_LASTMESSAGEDATE +" TEXT,"
                 + COLUMN_LASTMESSAGEDATE_FOR_SORTING +" INTEGER,"
@@ -179,5 +182,13 @@ public class Users {
 
     public void setLastMessageType(Integer lastMessageType) {
         this.lastMessageType = lastMessageType;
+    }
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
     }
 }

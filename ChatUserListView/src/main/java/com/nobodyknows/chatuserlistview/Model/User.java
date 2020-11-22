@@ -10,6 +10,7 @@ public class User {
     private String name;
     private String profileUrl;
     private String lastMessage;
+    private String lastMessageId;
     private String lastMessageSender;
     private Date lastMessageDate;
     private Integer unreadMessageCount = 0;
@@ -122,5 +123,13 @@ public class User {
 
     public void setLastMessageType(MessageType lastMessageType) {
         this.lastMessageType = lastMessageType;
+    }
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
     }
 }

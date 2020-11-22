@@ -57,6 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Users.COLUMN_LASTMESSAGE, user.getLastMessage());
+        values.put(Users.COLUMN_LASTMESSAGE_ID, user.getLastMessageId());
         values.put(Users.COLUMN_LASTMESSAGETYPE,user.getLastMessageType().ordinal());
         values.put(Users.COLUMN_LASTMESSAGEDATE, getConvertedDate(user.getLastMessageDate()));
         values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING, getFormattedDateForSorting(user.getLastMessageDate()));
@@ -83,6 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(Users.COLUMN_NAME,user.getName());
         values.put(Users.COLUMN_PROFILEURL,user.getProfileUrl());
         values.put(Users.COLUMN_LASTMESSAGE,user.getLastMessage());
+        values.put(Users.COLUMN_LASTMESSAGE_ID,user.getLastMessageId());
         values.put(Users.COLUMN_LASTMESSAGESENDER,user.getLastMessageSender());
         values.put(Users.COLUMN_LASTMESSAGEDATE,getConvertedDate(user.getLastMessageDate()));
         values.put(Users.COLUMN_LASTMESSAGEDATE_FOR_SORTING,getFormattedDateForSorting(user.getLastMessageDate()));
@@ -102,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setName(cursor.getString(cursor.getColumnIndex(Users.COLUMN_NAME)));
         user.setProfileUrl(cursor.getString(cursor.getColumnIndex(Users.COLUMN_PROFILEURL)));
         user.setLastMessage(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGE)));
+        user.setLastMessageId(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGE_ID)));
         user.setLastMessageSender(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGESENDER)));
         user.setLastMessageDate(getReveretdDate(cursor.getString(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGEDATE))));
         user.setLastMessageStatus(MessageStatus.values()[cursor.getInt(cursor.getColumnIndex(Users.COLUMN_LASTMESSAGESTATUS))]);

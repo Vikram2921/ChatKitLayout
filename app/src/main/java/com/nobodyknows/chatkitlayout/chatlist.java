@@ -32,7 +32,7 @@ public class chatlist extends AppCompatActivity {
                 }
                 user.setUnreadMessageCount(user.getUnreadMessageCount() -1);
                 user.setLastMessageDate(new Date());
-                chatUserListView.updateLastMessage(user);
+                chatUserListView.updateLastMessage(user,true);
             }
 
             @Override

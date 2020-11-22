@@ -106,11 +106,13 @@ public class ChatUserListView extends RelativeLayout {
         }
     }
 
-    public void updateLastMessage(User user) {
+    public void updateLastMessage(User user,Boolean updatePositonToTop) {
         if(useDatabase) {
             databaseHelper.updateUser(user);
         }
-        changeToTop(user);
+        if(updatePositonToTop) {
+            changeToTop(user);
+        }
     }
 
     private void changeToTop(User user) {
