@@ -32,7 +32,7 @@ public class Urls {
     }
 
     public static final String getCreateTableQuery(String roomId) {
-        String CREATE_TABLE="CREATE TABLE "+getTableName(roomId)+"("
+        String CREATE_TABLE="CREATE TABLE IF NOT EXISTS "+getTableName(roomId)+"("
                 + COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_FILE_ID +" TEXT NOT NULL,"
                 + COLUMN_MESSAGE_ID +" TEXT NOT NULL,"

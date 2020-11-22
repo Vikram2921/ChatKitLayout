@@ -18,7 +18,7 @@ public class ContactDbModel {
     }
 
     public static final String getCreateTableQuery(String roomId) {
-        String CREATE_TABLE="CREATE TABLE "+getTableName(roomId)+"("
+        String CREATE_TABLE="CREATE TABLE IF NOT EXISTS "+getTableName(roomId)+"("
                 + COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_MESSAGE_ID +" TEXT NOT NULL,"
                 + COLUMN_NAME +" TEXT NOT NULL,"

@@ -327,6 +327,7 @@ public class ChatLayoutView extends RelativeLayout {
         if(useDatabase) {
             canSave = true;
             databaseHelper = new DatabaseHelper(getContext(),roomId);
+            databaseHelper.createTable(roomId);
             databaseHelper.setHelper(helper);
         }
     }

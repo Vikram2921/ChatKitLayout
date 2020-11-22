@@ -41,7 +41,7 @@ public class Chats {
     }
 
     public static final String getCreateTableQuery(String roomId) {
-        String CREATE_TABLE="CREATE TABLE "+getTableName(roomId)+"("
+        String CREATE_TABLE="CREATE TABLE IF NOT EXISTS "+getTableName(roomId)+"("
                 + COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_MESSAGE_ID +" TEXT NOT NULL UNIQUE,"
                 + COLUMN_REPLY_MESSAGE_ID +" TEXT,"

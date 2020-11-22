@@ -44,6 +44,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+    }
+
+    public void createTable(String roomId) {
+        SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(Chats.getCreateTableQuery(roomId));
         db.execSQL(Urls.getCreateTableQuery(roomId));
         db.execSQL(ContactDbModel.getCreateTableQuery(roomId));
