@@ -115,6 +115,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 holder.status.setImageResource(R.drawable.seen);
             } else if(user.getLastMessageStatus() == MessageStatus.SENDING) {
                 holder.status.setImageResource(R.drawable.waiting);
+            } else {
+                holder.status.setVisibility(View.GONE);
+                holder.lasteMessage.setText("This message was deleted.");
             }
         } else {
             holder.status.setVisibility(View.GONE);

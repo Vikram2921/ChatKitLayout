@@ -112,12 +112,18 @@ public class ChatUserListView extends RelativeLayout {
         }
         if(updatePositonToTop) {
             changeToTop(user);
+        } else {
+            int index = usersIds.indexOf(user.getUserId());
+            usersIds.remove(index);
+            users.remove(index);
+            usersIds.add(index,user.getUserId());
+            users.add(index,user);
+            recyclerViewAdapter.notifyItemChanged(index);
         }
     }
 
     private void changeToTop(User user) {
         int index = usersIds.indexOf(user.getUserId());
-        Log.d("TAGINDEX",index+"");
         usersIds.remove(index);
         users.remove(index);
         usersIds.add(0,user.getUserId());
